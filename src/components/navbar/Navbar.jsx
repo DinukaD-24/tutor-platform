@@ -3,23 +3,25 @@ import Link from "next/link";
 
 export default function Navbar() {
     return (
-        <nav className="flex justify-between items-center px-8 py-4 border-b">
-            <Link href="/">
-                <Image 
-                src="/logo.svg"
-                alt="TutorHub Logo"
-                width={140}
-                height={50}
-                priority
-                />
-            </Link>
+        <nav className="border-b">
+            <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+                <Link href="/">
+                    <Image 
+                    src="/logo.svg"
+                    alt="TutorHub Logo"
+                    width={140}
+                    height={50}
+                    priority
+                    />
+                </Link>
 
-            <div className="flex gap-6">
-                <a href="#">Lessons</a>
-                <a href="#">Subjects</a>
-                <a href="#">Tutors</a>
-                <a href="#">About</a>
-                <a href="#">Contact</a>
+                <div className="flex gap-6">
+                    <Link href="/syllabus">Browse</Link>
+                    <Link href="/tutors">Tutors</Link>
+                    <Link href="/about">About</Link>
+                    <Link href="/contact">Contact</Link>
+                </div>
+
             </div>
 
         </nav>
