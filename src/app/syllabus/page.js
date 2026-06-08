@@ -1,3 +1,4 @@
+import Navbar from "@/components/navbar/Navbar";
 import { syllabuses } from "@/data/syllabuses";
 import SyllabusCard from "@/components/cards/SyllabusCard";
 
