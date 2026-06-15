@@ -2,6 +2,8 @@ import Navbar from "@/components/navbar/Navbar";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturedSubjects from "@/components/home/FeaturedSubjects";
 import FeaturedTutors from "@/components/home/FeaturedTutors";
+import StatisticsSection from "@/components/home/StatisticsSection";
+import HowItWorksSection from "@/components/home/HowItWorksSection";
 
 export default function Home() {
   return (
@@ -10,6 +12,8 @@ export default function Home() {
       <HeroSection/>
       <FeaturedSubjects/>
       <FeaturedTutors/>
+      <StatisticsSection/>
+      <HowItWorksSection/>
     </main>
   );
 }
