@@ -1,22 +1,19 @@
+import HeroContent from "../hero/HeroContent";
+import TutorCarousel from "../hero/TutorCarousel";
+
 export default function HeroSection() {
     return (
-        <section className="text-center py-24">
-            <h1 className="text-5xl font-bold mb-4">
-                Discover Different Teaching Styles
-            </h1>
+        <section className="relative overflow-hidden">
+            <div className="absolute inset-0 -z-10">
+                <div className="absolute top-10 right-20 h-72 w-72 rounded-full bg-gray-100 blur-3xl"/>
+                <div className="absolute bottom-0 left-20 h-72 w-72 rounded-full bg-gray-100 blur-3xl"/>
+            </div>
 
-            <p className="text-lg text-gray-600 mb-8">
-                Learn freely and find tutors that suit you.
-            </p>
-
-            <div className="flex justify-center gap-4">
-                <button className="px-6 py-3 bg-black text-white rounded-lg">
-                    Browse Lessons
-                </button>
-
-                <button className="px-6 py-3 border rounded-lg">
-                    Explore Tutors
-                </button>
+            <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <HeroContent/>
+                    <TutorCarousel/>
+                </div>
             </div>
         </section>
     );
