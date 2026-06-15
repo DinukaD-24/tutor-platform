@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Footer() {
@@ -7,9 +8,14 @@ export default function Footer() {
                 <div className="flex flex-col md:flex-row justify-between gap-8">
 
                     <div>
-                        <h3 className="text-xl font-bold">
-                            TutorHub.LK
-                        </h3>
+                        <Link href="/">
+                            <Image 
+                            src="/logo.svg"
+                            alt="TutorHub Logo"
+                            width={140}
+                            height={50}
+                            />
+                        </Link>
 
                         <p className="text-gray-500 mt-2">
                             Helping students discover the right tutor
