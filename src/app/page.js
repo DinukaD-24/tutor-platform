@@ -6,7 +6,7 @@ import HowItWorksSection from "@/components/home/HowItWorksSection";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="min-h-screen bg-background text-dark pt-20">
       <HeroSection/>
       <FeaturedSubjects/>
       <FeaturedTutors/>

@@ -15,11 +15,35 @@ export default function Navbar() {
                     />
                 </Link>
 
-                <div className="flex gap-6">
-                    <Link href="/syllabus">Browse</Link>
-                    <Link href="/tutors">Tutors</Link>
-                    <Link href="/about">About</Link>
-                    <Link href="/contact">Contact</Link>
+                <div className="flex gap-6 text-dark font-medium">
+                    <Link 
+                        href="/syllabus"
+                        className="transition-colors hover:text-primary"
+                    >
+                            Browse
+                    </Link>
+
+                    <Link 
+                        href="/tutors"
+                        className="transition-colors hover:text-primary"
+                    >
+                            Tutors
+                    </Link>
+
+                    <Link 
+                        href="/about"
+                        className="transition-colors hover:text-primary"
+                    >
+                            About
+                    </Link>
+
+                    <Link 
+                        href="/contact"
+                        className="transition-colors hover:text-primary"
+                    >
+                            Contact
+                    </Link>                                        
+
                 </div>
 
             </div>

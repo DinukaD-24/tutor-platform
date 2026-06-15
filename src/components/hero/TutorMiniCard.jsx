@@ -13,12 +13,12 @@ export default function TutorMiniCard ({ tutor }) {
                 hover:-translate-y-1
                 hover:shadow-xl">
             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold">
                     {tutor.name.charAt(0)}
                 </div>
 
                 <div>
-                    <h3 className="font-semibold">
+                    <h3 className="font-semibold text-dark">
                         {tutor.name}
                     </h3>
                     <p className="text-sm text-gray-500">
@@ -28,7 +28,7 @@ export default function TutorMiniCard ({ tutor }) {
             </div>
 
             <div className="mt-4">
-                <p className="font-medium">
+                <p className="font-medium text-dark">
                     {tutor.subject}
                 </p>
             </div>
