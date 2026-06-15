@@ -6,15 +6,15 @@ export default function StatisticsSection() {
         },
         {
             number: "50+",
-            lable: "Tutors",
+            label: "Tutors",
         },
         {
             number: "1000+",
-            lable: "Students",
+            label: "Students",
         },
         {
             number: "4",
-            lable: "Syllabuses",
+            label: "Syllabuses",
         },
     ];
 
