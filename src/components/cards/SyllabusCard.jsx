@@ -4,7 +4,16 @@ export default function SyllabusCard({ syllabus }) {
     return (
         <Link 
             href={`/syllabus/${syllabus.slug}`}
-            className="block border rounded-xl p-5 shadow-sm hover:shadow-md transition"
+            className="
+            bg-white
+            rounded-2xl
+            border
+            border-gray-200
+            p-6
+            shadow-sm
+            hover:shadow-lg
+            transition
+            "
         >
 
             <h3 className="text-lg font-semibold">

@@ -4,7 +4,7 @@ import TutorCard from "../cards/TutorCard";
 export default function FeaturedTutors() {
     return (
         <section className="px-8 py-16">
-            <h2 className="text-3xl font-bold mb-8">
+            <h2 className="text-3xl font-bold text-center mb-8">
                 Featured Tutors
             </h2>
 
