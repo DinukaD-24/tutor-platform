@@ -32,7 +32,7 @@ export default function TutorCarousel () {
     ];
 
     return (
-        <div className="relative w-full max-w-[420px] mx-auto flex flex-col items-center">
+        <div className="relative w-full max-w-[460px] mx-auto flex flex-col items-center">
             
             {/* Carousel Frame */}
             <div className="w-full overflow-hidden rounded-3xl p-2">
@@ -46,11 +46,10 @@ export default function TutorCarousel () {
                         return (
                             <div key={tutor.id} className="w-full shrink-0 flex justify-center px-1">
                                 
-                                {/* Large Square Tutor Card */}
+                                {/* Large Tutor Card */}
                                 <div className="
                                     w-full 
-                                    max-w-[400px] 
-                                    aspect-square 
+                                    max-w-[440px] 
                                     bg-white 
                                     border 
                                     border-gray-100 
@@ -67,8 +66,8 @@ export default function TutorCarousel () {
                                     text-center
                                     relative
                                 ">
-                                    {/* Profile Pic - Larger (occupying ~60% of card height) */}
-                                    <div className="w-full h-52 rounded-2xl overflow-hidden shadow-sm border border-gray-100 shrink-0 mb-3 relative">
+                                    {/* Profile Pic - 3:4 aspect ratio */}
+                                    <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-sm border border-gray-100 shrink-0 mb-4 relative">
                                         {tutor.image ? (
                                             <img 
                                                 src={tutor.image} 
