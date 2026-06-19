@@ -49,7 +49,7 @@ export default function HeroContent() {
                 </Link>
 
                 <Link 
-                    href="/contact"
+                    href="/become-a-tutor"
                     className="
                         px-7
                         py-3.5

@@ -110,7 +110,7 @@ export default function TutorCarousel () {
                                         </h3>
                                         
                                         <p className="text-gray-500 text-xs leading-relaxed max-w-[280px] mx-auto mt-1 mb-2 italic">
-                                            "{slogans[idx] || slogans[0]}"
+                                            &ldquo;{slogans[idx] || slogans[0]}&rdquo;
                                         </p>
                                     </div>
 
