@@ -32,7 +32,7 @@ export default function TutorCarousel () {
     ];
 
     return (
-        <div className="relative w-full max-w-[460px] mx-auto flex flex-col items-center">
+        <div className="relative w-full max-w-[340px] mx-auto flex flex-col items-center">
             
             {/* Carousel Frame */}
             <div className="w-full overflow-hidden rounded-3xl p-2">
@@ -49,7 +49,7 @@ export default function TutorCarousel () {
                                 {/* Large Tutor Card */}
                                 <div className="
                                     w-full 
-                                    max-w-[440px] 
+                                    max-w-[320px] 
                                     bg-white 
                                     border 
                                     border-gray-100 
