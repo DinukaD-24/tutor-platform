@@ -12,7 +12,7 @@ export default function TutorPage() {
                 </h1>
 
                 <p className="text-gray-600 mb-10">
-                    Discover tutors, explore teaching styles, and find the right match for your learning journey.
+                    Discover tutors across different syllabuses and find the right match for your learning journey.
                 </p>
 
                 <div className="

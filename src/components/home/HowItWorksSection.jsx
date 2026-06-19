@@ -1,9 +1,9 @@
 export default function HowItWorksSection () {
     const steps = [
         "Browse Subjects",
-        "Watch Tutor Lessons",
-        "Download Study Materials",
-        "Find the Tutor Fits You",
+        "Explore Tutor Profiles",
+        "Find the Right Teaching Style",
+        "Get in Touch with a Tutor",
     ];
 
     return (

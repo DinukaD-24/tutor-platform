@@ -8,8 +8,8 @@ export default function AboutPage () {
                 </h1>
 
                 <p className="text-center text-gray-600 max-w-3xl mx-auto mb-16">
-                    TutorHub helps students discover free learning resources 
-                    while giving tutors a platform to showcase their teaching 
+                    TutorHub connects students with qualified tutors,
+                    giving tutors a platform to showcase their teaching
                     style and reach more students.
                 </p>
 
@@ -35,10 +35,10 @@ export default function AboutPage () {
                         </h2>
 
                         <p className="text-gray-600 leading-8">
-                            Tutors share educational vidoes and study materials.
-                            Students can explore lessons by syllabus, grade, 
-                            subject, and topic while discovering teaching styles 
-                            that suit them best.
+                            Tutors create a profile and showcase their teaching
+                            style across their subjects and syllabuses.
+                            Students can browse tutor profiles by syllabus, grade,
+                            and subject to find the right fit for them.
                         </p>
 
                         <div>
@@ -47,9 +47,9 @@ export default function AboutPage () {
                             </h2>
 
                             <ul className="list-disc ml-6 text-gray-600 space-y-2">
-                                <li>Free learning resources</li>
+                                <li>Browse tutors across all syllabuses</li>
                                 <li>Explore resources from different tutors</li>
-                                <li>Downloadable study materials</li>
+                                <li>Find a teaching style that suits you</li>
                                 <li>Discover tutors before joining classes</li>
                             </ul>
                         </div>

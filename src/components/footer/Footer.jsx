@@ -18,7 +18,7 @@ export default function Footer() {
                         </Link>
 
                         <p className="text-gray-500 mt-2">
-                            Helping students discover the right tutor
+                            Connecting students with the right tutor
                         </p>
                     </div>
 

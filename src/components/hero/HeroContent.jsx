@@ -13,7 +13,7 @@ export default function HeroContent() {
             </h1>
 
             <p className="text-lg text-gray-600 max-w-md">
-                Explore free lessons, study materials, and teaching styles from tutors across multiple syllabuses.
+                Explore qualified tutors across multiple syllabuses and find the right teaching style for you.
             </p>
 
             <div className="flex gap-6">

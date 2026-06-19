@@ -2,7 +2,7 @@ export default function StatisticsSection() {
     const stats = [
         {
             number: "500+",
-            label: "Lessons",
+            label: "Subjects",
         },
         {
             number: "50+",
