@@ -1,36 +1,54 @@
+import { BookOpen } from "lucide-react";
+
 export default function TutorMiniCard ({ tutor }) {
+    const isUni = tutor.tutorType.toLowerCase().includes("uni");
+    
     return (
         <div 
             className="
-                bg-white 
+                bg-white/90
+                backdrop-blur-sm
                 border 
-                border-gray-200 
+                border-gray-100 
                 rounded-2xl 
                 p-5 
-                shadow-lg 
+                shadow-[0_8px_30px_rgb(0,0,0,0.02)]
+                hover:border-primary/20
+                hover:-translate-y-1
+                hover:shadow-[0_15px_30px_rgba(33,131,150,0.08)]
                 transition-all 
                 duration-300
-                hover:-translate-y-1
-                hover:shadow-xl">
+                w-full
+                max-w-[340px]
+            "
+        >
             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
                     {tutor.name.charAt(0)}
                 </div>
 
-                <div>
-                    <h3 className="font-semibold text-dark">
+                <div className="min-w-0">
+                    <h3 className="font-bold text-dark truncate">
                         {tutor.name}
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <span className={`
+                        inline-block 
+                        text-[10px] 
+                        font-bold 
+                        px-2.5 
+                        py-0.5 
+                        rounded-full 
+                        mt-1
+                        ${isUni ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}
+                    `}>
                         {tutor.tutorType}
-                    </p>
+                    </span>
                 </div>
             </div>
 
-            <div className="mt-4">
-                <p className="font-medium text-dark">
-                    {tutor.subject}
-                </p>
+            <div className="mt-4 pt-3 border-t border-gray-50 flex items-center gap-2 text-sm text-gray-700">
+                <BookOpen size={16} className="text-primary/70" />
+                <span className="font-semibold truncate">{tutor.subject}</span>
             </div>
 
         </div>

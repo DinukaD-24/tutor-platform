@@ -1,33 +1,97 @@
-export default function HowItWorksSection () {
+import { BookOpen, UserCheck, Sparkles, MessageSquare } from "lucide-react";
+
+export default function HowItWorksSection() {
     const steps = [
-        "Browse Subjects",
-        "Explore Tutor Profiles",
-        "Find the Right Teaching Style",
-        "Get in Touch with a Tutor",
+        {
+            title: "Browse Subjects",
+            desc: "Navigate through Local A/L, O/L, Edexcel, and Cambridge syllabuses to locate specific subject syllabuses.",
+            icon: <BookOpen className="text-primary" size={24} />,
+        },
+        {
+            title: "Explore Tutor Profiles",
+            desc: "View verified tutor details, specialties, qualifications, and curriculum areas.",
+            icon: <UserCheck className="text-primary" size={24} />,
+        },
+        {
+            title: "Match Teaching Styles",
+            desc: "Review tutor bios to find a teacher whose method aligns with your individual learning needs.",
+            icon: <Sparkles className="text-primary" size={24} />,
+        },
+        {
+            title: "Get in Touch",
+            desc: "Reach out directly to arrange schedules, request classes, and begin your lessons.",
+            icon: <MessageSquare className="text-primary" size={24} />,
+        },
     ];
 
     return (
-        <section className="py-20 bg-gray-50">
+        <section className="py-24 bg-white">
             <div className="max-w-7xl mx-auto px-6">
+                
+                <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10">
+                        🚀 Getting Started
+                    </span>
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-dark tracking-tight">
+                        How TutorHub Works
+                    </h2>
+                    <p className="text-gray-500">
+                        Our simple step-by-step discovery process is designed to connect students with their ideal tutor in just a few clicks.
+                    </p>
+                </div>
 
-                <h2 className="text-3xl font-bold text-center mb-12">
-                    How It Works
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {steps.map((step, index) => (
                         <div
-                            key={step}
-                            className="bg-white rounded-2xl p-6 border"
+                            key={step.title}
+                            className="
+                                group
+                                relative
+                                bg-gray-50/50 
+                                rounded-3xl 
+                                p-8 
+                                border 
+                                border-gray-100 
+                                hover:bg-white
+                                hover:border-primary/20
+                                hover:-translate-y-1
+                                hover:shadow-[0_20px_40px_rgba(33,131,150,0.05)]
+                                transition-all
+                                duration-300
+                            "
                         >
-                                <div className="text-2xl font-bold mb-4">
-                                    {index + 1}
-                                </div>
+                            {/* Number Bubble */}
+                            <div className="
+                                absolute 
+                                -top-4 
+                                -left-4 
+                                w-10 
+                                h-10 
+                                rounded-full 
+                                bg-primary 
+                                text-white 
+                                flex 
+                                items-center 
+                                justify-center 
+                                font-bold 
+                                shadow-md
+                                border-4
+                                border-white
+                            ">
+                                {index + 1}
+                            </div>
 
-                                <p>
-                                    {step}
-                                </p>
+                            <div className="p-3 bg-white rounded-2xl w-fit shadow-sm group-hover:bg-primary/5 transition-colors mb-6">
+                                {step.icon}
+                            </div>
+
+                            <h3 className="text-lg font-bold text-dark group-hover:text-primary transition-colors">
+                                {step.title}
+                            </h3>
+
+                            <p className="text-gray-500 text-sm mt-3 leading-relaxed">
+                                {step.desc}
+                            </p>
                         </div>
                     ))}
                 </div>

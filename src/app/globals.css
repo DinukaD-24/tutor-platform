@@ -25,7 +25,6 @@
 
   --color-background: var(--color-background);
 
-
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
@@ -34,34 +33,47 @@ body {
   background: var(--color-background);
   color: var(--color-dark);
   font-family: var(--font-geist-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 @keyframes scroll {
   from {
     transform: translateY(0);
   }
-
   to {
     transform: translateY(-50%);
   }
 }
 
 .animate-scroll {
-  animation: scroll 20s linear infinite;
+  animation: scroll 25s linear infinite;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    tranform: translateY(-10px);
+    transform: translateY(-10px);
   }
-
   to {
     opacity: 1;
-    tranform: translateY(0);
+    transform: translateY(0);
   }
 }
 
 .animate-slideDown {
-  animation: slide 0.2s ease-out;
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+/* Custom glow utility */
+.shadow-glow-primary {
+  box-shadow: 0 10px 30px -10px rgba(33, 131, 150, 0.3);
+}
+
+.shadow-glow-secondary {
+  box-shadow: 0 10px 30px -10px rgba(47, 184, 111, 0.3);
+}
+
+/* Modern smooth transitions default */
+.transition-all-custom {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
