@@ -25,7 +25,7 @@ export default function HeroContent() {
 
                 <Link 
                     href="/become-a-tutor"
-                    className="px-6 py-3 border border-color-primary text-color-primary rounded-lg hover:bg-primary hover:text-white transition">
+                    className="px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition">
                     Become a Tutor
                 </Link>
             </div>

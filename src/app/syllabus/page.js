@@ -3,8 +3,8 @@ import SyllabusCard from "@/components/cards/SyllabusCard";
 
 export default function Page() {
     return (
-        <main className="min-h-screen bg-white text-black">
-                <div className="max-w-7xl mx-auto px-6 py-10">
+        <main className="min-h-screen bg-background text-dark py-12">
+                <div className="max-w-7xl mx-auto px-6">
                     <h2 className="text-3xl font-bold mb-8">
                         Browse Syllabuses
                     </h2>

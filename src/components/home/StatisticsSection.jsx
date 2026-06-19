@@ -31,7 +31,7 @@ export default function StatisticsSection() {
                                 {stat.number}
                             </h3>
 
-                            <p className="text-grey-500 mt-2">
+                            <p className="text-gray-500 mt-2">
                                 {stat.label}
                             </p>
                         </div>
