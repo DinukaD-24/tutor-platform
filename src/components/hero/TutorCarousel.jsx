@@ -32,10 +32,10 @@ export default function TutorCarousel () {
     ];
 
     return (
-        <div className="relative w-full max-w-md mx-auto flex flex-col items-center">
+        <div className="relative w-full max-w-[420px] mx-auto flex flex-col items-center">
             
             {/* Carousel Frame */}
-            <div className="w-full overflow-hidden rounded-3xl p-4">
+            <div className="w-full overflow-hidden rounded-3xl p-2">
                 <div 
                     className="flex transition-transform duration-700 ease-out" 
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -44,18 +44,18 @@ export default function TutorCarousel () {
                         const isUni = tutor.tutorType.toLowerCase().includes("uni");
                         
                         return (
-                            <div key={tutor.id} className="w-full shrink-0 flex justify-center px-2">
+                            <div key={tutor.id} className="w-full shrink-0 flex justify-center px-1">
                                 
                                 {/* Large Square Tutor Card */}
                                 <div className="
                                     w-full 
-                                    max-w-[350px] 
+                                    max-w-[400px] 
                                     aspect-square 
                                     bg-white 
                                     border 
                                     border-gray-100 
                                     rounded-3xl 
-                                    p-8 
+                                    p-6 
                                     shadow-[0_15px_40px_rgba(0,0,0,0.04)]
                                     hover:shadow-[0_20px_50px_rgba(33,131,150,0.08)]
                                     transition-all
@@ -67,63 +67,66 @@ export default function TutorCarousel () {
                                     text-center
                                     relative
                                 ">
-                                    {/* Accent strip */}
-                                    <span className="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-primary to-secondary rounded-t-3xl" />
-
-                                    {/* Profile Pic & Title */}
-                                    <div className="flex flex-col items-center">
-                                        <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md mb-4 border border-gray-50 shrink-0">
-                                            {tutor.image ? (
-                                                <img 
-                                                    src={tutor.image} 
-                                                    alt={tutor.name} 
-                                                    className="w-full h-full object-cover" 
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-bold text-2xl">
-                                                    {tutor.name.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <h3 className="font-extrabold text-xl text-dark">
-                                            {tutor.name}
-                                        </h3>
+                                    {/* Profile Pic - Larger (occupying ~60% of card height) */}
+                                    <div className="w-full h-52 rounded-2xl overflow-hidden shadow-sm border border-gray-100 shrink-0 mb-3 relative">
+                                        {tutor.image ? (
+                                            <img 
+                                                src={tutor.image} 
+                                                alt={tutor.name} 
+                                                className="w-full h-full object-cover" 
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-bold text-2xl">
+                                                {tutor.name.charAt(0)}
+                                            </div>
+                                        )}
                                         
+                                        {/* Overlay Badge */}
                                         <span className={`
+                                            absolute
+                                            top-3
+                                            right-3
                                             inline-flex
                                             items-center
                                             gap-1
-                                            text-xs
-                                            font-semibold
-                                            px-3
-                                            py-0.5
-                                            rounded-full
-                                            mt-2
-                                            ${isUni ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}
+                                            text-[10px]
+                                            font-bold
+                                            px-2.5
+                                            py-1
+                                            rounded-lg
+                                            shadow-sm
+                                            backdrop-blur-md
+                                            bg-white/90
+                                            ${isUni ? 'text-primary' : 'text-secondary'}
                                         `}>
-                                            <Award size={12} />
+                                            <Award size={10} />
                                             {tutor.tutorType}
                                         </span>
                                     </div>
 
-                                    {/* Motto / Slogan */}
-                                    <p className="text-gray-500 text-sm leading-relaxed max-w-[240px] my-3 italic">
-                                        "{slogans[idx] || slogans[0]}"
-                                    </p>
+                                    {/* Name & Motto */}
+                                    <div className="w-full text-center">
+                                        <h3 className="font-extrabold text-lg text-dark">
+                                            {tutor.name}
+                                        </h3>
+                                        
+                                        <p className="text-gray-500 text-xs leading-relaxed max-w-[280px] mx-auto mt-1 mb-2 italic">
+                                            "{slogans[idx] || slogans[0]}"
+                                        </p>
+                                    </div>
 
                                     {/* Subject & CTA */}
-                                    <div className="w-full pt-3 border-t border-gray-50 flex items-center justify-between text-sm">
+                                    <div className="w-full pt-3 border-t border-gray-50 flex items-center justify-between text-xs">
                                         <div className="flex items-center gap-1.5 text-gray-700">
-                                            <BookOpen size={16} className="text-primary/70" />
-                                            <span className="font-bold truncate max-w-[120px]">{tutor.subject}</span>
+                                            <BookOpen size={14} className="text-primary/70" />
+                                            <span className="font-bold truncate max-w-[150px]">{tutor.subject}</span>
                                         </div>
                                         <Link 
                                             href="/contact" 
                                             className="text-primary hover:text-primary-dark font-extrabold flex items-center gap-0.5"
                                         >
                                             Inquire
-                                            <ArrowRight size={14} />
+                                            <ArrowRight size={12} />
                                         </Link>
                                     </div>
 
