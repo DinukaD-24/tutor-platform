@@ -48,7 +48,7 @@ export default function AboutPage () {
 
                             <ul className="list-disc ml-6 text-gray-600 space-y-2">
                                 <li>Free learning resources</li>
-                                <li>Multiple tutors for every subject</li>
+                                <li>Explore resources from different tutors</li>
                                 <li>Downloadable study materials</li>
                                 <li>Discover tutors before joining classes</li>
                             </ul>
