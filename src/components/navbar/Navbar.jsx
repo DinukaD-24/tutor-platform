@@ -81,7 +81,7 @@ export default function Navbar() {
 
                     {/* CTA Button */}
                     <Link
-                        href="/contact"
+                        href="/become-a-tutor"
                         className="
                             rounded-xl
                             bg-primary
@@ -155,7 +155,7 @@ export default function Navbar() {
 
                     {/* CTA Button */}
                     <Link
-                        href="/contact"
+                        href="/become-a-tutor"
                         onClick={closeMenu}
                         className="
                             rounded-xl

@@ -6,7 +6,7 @@ export default function HeroContent() {
         <div className="space-y-8">
             <div className="space-y-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
-                    ✨ Sri Lanka's Modern Tutor Discovery
+                    Sri Lanka's Modern Tutor Discovery
                 </span>
                 
                 <h1 className="text-4xl md:text-6xl font-black leading-tight text-dark tracking-tight">

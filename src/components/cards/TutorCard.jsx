@@ -28,24 +28,32 @@ export default function TutorCard({ tutor }) {
 
             <div>
                 <div className="flex items-center gap-4">
-                    <div className="
-                        w-14
-                        h-14
-                        rounded-xl
-                        bg-gradient-to-tr
-                        from-primary
-                        to-primary-dark
-                        text-white
-                        flex
-                        items-center
-                        justify-center
-                        font-bold
-                        text-xl
-                        shadow-md
-                        shrink-0
-                    ">
-                        {tutor.name.charAt(0)}
-                    </div>
+                    {tutor.image ? (
+                        <img 
+                            src={tutor.image} 
+                            alt={tutor.name} 
+                            className="w-14 h-14 rounded-xl object-cover shadow-md shrink-0"
+                        />
+                    ) : (
+                        <div className="
+                            w-14
+                            h-14
+                            rounded-xl
+                            bg-gradient-to-tr
+                            from-primary
+                            to-primary-dark
+                            text-white
+                            flex
+                            items-center
+                            justify-center
+                            font-bold
+                            text-xl
+                            shadow-md
+                            shrink-0
+                        ">
+                            {tutor.name.charAt(0)}
+                        </div>
+                    )}
 
                     <div>
                         <h3 className="font-bold text-lg text-dark group-hover:text-primary transition-colors">

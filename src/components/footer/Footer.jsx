@@ -90,7 +90,7 @@ export default function Footer () {
                         </li>
                         <li>
                             <Link 
-                                href="/contact"
+                                href="/become-a-tutor"
                                 className="text-gray-500 hover:text-primary transition-colors"
                             >
                                 Become a Tutor
@@ -142,7 +142,7 @@ export default function Footer () {
                     <ul className="space-y-4 text-sm text-gray-500">
                         <li className="flex gap-2.5 items-start">
                             <Mail size={18} className="text-primary mt-0.5 shrink-0" />
-                            <span>info@tutorhub.lk</span>
+                            <span>tutorhubadmin@gmail.com</span>
                         </li>
                         <li className="flex gap-2.5 items-start">
                             <MapPin size={18} className="text-primary mt-0.5 shrink-0" />

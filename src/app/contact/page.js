@@ -10,7 +10,7 @@ export default function ContactPage() {
                 {/* Hero Header */}
                 <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
-                        ✉️ Get In Touch
+                        Get In Touch
                     </span>
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight">
                         We'd Love to{" "}
@@ -40,7 +40,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-dark text-sm">Email Address</h3>
-                                        <p className="text-gray-500 text-sm mt-0.5">info@tutorhub.lk</p>
+                                        <p className="text-gray-500 text-sm mt-0.5">tutorhubadmin@gmail.com</p>
                                     </div>
                                 </div>
 

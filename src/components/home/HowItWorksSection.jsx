@@ -30,7 +30,7 @@ export default function HowItWorksSection() {
                 
                 <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10">
-                        🚀 Getting Started
+                        Getting Started
                     </span>
                     <h2 className="text-3xl md:text-4xl font-extrabold text-dark tracking-tight">
                         How TutorHub Works

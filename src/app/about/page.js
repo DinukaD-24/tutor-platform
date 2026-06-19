@@ -9,7 +9,7 @@ export default function AboutPage () {
                 {/* Page Hero */}
                 <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
-                        🎓 About Our Mission
+                        About Our Mission
                     </span>
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
                         Connecting Students with the{" "}
