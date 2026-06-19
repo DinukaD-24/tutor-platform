@@ -2,38 +2,29 @@ export default function StatisticsSection() {
     const stats = [
         {
             number: "500+",
-            label: "Subjects",
-            description: "Mapped to official curricula",
+            label: "Subjects Offered",
+            description: "Local & International Syllabuses",
         },
         {
             number: "50+",
             label: "Verified Tutors",
-            description: "Undergone strict verification",
+            description: "Direct Student Matches",
         },
         {
             number: "1,000+",
             label: "Active Students",
-            description: "Empowered daily by partners",
+            description: "Empowered Daily by Onboarding",
         },
         {
             number: "4",
             label: "Syllabuses Supported",
-            description: "Local & International options",
+            description: "Local, Edexcel, and Cambridge",
         },
     ];
 
     return (
-        <section className="py-24 bg-gradient-to-b from-transparent to-gray-50/50">
+        <section className="py-16 bg-gradient-to-b from-white to-gray-50/30 border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-dark tracking-tight">
-                        TutorHub by the Numbers
-                    </h2>
-                    <p className="text-gray-500 text-base">
-                        Empowering Sri Lankan students and educators by bridging the gap between local resources and international learning standards.
-                    </p>
-                </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {stats.map((stat) => (
                         <div
@@ -43,7 +34,7 @@ export default function StatisticsSection() {
                                 bg-white 
                                 rounded-3xl 
                                 border 
-                                border-gray-100 
+                                border-gray-100/80 
                                 p-8 
                                 text-center 
                                 shadow-[0_8px_30px_rgb(0,0,0,0.015)]
@@ -57,11 +48,11 @@ export default function StatisticsSection() {
                                 {stat.number}
                             </h3>
 
-                            <p className="text-dark font-bold text-lg mt-4">
+                            <p className="text-dark font-bold text-base mt-3">
                                 {stat.label}
                             </p>
                             
-                            <p className="text-gray-400 text-xs mt-2 font-medium">
+                            <p className="text-gray-400 text-xs mt-1.5 font-medium">
                                 {stat.description}
                             </p>
                         </div>

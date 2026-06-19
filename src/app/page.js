@@ -8,9 +8,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background text-dark">
       <HeroSection/>
+      <StatisticsSection/>
       <FeaturedSubjects/>
       <FeaturedTutors/>
-      <StatisticsSection/>
       <HowItWorksSection/>
     </main>
   );
