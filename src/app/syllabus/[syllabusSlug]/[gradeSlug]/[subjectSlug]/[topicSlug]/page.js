@@ -1,9 +1,12 @@
 import { topics } from "@/data/topics";
 import { tutors } from "@/data/tutors";
 
-export default function TopicPage( {params} ) {
+export default async function TopicPage( {params} ) {
+
+    const {topicSlug} = await params;
+
     const topic = topics.find(
-        (t) => t.slug === params.topicSlug
+        (t) => t.slug === topicSlug
     );
 
     if(!topic) {

@@ -1,7 +1,11 @@
-import {subjects} from "@/data/subjects";
+import { syllabuses } from "@/data/syllabuses";
 import SubjectCard from "../cards/SubjectCard";
+import { getFeaturedSubjects } from "@/utils/getFeaturedSubjects";
 
 export default function FeaturedSubject() {
+
+    const subjects = getFeaturedSubjects();
+
     return (
         <section className="px-8 py-16">
             <h2 className="text-3xl font-bold text-center mb-8">

@@ -1,6 +1,6 @@
 import { syllabuses } from "./syllabuses";
 
-export const topic = [
+export const topics = [
     {
         id: 1,
         slug: "trigonometry",

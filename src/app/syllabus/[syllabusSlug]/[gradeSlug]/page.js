@@ -1,9 +1,17 @@
-import { syllabuses } from "@/data/syllabuses";
 import SubjectCard from "@/components/cards/SubjectCard";
+import { getSyllabus, getGrade } from "@/utils/getData";
 
-export default function GradePage({ params }) {
-    const syllabus = syllabuses.find(s => s.slug === params.syllabusSlug);
-    const grade = syllabus?.grades.find(g => g.slug === params.gradeSlug);
+export default async function GradePage({ params }) {
+
+    const { syllabusSlug, gradeSlug } = await params;
+
+    const syllabus = getSyllabus(
+        syllabusSlug
+    );
+    const grade = getGrade(
+        syllabusSlug,
+        gradeSlug
+    );
 
     if (!grade) return <div> Grade not found</div>
 
@@ -18,7 +26,7 @@ export default function GradePage({ params }) {
             </p>
 
             <div className="grid gap-6 md:grid-cols-2">
-                {grade.subjects.map(subject => (
+                {grade.subjects.map((subject) => (
                     <SubjectCard
                         key={subject.slug}
                         syllabusSlug={syllabus.slug}
