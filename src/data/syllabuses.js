@@ -15,21 +15,9 @@ export const syllabuses = [
             name: "Combined Maths",
             slug: "combined-maths",
             topics: [
-              {
-                id: 1,
-                name: "Trigonometry",
-                slug: "trigonometry",
-              },
-              {
-                id: 2,
-                name: "Complex Numbers",
-                slug: "complex-numbers",
-              },
-              {
-                id: 3,
-                name: "Vectors",
-                slug: "vectors",
-              },
+              "trigonometry",
+              "complex-numbers",
+              "vectors",
             ],
           },
           {
@@ -37,16 +25,8 @@ export const syllabuses = [
             name: "Physics",
             slug: "physics",
             topics: [
-              {
-                id: 1,
-                name: "Mechanics",
-                slug: "mechanics",
-              },
-              {
-                id: 2,
-                name: "Waves",
-                slug: "waves",
-              },
+              "mechanics",
+              "waves",
             ],
           },
         ],
@@ -62,16 +42,8 @@ export const syllabuses = [
             name: "Chemistry",
             slug: "chemistry",
             topics: [
-              {
-                id: 1,
-                name: "Organic Chemistry",
-                slug: "organic-chemistry",
-              },
-              {
-                id: 2,
-                name: "Chemical Equilibrium",
-                slug: "chemical-equilibrium",
-              },
+              "organic-chemistry",
+              "chemical-equilibrium",
             ],
           },
         ],
@@ -95,16 +67,8 @@ export const syllabuses = [
             name: "Mathematics",
             slug: "mathematics",
             topics: [
-              {
-                id: 1,
-                name: "Pure Mathematics 1",
-                slug: "pure-mathematics-1",
-              },
-              {
-                id: 2,
-                name: "Statistics 1",
-                slug: "statistics-1",
-              },
+              "pure-mathematics-1",
+              "statistics-1",
             ],
           },
           {
@@ -112,11 +76,7 @@ export const syllabuses = [
             name: "Physics",
             slug: "physics",
             topics: [
-              {
-                id: 1,
-                name: "Forces and Motion",
-                slug: "forces-and-motion",
-              },
+              "forces-and-motion",
             ],
           },
         ],
@@ -132,16 +92,8 @@ export const syllabuses = [
             name: "Mathematics",
             slug: "mathematics",
             topics: [
-              {
-                id: 1,
-                name: "Pure Mathematics 3",
-                slug: "pure-mathematics-3",
-              },
-              {
-                id: 2,
-                name: "Mechanics 1",
-                slug: "mechanics-1",
-              },
+              "pure-mathematics-3",
+              "mechanics-1",
             ],
           },
         ],
@@ -165,16 +117,8 @@ export const syllabuses = [
             name: "Mathematics",
             slug: "mathematics",
             topics: [
-              {
-                id: 1,
-                name: "Algebra",
-                slug: "algebra",
-              },
-              {
-                id: 2,
-                name: "Coordinate Geometry",
-                slug: "coordinate-geometry",
-              },
+              "algebra",
+              "coordinate-geometry",
             ],
           },
           {
@@ -182,16 +126,8 @@ export const syllabuses = [
             name: "Computer Science",
             slug: "computer-science",
             topics: [
-              {
-                id: 1,
-                name: "Data Representation",
-                slug: "data-representation",
-              },
-              {
-                id: 2,
-                name: "Algorithms",
-                slug: "algorithms",
-              },
+              "data-representation",
+              "algorithms",
             ],
           },
         ],
@@ -207,16 +143,8 @@ export const syllabuses = [
             name: "Physics",
             slug: "physics",
             topics: [
-              {
-                id: 1,
-                name: "Electric Fields",
-                slug: "electric-fields",
-              },
-              {
-                id: 2,
-                name: "Quantum Physics",
-                slug: "quantum-physics",
-              },
+              "electric-fields",
+              "quantum-physics",
             ],
           },
         ],
@@ -240,16 +168,8 @@ export const syllabuses = [
             name: "Mathematics",
             slug: "mathematics",
             topics: [
-              {
-                id: 1,
-                name: "Fractions",
-                slug: "fractions",
-              },
-              {
-                id: 2,
-                name: "Percentage",
-                slug: "percentage",
-              },
+               "fractions",
+               "percentage",
             ],
           },
           {
@@ -257,11 +177,7 @@ export const syllabuses = [
             name: "Science",
             slug: "science",
             topics: [
-              {
-                id: 1,
-                name: "Human Body",
-                slug: "human-body",
-              },
+              "human-body",
             ],
           },
         ],
@@ -277,16 +193,8 @@ export const syllabuses = [
             name: "Mathematics",
             slug: "mathematics",
             topics: [
-              {
-                id: 1,
-                name: "Probability",
-                slug: "probability",
-              },
-              {
-                id: 2,
-                name: "Statistics",
-                slug: "statistics",
-              },
+              "probability",
+              "statistics",
             ],
           },
           {
@@ -294,16 +202,8 @@ export const syllabuses = [
             name: "ICT",
             slug: "ict",
             topics: [
-              {
-                id: 1,
-                name: "Computer Networks",
-                slug: "computer-networks",
-              },
-              {
-                id: 2,
-                name: "Database Concepts",
-                slug: "database-concepts",
-              },
+              "computer-networks",
+              "database-concepts",
             ],
           },
         ],

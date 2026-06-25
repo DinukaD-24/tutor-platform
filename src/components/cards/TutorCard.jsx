@@ -8,7 +8,7 @@ export default function TutorCard({tutor}) {
             p-6 
             shadow-sm 
             hover:shadow-lg 
-            tansition
+            transition
         ">
             <div className="flex items-center gap-4">
                 <div className="

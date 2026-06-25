@@ -21,15 +21,21 @@ export default async function SubjectPage({ params }) {
             </p>
 
             <div className="grid gap-6 md:grid-cols-2">
-                {subject.topics.map((topic) => (
-                    <TopicCard 
-                        key={topic.slug}
-                        syllabusSlug={syllabus.slug}
-                        gradeSlug={grade.slug}
-                        subjectSlug={subject.slug}
-                        topic={topic}
-                    />
-                ))}
+                {subject.topics.map((topicSlug) => {
+                    const topicObj = getTopic(topicSlug); 
+                    
+                    if (!topicObj) return null; 
+                    
+                    return (
+                        <TopicCard 
+                            key={topicSlug}
+                            syllabusSlug={syllabus.slug}
+                            gradeSlug={grade.slug}
+                            subjectSlug={subject.slug}
+                            topic={topicObj} 
+                        />
+                    );
+                })}
             </div>
         </div>
     );

@@ -1,7 +1,6 @@
-import Link from ""import { syllabuses } from "@/data/syllabuses";
-next/link;
+import Link from "next/link";
 
-export default function TopicCard() {
+export default function TopicCard({ syllabusSlug, gradeSlug, subjectSlug, topic }) {
     return (
         <Link
             href={`/syllabus/${syllabusSlug}/${gradeSlug}/${subjectSlug}/${topic.slug}`}
