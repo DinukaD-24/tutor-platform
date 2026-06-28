@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { NAV_LINKS } from "@/constants/navigation";
 
 export default function Footer() {
     return (
@@ -23,10 +24,11 @@ export default function Footer() {
                     </div>
 
                     <div className="flex gap-6">
-                        <Link href="/syllabus">Browse</Link>
-                        <Link href="/tutors">Tutors</Link>
-                        <Link href="/about">About</Link>
-                        <Link href="/contact">Contact</Link>
+                        {NAV_LINKS.map((link) => (
+                            <Link key={link.href} href={link.href}>
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

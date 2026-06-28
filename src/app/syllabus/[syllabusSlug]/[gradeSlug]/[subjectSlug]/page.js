@@ -1,5 +1,5 @@
 import TopicCard from "@/components/cards/TopicCard";
-import { getGrade, getSubject, getSyllabus,getTopic } from "@/utils/getData";
+import { getGrade, getSubject, getSyllabus, getTopic } from "@/utils/getData";
 
 export default async function SubjectPage({ params }) {
 
