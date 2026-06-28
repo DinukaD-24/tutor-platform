@@ -1,5 +1,5 @@
 import { syllabuses } from "@/data/syllabuses";
-import SubjectCard from "../cards/SubjectCard";
+import SubjectCard from "../syllabus/SubjectCard";
 import { getFeaturedSubjects } from "@/utils/getFeaturedSubjects";
 
 export default function FeaturedSubject() {

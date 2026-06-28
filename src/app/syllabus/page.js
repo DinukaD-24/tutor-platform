@@ -1,5 +1,5 @@
 import { syllabuses } from "@/data/syllabuses";
-import SyllabusCard from "@/components/cards/SyllabusCard";
+import SyllabusCard from "@/components/syllabus/SyllabusCard";
 
 export default function Page() {
     return (

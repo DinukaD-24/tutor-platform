@@ -1,5 +1,5 @@
 import { tutors } from "@/data/tutors";
-import TutorCard from "@/components/cards/TutorCard";
+import TutorCard from "@/components/tutor/TutorCard";
 
 export default function TutorPage() {
     return (

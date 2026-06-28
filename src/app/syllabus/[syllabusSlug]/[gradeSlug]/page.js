@@ -1,4 +1,4 @@
-import SubjectCard from "@/components/cards/SubjectCard";
+import SubjectCard from "@/components/syllabus/SubjectCard";
 import { getSyllabus, getGrade } from "@/utils/getData";
 
 export default async function GradePage({ params }) {

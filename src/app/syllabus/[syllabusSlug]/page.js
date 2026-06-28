@@ -1,4 +1,4 @@
-import GradeCard from "@/components/cards/GradeCard";
+import GradeCard from "@/components/syllabus/GradeCard";
 import { getSyllabus } from "@/utils/getData";
 
 export default async function SyllabusDetailPage({ params }) {

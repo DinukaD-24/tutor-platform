@@ -1,5 +1,5 @@
 import {tutors} from "@/data/tutors";
-import TutorCard from "../cards/TutorCard";
+import TutorCard from "../tutor/TutorCard";
 
 export default function FeaturedTutors() {
     return (
