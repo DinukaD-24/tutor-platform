@@ -24,8 +24,8 @@ export function getSubject( syllabusSlug, gradeSlug, subjectSlug ) {
     );
 }
 
-export function getTopic(topicSlug) {
-    return topics.find(
-        (topic) => topic.slug === topicSlug
-    );
+export function getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug) {
+    const subject = getSubject(syllabusSlug, gradeSlug, subjectSlug);
+    if (!subject?.topics.includes(topicSlug)) return null;
+    return topics.find((topic) => topic.slug === topicSlug) || null;
 }

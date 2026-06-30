@@ -1,5 +1,5 @@
 import TopicCard from "@/components/syllabus/TopicCard";
-import { getGrade, getSubject, getSyllabus, getTopic } from "@/utils/getData";
+import { getGrade, getSubject, getSyllabus } from "@/utils/getData";
 
 export default async function SubjectPage({ params }) {
 
@@ -16,13 +16,13 @@ export default async function SubjectPage({ params }) {
                 {subject.name}
             </h1>
 
-            <p className="grid gap-6 md:grid-cols-2">
+            <p className="text-gray-500 mb-8">
                 Browse topics available in this subject.
             </p>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {subject.topics.map((topicSlug) => {
-                    const topicObj = getTopic(topicSlug); 
+                    const topicObj = getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug); 
                     
                     if (!topicObj) return null; 
                     

@@ -1,5 +1,3 @@
-import { syllabuses } from "./syllabuses";
-
 export const topics = [
     {
         id: 1,
