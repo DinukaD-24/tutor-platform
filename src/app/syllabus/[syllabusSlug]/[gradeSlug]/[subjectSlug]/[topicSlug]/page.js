@@ -119,7 +119,7 @@ export default async function TopicPage( {params} ) {
 
                 {materialCount > 0 ? (
                     <div className="grid gap-4 sm:grid-cols-2">
-                        {topic.materials.map((material) => 
+                        {topic.materials.map((material) => (
                             <div 
                                 key={material.title}
                                 className="bg-white border rounded-2xl p-5 flex items-center justify-between shadow-sm hover:shadow-md transition"
