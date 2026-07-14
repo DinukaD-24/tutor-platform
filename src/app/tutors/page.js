@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { tutors } from "@/data/tutors";
-import TutorCard from "@/components/cards/TutorCard";
+import TutorCard from "@/components/tutor/TutorCard";
 import { Search, SlidersHorizontal, Users, RefreshCw, X, Star } from "lucide-react";
 
 export default function TutorPage() {
