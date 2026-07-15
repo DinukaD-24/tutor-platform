@@ -2,17 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { tutors } from "@/data/tutors";
-import { ChevronLeft, ChevronRight, Star, BookOpen, Users } from "lucide-react";
+import { BookOpen, Award, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-const slogans = [
-    "Specialised in simplifying complex algebra and calculus for A/L students.",
-    "Passionate about making mechanics and waves intuitive through real examples.",
-    "Interactive programming lessons built around practical, exam-ready concepts.",
-    "Structured biology diagrams and memory techniques for fast revision.",
-];
-
-export default function TutorCarousel() {
+export default function TutorCarousel () {
     const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
@@ -22,68 +15,119 @@ export default function TutorCarousel() {
         return () => clearInterval(timer);
     }, []);
 
-    const prev = () => setActiveIndex((p) => (p - 1 + tutors.length) % tutors.length);
-    const next = () => setActiveIndex((p) => (p + 1) % tutors.length);
+    const prevSlide = () => {
+        setActiveIndex((prev) => (prev - 1 + tutors.length) % tutors.length);
+    };
+
+    const nextSlide = () => {
+        setActiveIndex((prev) => (prev + 1) % tutors.length);
+    };
+
+    const slogans = [
+        "Specialized in simplifying complex algebraic methods and geometry.",
+        "Passionate about making mechanical physics and waves intuitive.",
+        "Interactive programming lessons focusing on practical concepts.",
+        "Dedicated to structured biological diagrams and study methods."
+    ];
 
     return (
-        <div className="relative w-full max-w-[340px] mx-auto select-none">
-
-            {/* Card Slider */}
-            <div className="overflow-hidden rounded-3xl">
-                <div
-                    className="flex transition-transform duration-700 ease-out"
+        <div className="relative w-full max-w-[340px] mx-auto flex flex-col items-center">
+            
+            {/* Carousel Frame */}
+            <div className="w-full overflow-hidden rounded-3xl p-2">
+                <div 
+                    className="flex transition-transform duration-700 ease-out" 
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
                 >
                     {tutors.map((tutor, idx) => {
-                        const isUni = tutor.tutorType?.toLowerCase().includes("uni");
+                        const isUni = tutor.tutorType.toLowerCase().includes("uni");
+                        
                         return (
-                            <div key={tutor.id} className="w-full shrink-0 px-1">
-                                <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_20px_60px_rgba(0,0,0,0.06)] p-7 space-y-5">
-
-                                    {/* Avatar + Name */}
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br ${isUni ? "from-primary to-primary-dark" : "from-secondary to-emerald-600"} shrink-0`}>
-                                            {tutor.name.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-extrabold text-dark text-base leading-tight">{tutor.name}</h3>
-                                            <span className={`inline-flex mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isUni ? "bg-primary/10 text-primary" : "bg-secondary/10 text-secondary"}`}>
-                                                {tutor.tutorType}
-                                            </span>
-                                        </div>
+                            <div key={tutor.id} className="w-full shrink-0 flex justify-center px-1">
+                                
+                                {/* Large Tutor Card */}
+                                <div className="
+                                    w-full 
+                                    max-w-[320px] 
+                                    bg-white 
+                                    border 
+                                    border-gray-100 
+                                    rounded-3xl 
+                                    p-6 
+                                    shadow-[0_15px_40px_rgba(0,0,0,0.04)]
+                                    hover:shadow-[0_20px_50px_rgba(33,131,150,0.08)]
+                                    transition-all
+                                    duration-300
+                                    flex 
+                                    flex-col 
+                                    justify-between 
+                                    items-center 
+                                    text-center
+                                    relative
+                                ">
+                                    {/* Profile Pic - 3:4 aspect ratio */}
+                                    <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-sm border border-gray-100 shrink-0 mb-4 relative">
+                                        {tutor.image ? (
+                                            <img 
+                                                src={tutor.image} 
+                                                alt={tutor.name} 
+                                                className="w-full h-full object-cover" 
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-bold text-2xl">
+                                                {tutor.name.charAt(0)}
+                                            </div>
+                                        )}
+                                        
+                                        {/* Overlay Badge */}
+                                        <span className={`
+                                            absolute
+                                            top-3
+                                            right-3
+                                            inline-flex
+                                            items-center
+                                            gap-1
+                                            text-[10px]
+                                            font-bold
+                                            px-2.5
+                                            py-1
+                                            rounded-lg
+                                            shadow-sm
+                                            backdrop-blur-md
+                                            bg-white/90
+                                            ${isUni ? 'text-primary' : 'text-secondary'}
+                                        `}>
+                                            <Award size={10} />
+                                            {tutor.tutorType}
+                                        </span>
                                     </div>
 
-                                    {/* Slogan */}
-                                    <p className="text-sm text-gray-500 leading-relaxed">
-                                        {slogans[idx] || tutor.bio?.slice(0, 100)}
-                                    </p>
-
-                                    {/* Stats */}
-                                    <div className="grid grid-cols-3 gap-3 pt-3 border-t border-gray-50">
-                                        <div className="text-center">
-                                            <Star size={13} className="text-amber-400 mx-auto mb-1" />
-                                            <strong className="block text-xs font-extrabold text-dark">{tutor.rating}</strong>
-                                            <span className="text-[9px] text-gray-400">Rating</span>
-                                        </div>
-                                        <div className="text-center">
-                                            <Users size={13} className="text-primary mx-auto mb-1" />
-                                            <strong className="block text-xs font-extrabold text-dark">{tutor.students}</strong>
-                                            <span className="text-[9px] text-gray-400">Students</span>
-                                        </div>
-                                        <div className="text-center">
-                                            <BookOpen size={13} className="text-secondary mx-auto mb-1" />
-                                            <strong className="block text-xs font-extrabold text-dark">{tutor.lessonsCount}</strong>
-                                            <span className="text-[9px] text-gray-400">Lessons</span>
-                                        </div>
+                                    {/* Name & Motto */}
+                                    <div className="w-full text-center">
+                                        <h3 className="font-extrabold text-lg text-dark">
+                                            {tutor.name}
+                                        </h3>
+                                        
+                                        <p className="text-gray-500 text-xs leading-relaxed max-w-[280px] mx-auto mt-1 mb-2 italic">
+                                            &ldquo;{slogans[idx] || slogans[0]}&rdquo;
+                                        </p>
                                     </div>
 
-                                    {/* CTA */}
-                                    <Link
-                                        href={`/tutors/${tutor.id}`}
-                                        className="block w-full text-center py-3 bg-primary/5 hover:bg-primary text-primary hover:text-white font-bold text-xs rounded-2xl border border-primary/10 hover:border-primary transition-all duration-200"
-                                    >
-                                        View Profile
-                                    </Link>
+                                    {/* Subject & CTA */}
+                                    <div className="w-full pt-3 border-t border-gray-50 flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-1.5 text-gray-700">
+                                            <BookOpen size={14} className="text-primary/70" />
+                                            <span className="font-bold truncate max-w-[150px]">{tutor.subject}</span>
+                                        </div>
+                                        <Link 
+                                            href={`/tutors/${tutor.id}`} 
+                                            className="text-primary hover:text-primary-dark font-extrabold flex items-center gap-0.5 animate-pulse hover:animate-none"
+                                        >
+                                            View Profile
+                                            <ArrowRight size={12} />
+                                        </Link>
+                                    </div>
+
                                 </div>
                             </div>
                         );
@@ -91,27 +135,39 @@ export default function TutorCarousel() {
                 </div>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center justify-between mt-5 px-1">
-                <button onClick={prev} className="p-2 rounded-xl border border-gray-100 bg-white hover:border-primary/20 hover:text-primary text-gray-400 transition-all shadow-sm">
+            {/* Slider Dots & Navigation */}
+            <div className="flex items-center gap-4 mt-2">
+                <button 
+                    onClick={prevSlide}
+                    className="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary hover:border-primary/30 transition-colors"
+                >
                     <ChevronLeft size={16} />
                 </button>
-
-                {/* Dots */}
-                <div className="flex items-center gap-1.5">
-                    {tutors.map((_, i) => (
+                
+                <div className="flex gap-1.5">
+                    {tutors.map((_, idx) => (
                         <button
-                            key={i}
-                            onClick={() => setActiveIndex(i)}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${i === activeIndex ? "w-5 bg-primary" : "w-1.5 bg-gray-200"}`}
+                            key={idx}
+                            onClick={() => setActiveIndex(idx)}
+                            className={`
+                                h-1.5 
+                                rounded-full 
+                                transition-all 
+                                duration-300
+                                ${activeIndex === idx ? 'w-5 bg-primary' : 'w-1.5 bg-gray-200'}
+                            `}
                         />
                     ))}
                 </div>
 
-                <button onClick={next} className="p-2 rounded-xl border border-gray-100 bg-white hover:border-primary/20 hover:text-primary text-gray-400 transition-all shadow-sm">
+                <button 
+                    onClick={nextSlide}
+                    className="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-primary hover:border-primary/30 transition-colors"
+                >
                     <ChevronRight size={16} />
                 </button>
             </div>
+            
         </div>
     );
 }
