@@ -1,32 +1,53 @@
 import Link from "next/link";
+import { ArrowRight, Search, ShieldCheck } from "lucide-react";
 
 export default function HeroContent() {
     return (
-        <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-dark">
-                Find the{" "}
-                <span className="text-primary">
-                    Right Tutor
+        <div className="space-y-8">
+            <div className="space-y-5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
+                    Sri Lanka's Modern Tutor Discovery
                 </span>
-                <br/>
-                Learn at Your Own Pace.
-            </h1>
 
-            <p className="text-lg text-gray-600 max-w-md">
-                Explore free lessons, study materials, and teaching styles from tutors across multiple syllabuses.
-            </p>
+                <h1 className="text-4xl md:text-6xl font-black leading-tight text-dark tracking-tight">
+                    Find the{" "}
+                    <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        Right Tutor.
+                    </span>
+                    <br />
+                    Learn Your Way.
+                </h1>
 
-            <div className="flex gap-6">
-                <Link 
+                <p className="text-gray-500 text-lg leading-relaxed max-w-lg">
+                    Discover qualified tutors across every syllabus — Local A/L, O/L, Edexcel, and Cambridge. Browse subjects, compare teaching styles, and connect directly.
+                </p>
+            </div>
+
+            {/* Trust badges */}
+            <div className="flex flex-wrap gap-3">
+                {["Verified Tutors", "Free to Browse", "All Syllabuses"].map((badge) => (
+                    <span key={badge} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-xl border border-gray-100 text-xs font-semibold text-gray-600 shadow-sm">
+                        <ShieldCheck size={12} className="text-primary" />
+                        {badge}
+                    </span>
+                ))}
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-4">
+                <Link
                     href="/syllabus"
-                    className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
-                    Browse Syllabuses
+                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-2xl shadow-glow-primary hover:-translate-y-0.5 transition-all duration-200 text-sm"
+                >
+                    Browse Subjects
+                    <ArrowRight size={16} />
                 </Link>
-
-                <Link 
-                    href="/become-a-tutor"
-                    className="px-6 py-3 border border-color-primary text-color-primary rounded-lg hover:bg-primary hover:text-white transition">
-                    Become a Tutor
+                <Link
+                    href="/tutors"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-white border-2 border-gray-100 hover:border-primary/30 hover:text-primary text-dark font-bold rounded-2xl hover:-translate-y-0.5 transition-all duration-200 text-sm"
+                >
+                    <Search size={15} />
+                    Find a Tutor
                 </Link>
             </div>
         </div>
