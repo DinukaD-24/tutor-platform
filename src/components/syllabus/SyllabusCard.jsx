@@ -23,6 +23,7 @@ export default function SyllabusCard({ syllabus }) {
                 flex-col
                 justify-between
                 min-h-[140px]
+                overflow-hidden
             "
         >
             {/* Top color accent strip */}

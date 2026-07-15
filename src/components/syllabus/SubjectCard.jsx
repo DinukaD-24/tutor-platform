@@ -32,6 +32,7 @@ export default function SubjectCard({ syllabusSlug, gradeSlug, subject }) {
                 hover:shadow-[0_15px_30px_rgba(33,131,150,0.06)]
                 transition-all
                 duration-300
+                overflow-hidden
             "
         >
             {/* Top color strip on hover */}
