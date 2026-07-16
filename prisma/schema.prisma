@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,114 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model Syllabus {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  name   String
+  grades Grade[]
+}
+
+model Grade {
+  id         String    @id @default(cuid())
+  slug       String
+  name       String
+  order      Int       @default(0)
+  syllabusId String
+  syllabus   Syllabus  @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
+  subjects   Subject[]
+
+  @@unique([syllabusId, slug])
+}
+
+model Subject {
+  id      String  @id @default(cuid())
+  slug    String
+  name    String
+  gradeId String
+  grade   Grade   @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  topics  Topic[]
+
+  @@unique([gradeId, slug])
+}
+
+model Topic {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  description      String?
+  order            Int      @default(0)
+  difficulty       String?
+  estimatedHours   Int?
+  prerequisites    String[]
+  learningOutcomes String[]
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  materials Material[]
+  videos    Video[]
+  tutors    Tutor[]   @relation("TopicTutors")
+
+  relatedTo Topic[] @relation("RelatedTopics")
+  relatedBy Topic[] @relation("RelatedTopics")
+}
+
+model Material {
+  id      String @id @default(cuid())
+  title   String
+  url     String
+  topicId String
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+}
+
+model Video {
+  id        String @id @default(cuid())
+  youtubeId String
+  title     String
+  topicId   String
+  topic     Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  tutorId   String
+  tutor     Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+}
+
+model Tutor {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  name              String
+  subject           String
+  tutorType         String
+  image             String?
+  rating            Float    @default(0)
+  reviewsCount      Int      @default(0)
+  experience        String?
+  lessonsCount      Int      @default(0)
+  studentsCount     Int      @default(0)
+  university        String?
+  languages         String[]
+  price             String?
+  onlineAvailable   Boolean  @default(false)
+  physicalAvailable Boolean  @default(false)
+  email             String   @unique
+  phone             String?
+  location          String?
+  qualifications    String[]
+  specializations   String[]
+  teachingStyle     String?
+  bio               String?
+
+  reviews Review[]
+  videos  Video[]
+  topics  Topic[]  @relation("TopicTutors")
+}
+
+model Review {
+  id      String   @id @default(cuid())
+  student String
+  rating  Int
+  comment String?
+  date    DateTime
+  tutorId String
+  tutor   Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
 }
