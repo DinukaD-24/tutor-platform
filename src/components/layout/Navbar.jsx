@@ -38,33 +38,57 @@ export default function Navbar() {
                     <Image 
                         src="/logo.svg"
                         alt="TutorHub Logo"
-                        width={140}
-                        height={50}
+                        width={130}
+                        height={46}
                         priority
                     />
                 </Link>
                 
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-8">
-                    {NAV_LINKS.map((link) => {
-                        const active = isActive(link.href);
-                        return (
-                            <Link 
-                                key={link.href}
-                                href={link.href}
-                                className={`
-                                    font-medium
-                                    transition-colors
-                                    duration-200
-                                    ${active ? 'text-primary' : 'text-dark hover:text-primary'}
-                                `}
-                            >
-                                {link.label}
-                            </Link>
-                        );
-                    })}
+                <div className="hidden md:flex items-center gap-6">
+                    <div className="flex items-center gap-8 mr-4">
+                        {NAV_LINKS.map((link) => {
+                            const active = isActive(link.href);
+                            return (
+                                <Link 
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`
+                                        font-medium
+                                        transition-colors
+                                        duration-200
+                                        ${active ? 'text-primary' : 'text-dark hover:text-primary'}
+                                    `}
+                                >
+                                    {link.label}
+                                </Link>
+                            );
+                        })}
+                    </div>
+
+                    {/* Secondary Outline Log In Button */}
+                    <Link
+                        href="/login"
+                        className="
+                            rounded-2xl
+                            border-2
+                            border-gray-100
+                            hover:border-primary/20
+                            px-5
+                            py-2
+                            text-sm
+                            text-dark
+                            hover:text-primary
+                            font-semibold
+                            transition-all
+                            duration-200
+                            hover:scale-102
+                        "
+                    >
+                        Log In
+                    </Link>
                     
-                    {/* CTA Button */}
+                    {/* Primary Become a Tutor Button */}
                     <Link
                         href="/become-a-tutor"
                         className="
@@ -73,7 +97,8 @@ export default function Navbar() {
                             px-5
                             py-2.5
                             text-white
-                            font-medium
+                            font-semibold
+                            text-sm
                             transition-all
                             duration-200
                             hover:bg-primary-dark
@@ -104,12 +129,12 @@ export default function Navbar() {
                         md:hidden
                         flex
                         flex-col
-                        gap-5
+                        gap-4
                         px-6
                         pb-6
                         border-t
                         border-white/20
-                        animate-slideDown
+                        pt-4
                     "
                 >
                     {NAV_LINKS.map((link) => {
@@ -123,6 +148,7 @@ export default function Navbar() {
                                     font-medium
                                     transition-colors
                                     duration-200
+                                    py-1
                                     ${active ? 'text-primary' : 'text-dark hover:text-primary'}
                                 `}
                             >
@@ -131,7 +157,29 @@ export default function Navbar() {
                         );
                     })}
 
-                    {/* CTA Button */}
+                    {/* Mobile Log In Button */}
+                    <Link
+                        href="/login"
+                        onClick={closeMenu}
+                        className="
+                            rounded-2xl
+                            border-2
+                            border-gray-100
+                            hover:border-primary/20
+                            py-2.5
+                            text-center
+                            text-dark
+                            hover:text-primary
+                            font-semibold
+                            transition-all
+                            duration-200
+                            mt-2
+                        "
+                    >
+                        Log In
+                    </Link>
+
+                    {/* Mobile Become a Tutor Button */}
                     <Link
                         href="/become-a-tutor"
                         onClick={closeMenu}
@@ -142,7 +190,7 @@ export default function Navbar() {
                             py-2.5
                             text-center
                             text-white
-                            font-medium
+                            font-semibold
                             transition-all
                             duration-200
                             hover:bg-primary-dark
