@@ -1,11 +1,9 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { tutors } from "@/data/tutors";
 import { BookOpen, Award, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-export default function TutorCarousel () {
+export default function TutorCarousel ({ tutors }) {
     const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {

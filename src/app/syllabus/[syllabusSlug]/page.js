@@ -4,7 +4,7 @@ import { ChevronRight, Layers, ArrowRight } from "lucide-react";
 
 export default async function SyllabusDetailPage({ params }) {
     const { syllabusSlug } = await params;
-    const syllabus = getSyllabus(syllabusSlug);
+    const syllabus = await getSyllabus(syllabusSlug);
 
     if (!syllabus) {
         return (

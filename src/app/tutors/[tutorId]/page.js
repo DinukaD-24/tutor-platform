@@ -1,4 +1,4 @@
-import { tutors } from "@/data/tutors";
+import { getTutorById } from "@/utils/getData";
 import Link from "next/link";
 import { 
     ChevronRight, BookOpen, Award, Star, Users, GraduationCap, 
@@ -7,7 +7,7 @@ import {
 
 export default async function TutorProfilePage({ params }) {
     const { tutorId } = await params;
-    const tutor = tutors.find((t) => t.id === parseInt(tutorId));
+    const tutor = await getTutorById(tutorId);
 
     if (!tutor) {
         return (

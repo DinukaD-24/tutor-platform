@@ -1,10 +1,12 @@
-import { tutors } from "@/data/tutors";
+import { getAllTutors } from "@/utils/getData";
 import TutorCard from "@/components/tutor/TutorCard";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { StaggerContainer, StaggerItem, FadeIn } from "@/components/ui";
 
-export default function FeaturedTutors() {
+export default async function FeaturedTutors() {
+    const tutors = await getAllTutors();
+    
     return (
         <section className="bg-gray-50/50 py-24 border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-6">

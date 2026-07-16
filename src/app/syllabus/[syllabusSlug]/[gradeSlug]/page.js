@@ -5,8 +5,8 @@ import { ChevronRight, Layers } from "lucide-react";
 export default async function GradePage({ params }) {
     const { syllabusSlug, gradeSlug } = await params;
 
-    const syllabus = getSyllabus(syllabusSlug);
-    const grade    = getGrade(syllabusSlug, gradeSlug);
+    const syllabus = await getSyllabus(syllabusSlug);
+    const grade    = await getGrade(syllabusSlug, gradeSlug);
 
     if (!grade || !syllabus) {
         return (

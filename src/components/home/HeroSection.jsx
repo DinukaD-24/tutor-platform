@@ -1,7 +1,10 @@
 import HeroContent from "../hero/HeroContent";
 import TutorCarousel from "../hero/TutorCarousel";
+import { getAllTutors } from "@/utils/getData";
 
-export default function HeroSection() {
+export default async function HeroSection() {
+    const tutors = await getAllTutors();
+    
     return (
         <section className="relative overflow-hidden">
             <div className="absolute inset-0 -z-10">
@@ -12,7 +15,7 @@ export default function HeroSection() {
             <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <HeroContent/>
-                    <TutorCarousel/>
+                    <TutorCarousel tutors={tutors} />
                 </div>
             </div>
         </section>

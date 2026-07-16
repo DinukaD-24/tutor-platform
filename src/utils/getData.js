@@ -1,31 +1,187 @@
-import { syllabuses } from "@/data/syllabuses";
-import { topics } from "@/data/topics";
-import { tutors } from "@/data/tutors";
+import { prisma } from "@/lib/prisma";
 
-export function getSyllabus(syllabusSlug) {
-    return syllabuses.find(
-        (syllabus) => syllabus.slug === syllabusSlug
-    );
+const topicInclude = {
+  subject: { include: { grade: { include: { syllabus: true } } } },
+  relatedTo: true,
+  videos: { include: { tutor: true } },
+  materials: true,
+  tutors: true,
+};
+
+function serializeTopic(topic) {
+  return {
+    id: topic.id,
+    slug: topic.slug,
+    name: topic.name,
+    description: topic.description,
+    order: topic.order,
+    difficulty: topic.difficulty,
+    estimatedHours: topic.estimatedHours,
+    prerequisites: topic.prerequisites,
+    learningOutcomes: topic.learningOutcomes,
+    subjectSlug: topic.subject.slug,
+    gradeSlug: topic.subject.grade.slug,
+    syllabusSlug: topic.subject.grade.syllabus.slug,
+    relatedTopics: topic.relatedTo.map((t) => t.slug),
+    videos: topic.videos.map((v) => ({
+      tutorSlug: v.tutor.slug,
+      youtubeId: v.youtubeId,
+      title: v.title,
+    })),
+    materials: topic.materials.map((m) => ({ title: m.title, url: m.url })),
+    tutors: topic.tutors.map((t) => t.slug),
+  };
 }
 
-export function getGrade(syllabusSlug, gradeSlug) {
-    const syllabus = getSyllabus(syllabusSlug);
-
-    return syllabus?.grades.find(
-        (grade) => grade.slug === gradeSlug
-    );
+function serializeTutor(t) {
+  return {
+    id: t.id,
+    slug: t.slug,
+    name: t.name,
+    subject: t.subject,
+    tutorType: t.tutorType,
+    image: t.image,
+    rating: t.rating,
+    reviewsCount: t.reviewsCount,
+    experience: t.experience,
+    lessonsCount: t.lessonsCount,
+    studentsCount: t.studentsCount,
+    university: t.university,
+    languages: t.languages,
+    price: t.price,
+    availability: { online: t.onlineAvailable, physical: t.physicalAvailable },
+    email: t.email,
+    phone: t.phone,
+    location: t.location,
+    qualifications: t.qualifications,
+    specializations: t.specializations,
+    teachingStyle: t.teachingStyle,
+    bio: t.bio,
+    reviews: (t.reviews ?? []).map((r) => ({
+      id: r.id,
+      student: r.student,
+      rating: r.rating,
+      comment: r.comment,
+      date: r.date.toISOString().slice(0, 10),
+    })),
+  };
 }
 
-export function getSubject( syllabusSlug, gradeSlug, subjectSlug ) {
-    const grade = getGrade(syllabusSlug, gradeSlug);
+const gradeInclude = {
+  subjects: { include: { topics: { select: { slug: true } } } },
+};
 
-    return grade?.subjects.find(
-        (subject) => subject.slug === subjectSlug
-    );
+function serializeGrade(g) {
+  return {
+    id: g.id,
+    slug: g.slug,
+    name: g.name,
+    order: g.order,
+    subjects: g.subjects.map((sub) => ({
+      id: sub.id,
+      slug: sub.slug,
+      name: sub.name,
+      topics: sub.topics.map((t) => t.slug),
+    })),
+  };
 }
 
-export function getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug) {
-    const subject = getSubject(syllabusSlug, gradeSlug, subjectSlug);
-    if (!subject?.topics.includes(topicSlug)) return null;
-    return topics.find((topic) => topic.slug === topicSlug) || null;
+export async function getAllSyllabuses() {
+  const syllabuses = await prisma.syllabus.findMany({
+    include: { grades: { orderBy: { order: "asc" }, include: gradeInclude } },
+  });
+  return syllabuses.map((s) => ({
+    id: s.id,
+    slug: s.slug,
+    name: s.name,
+    grades: s.grades.map(serializeGrade),
+  }));
+}
+
+export async function getSyllabus(syllabusSlug) {
+  const syllabus = await prisma.syllabus.findUnique({
+    where: { slug: syllabusSlug },
+    include: { grades: { orderBy: { order: "asc" }, include: gradeInclude } },
+  });
+  if (!syllabus) return null;
+  return {
+    id: syllabus.id,
+    slug: syllabus.slug,
+    name: syllabus.name,
+    grades: syllabus.grades.map(serializeGrade),
+  };
+}
+
+export async function getGrade(syllabusSlug, gradeSlug) {
+  const syllabus = await prisma.syllabus.findUnique({ where: { slug: syllabusSlug } });
+  if (!syllabus) return null;
+  const grade = await prisma.grade.findUnique({
+    where: { syllabusId_slug: { syllabusId: syllabus.id, slug: gradeSlug } },
+    include: gradeInclude,
+  });
+  if (!grade) return null;
+  return serializeGrade(grade);
+}
+
+export async function getSubject(syllabusSlug, gradeSlug, subjectSlug) {
+  const syllabus = await prisma.syllabus.findUnique({ where: { slug: syllabusSlug } });
+  if (!syllabus) return null;
+  const grade = await prisma.grade.findUnique({
+    where: { syllabusId_slug: { syllabusId: syllabus.id, slug: gradeSlug } },
+  });
+  if (!grade) return null;
+  const subject = await prisma.subject.findUnique({
+    where: { gradeId_slug: { gradeId: grade.id, slug: subjectSlug } },
+    include: { topics: { select: { slug: true }, orderBy: { order: "asc" } } },
+  });
+  if (!subject) return null;
+  return {
+    id: subject.id,
+    slug: subject.slug,
+    name: subject.name,
+    topics: subject.topics.map((t) => t.slug),
+  };
+}
+
+export async function getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug) {
+  const topic = await prisma.topic.findUnique({
+    where: { slug: topicSlug },
+    include: topicInclude,
+  });
+  if (!topic) return null;
+  if (
+    topic.subject.slug !== subjectSlug ||
+    topic.subject.grade.slug !== gradeSlug ||
+    topic.subject.grade.syllabus.slug !== syllabusSlug
+  ) {
+    return null;
+  }
+  return serializeTopic(topic);
+}
+
+export async function getTopicsBySlugs(slugs) {
+  if (!slugs?.length) return [];
+  const topics = await prisma.topic.findMany({
+    where: { slug: { in: slugs } },
+    include: topicInclude,
+  });
+  const bySlug = new Map(topics.map((t) => [t.slug, serializeTopic(t)]));
+  return slugs.map((s) => bySlug.get(s)).filter(Boolean);
+}
+
+export async function getAllTutors() {
+  const tutors = await prisma.tutor.findMany({ include: { reviews: true } });
+  return tutors.map(serializeTutor);
+}
+
+export async function getTutorById(id) {
+  const t = await prisma.tutor.findUnique({ where: { id }, include: { reviews: true } });
+  return t ? serializeTutor(t) : null;
+}
+
+export async function getTutorsBySlugs(slugs) {
+  if (!slugs?.length) return [];
+  const tutors = await prisma.tutor.findMany({ where: { slug: { in: slugs } } });
+  const bySlug = new Map(tutors.map((t) => [t.slug, serializeTutor(t)]));
+  return slugs.map((s) => bySlug.get(s)).filter(Boolean);
 }

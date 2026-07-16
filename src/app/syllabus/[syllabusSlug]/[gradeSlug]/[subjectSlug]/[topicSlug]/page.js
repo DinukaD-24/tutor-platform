@@ -1,6 +1,4 @@
-import { getSyllabus, getGrade, getSubject, getTopic } from "@/utils/getData";
-import { tutors } from "@/data/tutors";
-import { topics } from "@/data/topics";
+import { getSyllabus, getGrade, getSubject, getTopic, getTopicsBySlugs, getTutorsBySlugs } from "@/utils/getData";
 import Breadcrumbs from "@/components/syllabus/Breadcrumbs";
 import VideoList from "@/components/syllabus/VideoList";
 import TutorCard from "@/components/tutor/TutorCard";
@@ -18,11 +16,10 @@ const difficultyConfig = {
 
 export default async function TopicPage({ params }) {
     const { syllabusSlug, gradeSlug, subjectSlug, topicSlug } = await params;
-
-    const syllabus = getSyllabus(syllabusSlug);
-    const grade    = getGrade(syllabusSlug, gradeSlug);
-    const subject  = getSubject(syllabusSlug, gradeSlug, subjectSlug);
-    const topic    = getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug);
+    const syllabus = await getSyllabus(syllabusSlug);
+    const grade    = await getGrade(syllabusSlug, gradeSlug);
+    const subject  = await getSubject(syllabusSlug, gradeSlug, subjectSlug);
+    const topic    = await getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug);
 
     if (!topic || !subject || !grade || !syllabus) {
         return (
@@ -36,8 +33,8 @@ export default async function TopicPage({ params }) {
         );
     }
 
-    const recommendedTutors = tutors.filter((t) => topic.tutors?.includes(t.slug));
-    const relatedTopicObjects = topics.filter((t) => topic.relatedTopics?.includes(t.slug));
+    const recommendedTutors = await getTutorsBySlugs(topic.tutors);
+    const relatedTopicObjects = await getTopicsBySlugs(topic.relatedTopics);
 
     const videoCount    = topic.videos?.length    || 0;
     const materialCount = topic.materials?.length || 0;
@@ -185,7 +182,7 @@ export default async function TopicPage({ params }) {
                 <section className="space-y-5">
                     <h2 className="text-2xl font-extrabold text-gray-900">Video Lessons</h2>
                     {videoCount > 0 ? (
-                        <VideoList videos={topic.videos} tutors={tutors} />
+                        <VideoList videos={topic.videos} tutors={recommendedTutors} />
                     ) : (
                         <div className="border border-dashed border-gray-200 rounded-2xl p-12 text-center text-gray-400 bg-gray-50/50 space-y-2">
                             <Video size={32} className="mx-auto opacity-30" />

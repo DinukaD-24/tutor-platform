@@ -1,5 +1,4 @@
-import { getGrade, getSubject, getSyllabus, getTopic } from "@/utils/getData";
-import { tutors } from "@/data/tutors";
+import { getGrade, getSubject, getSyllabus, getTopicsBySlugs, getTutorsBySlugs } from "@/utils/getData";
 import Link from "next/link";
 import { ChevronRight, Clock, BookOpen, Users, ArrowRight, Zap } from "lucide-react";
 
@@ -11,10 +10,9 @@ const difficultyConfig = {
 
 export default async function SubjectPage({ params }) {
     const { syllabusSlug, gradeSlug, subjectSlug } = await params;
-
-    const syllabus = getSyllabus(syllabusSlug);
-    const grade    = getGrade(syllabusSlug, gradeSlug);
-    const subject  = getSubject(syllabusSlug, gradeSlug, subjectSlug);
+    const syllabus = await getSyllabus(syllabusSlug);
+    const grade    = await getGrade(syllabusSlug, gradeSlug);
+    const subject  = await getSubject(syllabusSlug, gradeSlug, subjectSlug);
 
     if (!subject) {
         return (
@@ -28,15 +26,11 @@ export default async function SubjectPage({ params }) {
         );
     }
 
-    // Resolve each topic slug into a full topic object
-    const topicObjects = subject.topics
-        .map((topicSlug) => getTopic(syllabusSlug, gradeSlug, subjectSlug, topicSlug))
-        .filter(Boolean);
-
+// Resolve each topic slug into a full topic object
+    const topicObjects = await getTopicsBySlugs(subject.topics);
     // Count matched tutors across all topics
     const allTutorSlugs = [...new Set(topicObjects.flatMap((t) => t.tutors || []))];
-    const matchedTutors = tutors.filter((t) => allTutorSlugs.includes(t.slug));
-
+    const matchedTutors = await getTutorsBySlugs(allTutorSlugs);
     const totalHours = topicObjects.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
 
     return (

@@ -1,8 +1,10 @@
-import { syllabuses } from "@/data/syllabuses";
+import { getAllSyllabuses } from "@/utils/getData";
 import SyllabusCard from "@/components/syllabus/SyllabusCard";
 import { Search, SlidersHorizontal } from "lucide-react";
 
-export default function Page() {
+export default async function Page() {
+    const syllabuses = await getAllSyllabuses();
+
     return (
         <main className="min-h-screen bg-background text-dark py-24">
             <div className="max-w-7xl mx-auto px-6">
