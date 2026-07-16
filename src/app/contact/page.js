@@ -19,10 +19,29 @@ export default function ContactPage() {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e) => {
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Static submission — in Phase 4 this will POST to an API
-        setSubmitted(true);
+        setError("");
+        setLoading(true);
+        try {
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to send message.");
+            }
+            setSubmitted(true);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -198,12 +217,19 @@ export default function ContactPage() {
                                         />
                                     </div>
 
+                                    {error && (
+                                        <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">
+                                            {error}
+                                        </p>
+                                    )}
+                                    
                                     <button
                                         type="submit"
-                                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-bold text-sm rounded-xl shadow-glow-primary hover:bg-primary-dark hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                                        disabled={loading}
+                                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-bold text-sm rounded-xl shadow-glow-primary hover:bg-primary-dark hover:-translate-y-0.5 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <Send size={16} />
-                                        Send Message
+                                        {loading ? "Sending..." : "Send Message"}
                                     </button>
                                 </form>
                             )}
