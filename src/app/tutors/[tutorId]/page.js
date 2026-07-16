@@ -5,6 +5,8 @@ import {
     CheckCircle, MessageSquare, Mail, Phone, MapPin, Globe, Clock, ShieldCheck
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function TutorProfilePage({ params }) {
     const { tutorId } = await params;
     const tutor = await getTutorById(tutorId);

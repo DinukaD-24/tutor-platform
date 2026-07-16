@@ -2,6 +2,8 @@ import { getAllSyllabuses } from "@/utils/getData";
 import SyllabusCard from "@/components/syllabus/SyllabusCard";
 import { Search, SlidersHorizontal } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
     const syllabuses = await getAllSyllabuses();
 

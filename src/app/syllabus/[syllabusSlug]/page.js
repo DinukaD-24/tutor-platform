@@ -2,6 +2,8 @@ import { getSyllabus } from "@/utils/getData";
 import Link from "next/link";
 import { ChevronRight, Layers, ArrowRight } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function SyllabusDetailPage({ params }) {
     const { syllabusSlug } = await params;
     const syllabus = await getSyllabus(syllabusSlug);

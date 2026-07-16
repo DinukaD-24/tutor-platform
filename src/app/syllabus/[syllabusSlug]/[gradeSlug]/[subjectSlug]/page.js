@@ -2,6 +2,8 @@ import { getGrade, getSubject, getSyllabus, getTopicsBySlugs, getTutorsBySlugs }
 import Link from "next/link";
 import { ChevronRight, Clock, BookOpen, Users, ArrowRight, Zap } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const difficultyConfig = {
     "Beginner":     { color: "text-green-700", bg: "bg-green-50",  border: "border-green-100" },
     "Intermediate": { color: "text-amber-700", bg: "bg-amber-50",  border: "border-amber-100" },

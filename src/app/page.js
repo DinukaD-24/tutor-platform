@@ -5,6 +5,8 @@ import FeaturedTutors       from "@/components/home/FeaturedTutors";
 import HowItWorksSection    from "@/components/home/HowItWorksSection";
 import TestimonialsSection  from "@/components/home/TestimonialsSection";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
     return (
         <main className="min-h-screen bg-background text-dark">
