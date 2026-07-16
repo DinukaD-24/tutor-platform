@@ -8,6 +8,8 @@ import {
     CheckCircle, BookOpen, ArrowRight, AlertCircle, ChevronRight
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const difficultyConfig = {
     "Beginner":     { color: "text-green-700",  bg: "bg-green-50",  border: "border-green-100",  dot: "bg-green-500"  },
     "Intermediate": { color: "text-amber-700",  bg: "bg-amber-50",  border: "border-amber-100",  dot: "bg-amber-500"  },
