@@ -17,7 +17,8 @@ export default function DashboardClient({ tutor }) {
 
     // Upload lesson form states
     const [title, setTitle] = useState("");
-    const [youtubeId, setYoutubeId] = useState("");
+    const [youtubeUrl, setYoutubeUrl] = useState("");
+    const [description, setDescription] = useState("");
     const [subject, setSubject] = useState("Combined Maths");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -35,6 +36,21 @@ export default function DashboardClient({ tutor }) {
         setSuccess("");
         setLoading(true);
 
+        // Parse YouTube ID from URL
+        let youtubeId = youtubeUrl.trim();
+        try {
+            const url = new URL(youtubeUrl.trim());
+            youtubeId = url.searchParams.get("v") || url.pathname.replace("/", "").split("/").pop();
+        } catch {
+            // If not a valid URL, use as-is (raw ID fallback)
+        }
+
+        if (!youtubeId) {
+            setError("Could not parse a valid YouTube video ID from the URL.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const res = await fetch("/api/lessons", {
                 method: "POST",
@@ -42,6 +58,7 @@ export default function DashboardClient({ tutor }) {
                 body: JSON.stringify({
                     title,
                     youtubeId,
+                    description,
                     subject,
                     tutorId: tutor.id
                 })
@@ -52,10 +69,11 @@ export default function DashboardClient({ tutor }) {
                 throw new Error(data.error || "Failed to upload lesson.");
             }
 
-            setSuccess("Lesson uploaded successfully for review!");
+            setSuccess("Lesson uploaded successfully!");
             setTitle("");
-            setYoutubeId("");
-            router.refresh(); // Refresh Server Component data (refresh tutor.videos)
+            setYoutubeUrl("");
+            setDescription("");
+            router.refresh();
         } catch (err) {
             setError(err.message);
         } finally {
@@ -66,7 +84,7 @@ export default function DashboardClient({ tutor }) {
     // Calculate dynamic stats
     const stats = [
         { label: "Total Students",    value: tutor.studentsCount.toString(),  change: "Active students", icon: <Users size={20} />,     color: "text-primary bg-primary/10"    },
-        { label: "Lessons Uploaded",  value: (tutor.videos?.length || 0).toString(),   change: "Published video tutorials",   icon: <BookOpen size={20} />,  color: "text-secondary bg-secondary/10" },
+        { label: "Lessons Uploaded",  value: (tutor.videos?.length || 0).toString(),   change: "Published video tutorials",   icon: <BookOpen size={20} />,  color: "text-primary-dark bg-primary/10" },
         { label: "Average Rating",    value: tutor.rating.toFixed(1),  change: `${tutor.reviewsCount} reviews`,     icon: <Star size={20} />,      color: "text-amber-600 bg-amber-50"    },
         { label: "Lessons Conducted", value: tutor.lessonsCount.toString(), change: "In-person/Online hours",  icon: <TrendingUp size={20} />,color: "text-purple-600 bg-purple-50"  },
     ];
@@ -226,14 +244,25 @@ export default function DashboardClient({ tutor }) {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">YouTube Video ID</label>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">YouTube Video URL</label>
                                         <input
-                                            type="text"
-                                            value={youtubeId}
-                                            onChange={(e) => setYoutubeId(e.target.value)}
+                                            type="url"
+                                            value={youtubeUrl}
+                                            onChange={(e) => setYoutubeUrl(e.target.value)}
                                             required
-                                            placeholder="e.g. dQw4w9WgXcQ"
+                                            placeholder="https://www.youtube.com/watch?v=..."
                                             className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                        />
+                                        <p className="text-[10px] text-gray-400 pl-1">Paste any YouTube link — youtu.be, full URL, or short URL.</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Description (optional)</label>
+                                        <textarea
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            rows={3}
+                                            placeholder="Brief description of what this lesson covers..."
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none"
                                         />
                                     </div>
                                     <div className="space-y-1">

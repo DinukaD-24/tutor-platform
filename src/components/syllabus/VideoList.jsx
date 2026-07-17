@@ -7,10 +7,24 @@ export default function VideoList({ videos, tutors }) {
     const [activeVideoId, setActiveId] = useState(null);
 
     //0(1) tutor lookup instead of 0(n) find on every render
-
     const tutorMap = useMemo(() => (
         Object.fromEntries(tutors.map((t) => [t.slug, t]))
     ), [tutors]);
+
+    const handlePlayVideo = async (video) => {
+        setActiveId(video.youtubeId);
+        if (video.id) {
+            try {
+                await fetch("/api/student/visit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ videoId: video.id }),
+                });
+            } catch (err) {
+                console.error("Failed to log video view:", err);
+            }
+        }
+    };
 
     return (
         <div className="grid gap-6 md:grid-cols-2">
@@ -24,21 +38,21 @@ export default function VideoList({ videos, tutors }) {
                         className="border rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col hover:shadow-md transition duration-200"
                     >
                         {isPlaying ? (
-                            <div className="aspect-video w-full">
+                            <div className="aspect-video w-full bg-black">
                                 <iframe
                                     src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
-                                    className="h-full w-full"
+                                    className="h-full w-full border-0"
                                     allow="autoplay; encrypted-media"
                                     allowFullScreen
+                                    frameBorder="0"
                                 />
                             </div>
                         ) : (
                             <div
-                                onClick={() => setActiveId(video.youtubeId)}
+                                onClick={() => handlePlayVideo(video)}
                                 className="aspect-video w-full bg-gray-100 relative group cursor-pointer overflow-hidden"
                             >
                                 {/* Plain <img> is intentional — Next Image requires next.config domain config for img.youtube.com */}
-
                                 <img
                                     src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
                                     alt={video.title}

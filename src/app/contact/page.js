@@ -55,7 +55,7 @@ export default function ContactPage() {
                     </span>
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight">
                         We would love to{" "}
-                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                             hear from you
                         </span>
                     </h1>
@@ -93,7 +93,7 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-secondary/5 text-secondary rounded-xl shrink-0">
+                                    <div className="p-2.5 bg-primary/5 text-primary rounded-xl shrink-0">
                                         <MapPin size={16} />
                                     </div>
                                     <div>
@@ -243,7 +243,7 @@ export default function ContactPage() {
             <section className="py-16 bg-white border-t border-gray-100">
                 <div className="max-w-3xl mx-auto px-6 space-y-8">
                     <div className="text-center space-y-2">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-secondary bg-secondary/10">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary bg-primary/10">
                             FAQ
                         </span>
                         <h2 className="text-2xl font-extrabold text-dark">Common Questions</h2>

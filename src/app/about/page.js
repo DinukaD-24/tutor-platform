@@ -38,7 +38,7 @@ export default function AboutPage() {
                     </span>
                     <h1 className="text-4xl md:text-6xl font-black text-dark tracking-tight leading-tight">
                         Connecting Students with the{" "}
-                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                             Right Tutors
                         </span>
                     </h1>
@@ -62,7 +62,7 @@ export default function AboutPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {stats.map((s) => (
                             <div key={s.label} className="bg-white rounded-3xl border border-gray-100 p-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(33,131,150,0.05)] transition-all duration-300">
-                                <strong className="block text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{s.number}</strong>
+                                <strong className="block text-4xl font-black bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">{s.number}</strong>
                                 <span className="block text-sm font-bold text-dark mt-2">{s.label}</span>
                                 <span className="block text-xs text-gray-400 mt-1">{s.desc}</span>
                             </div>
@@ -99,7 +99,7 @@ export default function AboutPage() {
             <section className="py-20 bg-gray-50/50 border-b border-gray-100">
                 <div className="max-w-5xl mx-auto px-6 space-y-12">
                     <div className="text-center space-y-3">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-secondary bg-secondary/10">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary bg-primary/10">
                             Why TutorHub
                         </span>
                         <h2 className="text-3xl font-extrabold text-dark">Built for both sides of learning</h2>
@@ -108,7 +108,7 @@ export default function AboutPage() {
                         {/* Students */}
                         <div className="bg-white rounded-3xl border border-gray-100 p-8 space-y-5 shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
                             <h3 className="text-xl font-extrabold text-dark flex items-center gap-2">
-                                <BookOpen size={20} className="text-secondary" /> For Students
+                                <BookOpen size={20} className="text-primary" /> For Students
                             </h3>
                             <ul className="space-y-3">
                                 {[
@@ -119,7 +119,7 @@ export default function AboutPage() {
                                     "Contact tutors directly — no middlemen, no platform fees",
                                 ].map((item) => (
                                     <li key={item} className="flex items-start gap-2.5 text-sm text-gray-500">
-                                        <CheckCircle size={15} className="text-secondary shrink-0 mt-0.5" />
+                                        <CheckCircle size={15} className="text-primary shrink-0 mt-0.5" />
                                         {item}
                                     </li>
                                 ))}
@@ -160,7 +160,7 @@ export default function AboutPage() {
                     </div>
                     <div className="relative space-y-0">
                         {/* Vertical line */}
-                        <div className="absolute left-[39px] top-0 bottom-0 w-px bg-gradient-to-b from-primary/30 via-secondary/20 to-transparent" />
+                        <div className="absolute left-[39px] top-0 bottom-0 w-px bg-gradient-to-b from-primary/30 via-primary/20 to-transparent" />
                         {timeline.map((item, index) => (
                             <div key={item.year} className="relative flex gap-6 pb-10 last:pb-0">
                                 {/* Year bubble */}
@@ -211,7 +211,7 @@ export default function AboutPage() {
             <section className="py-20 bg-white">
                 <div className="max-w-3xl mx-auto px-6 space-y-10">
                     <div className="text-center space-y-3">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-secondary bg-secondary/10">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary bg-primary/10">
                             FAQ
                         </span>
                         <h2 className="text-3xl font-extrabold text-dark">Frequently Asked Questions</h2>

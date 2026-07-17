@@ -36,7 +36,7 @@ export default function SubjectCard({ syllabusSlug, gradeSlug, subject }) {
             "
         >
             {/* Top color strip on hover */}
-            <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary to-secondary rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary to-primary-dark rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div className="flex justify-between items-start gap-4">
                 <div className="p-3 bg-primary/5 rounded-xl group-hover:bg-primary/10 transition-colors shrink-0">
@@ -55,7 +55,7 @@ export default function SubjectCard({ syllabusSlug, gradeSlug, subject }) {
                     {subject.name}
                 </h3>
                 <p className="text-sm text-gray-500 mt-2 flex items-center gap-1.5">
-                    <CheckCircle size={14} className="text-secondary" />
+                    <CheckCircle size={14} className="text-primary" />
                     Verified Syllabus Content
                 </p>
             </div>

@@ -27,7 +27,7 @@ export default function SyllabusCard({ syllabus }) {
             "
         >
             {/* Top color accent strip */}
-            <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary to-secondary rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary to-primary-dark rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div className="space-y-2">
                 <h3 className="text-xl font-bold text-dark group-hover:text-primary transition-colors duration-200">

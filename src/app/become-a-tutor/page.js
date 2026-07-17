@@ -79,7 +79,7 @@ export default function BecomeATutorPage() {
                     </span>
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
                         Grow Your Teaching Career with{" "}
-                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                             TutorHub
                         </span>
                     </h1>
@@ -91,7 +91,7 @@ export default function BecomeATutorPage() {
                     <div className="flex flex-wrap justify-center gap-6 pt-4">
                         {stats.map((s) => (
                             <div key={s.label} className="text-center">
-                                <strong className="block text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{s.value}</strong>
+                                <strong className="block text-2xl font-black bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">{s.value}</strong>
                                 <span className="text-xs text-gray-400 font-semibold">{s.label}</span>
                             </div>
                         ))}

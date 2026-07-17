@@ -57,7 +57,7 @@ export default async function SubjectPage({ params }) {
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary bg-primary/10">
                                 {syllabus.name}
                             </span>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-secondary bg-secondary/10">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary bg-primary/10">
                                 {grade.name}
                             </span>
                         </div>
@@ -174,7 +174,7 @@ export default async function SubjectPage({ params }) {
                                                 {tutor.name}
                                             </h3>
                                             <p className="text-xs text-gray-400 truncate">{tutor.university}</p>
-                                            <span className={`inline-flex items-center gap-1 mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${isUni ? "bg-primary/10 text-primary" : "bg-secondary/10 text-secondary"}`}>
+                                            <span className={`inline-flex items-center gap-1 mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${isUni ? "bg-primary/10 text-primary" : "bg-primary/10 text-primary"}`}>
                                                 {tutor.tutorType}
                                             </span>
                                         </div>

@@ -93,7 +93,7 @@ export default function TutorCarousel ({ tutors }) {
                                             shadow-sm
                                             backdrop-blur-md
                                             bg-white/90
-                                            ${isUni ? 'text-primary' : 'text-secondary'}
+                                            ${isUni ? 'text-primary' : 'text-primary'}
                                         `}>
                                             <Award size={10} />
                                             {tutor.tutorType}

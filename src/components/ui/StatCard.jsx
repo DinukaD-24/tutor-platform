@@ -18,7 +18,7 @@ export default function StatCard({ number, label, description }) {
             transition-all
             duration-300
         ">
-            <h3 className="text-5xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent tracking-tight">
+            <h3 className="text-5xl font-black bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent tracking-tight">
                 {number}
             </h3>
             <p className="text-dark font-bold text-base mt-3">
