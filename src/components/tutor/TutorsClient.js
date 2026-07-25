@@ -8,6 +8,8 @@ export default function TutorsClient({ tutors }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [selectedSyllabuses, setSelectedSyllabuses] = useState([]);
+    const [selectedMediums, setSelectedMediums] = useState([]);
+    const [selectedClassFormats, setSelectedClassFormats] = useState([]);
     const [availability, setAvailability] = useState({ online: false, physical: false });
     const [minRating, setMinRating] = useState(0);
     const [maxPrice, setMaxPrice] = useState(3000);
@@ -18,12 +20,14 @@ export default function TutorsClient({ tutors }) {
         setSearchQuery("");
         setSelectedTypes([]);
         setSelectedSyllabuses([]);
+        setSelectedMediums([]);
+        setSelectedClassFormats([]);
         setAvailability({ online: false, physical: false });
         setMinRating(0);
         setMaxPrice(3000);
     };
 
-    // Toggle array selections (Syllabus & Tutor Types)
+    // Toggle array selections
     const handleToggleType = (type) => {
         setSelectedTypes((prev) =>
             prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
@@ -36,15 +40,27 @@ export default function TutorsClient({ tutors }) {
         );
     };
 
+    const handleToggleMedium = (medium) => {
+        setSelectedMediums((prev) =>
+            prev.includes(medium) ? prev.filter((m) => m !== medium) : [...prev, medium]
+        );
+    };
+
+    const handleToggleClassFormat = (format) => {
+        setSelectedClassFormats((prev) =>
+            prev.includes(format) ? prev.filter((f) => f !== format) : [...prev, format]
+        );
+    };
+
     // Computed Filtered Tutors List
     const filteredTutors = useMemo(() => {
         return tutors.filter((tutor) => {
             // 1. Search Query filter (checks name, subject, and specializations)
             if (searchQuery.trim() !== "") {
                 const query = searchQuery.toLowerCase();
-                const matchesName = tutor.name.toLowerCase().includes(query);
-                const matchesSubject = tutor.subject.toLowerCase().includes(query);
-                const matchesSpecs = tutor.specializations.some((spec) => 
+                const matchesName = (tutor.name || "").toLowerCase().includes(query);
+                const matchesSubject = (tutor.subject || "").toLowerCase().includes(query);
+                const matchesSpecs = (tutor.specializations || []).some((spec) => 
                     spec.toLowerCase().includes(query)
                 );
 
@@ -58,53 +74,70 @@ export default function TutorsClient({ tutors }) {
                 return false;
             }
 
-            // 3. Syllabus filter (checks if any of selected syllabuses are supported by qualifications/spec)
+            // 3. Syllabus filter
             if (selectedSyllabuses.length > 0) {
-                // Determine if tutor matches the syllabus string based on qualifications
-                const qualificationsStr = tutor.qualifications.join(" ").toLowerCase();
+                const qualificationsStr = (tutor.qualifications || []).join(" ").toLowerCase();
                 const matchesSyllabus = selectedSyllabuses.some((syl) => {
                     const sylLower = syl.toLowerCase();
                     if (sylLower.includes("local") && (qualificationsStr.includes("local") || qualificationsStr.includes("a/l") || qualificationsStr.includes("o/l"))) return true;
                     if (sylLower.includes("edexcel") && qualificationsStr.includes("edexcel")) return true;
                     if (sylLower.includes("cambridge") && qualificationsStr.includes("cambridge")) return true;
-                    // Fallback to match subject names or other fields
-                    return tutor.subject.toLowerCase().includes(sylLower);
+                    return (tutor.subject || "").toLowerCase().includes(sylLower);
                 });
                 if (!matchesSyllabus) return false;
             }
 
-            // 4. Availability filter
-            if (availability.online && !tutor.availability.online) return false;
-            if (availability.physical && !tutor.availability.physical) return false;
+            // 4. Medium Filter (Sinhala / English)
+            if (selectedMediums.length > 0) {
+                const tutorLangs = (tutor.languages || []).map(l => l.toLowerCase());
+                const matchesMedium = selectedMediums.some(m => tutorLangs.includes(m.toLowerCase()));
+                if (!matchesMedium) return false;
+            }
 
-            // 5. Min Rating filter
-            if (tutor.rating < minRating) return false;
+            // 5. Class Format Filter (Paper Classes / Theory + Revision)
+            if (selectedClassFormats.length > 0) {
+                const tutorSpecs = [
+                    ...(tutor.specializations || []),
+                    ...(tutor.qualifications || []),
+                    tutor.subject || "",
+                    tutor.teachingStyle || ""
+                ].join(" ").toLowerCase();
 
-            // 6. Max Price filter (extract numerical price)
-            const priceNum = parseInt(tutor.price.replace(/[^0-9]/g, ""));
+                const matchesFormat = selectedClassFormats.some(f => {
+                    const fLower = f.toLowerCase();
+                    if (fLower.includes("paper")) return tutorSpecs.includes("paper") || tutorSpecs.includes("revision") || tutorSpecs.includes("past paper");
+                    if (fLower.includes("theory")) return tutorSpecs.includes("theory") || tutorSpecs.includes("revision");
+                    return tutorSpecs.includes(fLower);
+                });
+                if (!matchesFormat) return false;
+            }
+
+            // 6. Availability filter
+            if (availability.online && !tutor.availability?.online) return false;
+            if (availability.physical && !tutor.availability?.physical) return false;
+
+            // 7. Min Rating filter
+            if ((tutor.rating || 0) < minRating) return false;
+
+            // 8. Max Price filter
+            const priceNum = parseInt((tutor.price || "0").replace(/[^0-9]/g, "")) || 0;
             if (priceNum > maxPrice) return false;
 
             return true;
         });
-    }, [searchQuery, selectedTypes, selectedSyllabuses, availability, minRating, maxPrice]);
+    }, [searchQuery, selectedTypes, selectedSyllabuses, selectedMediums, selectedClassFormats, availability, minRating, maxPrice]);
 
     return (
         <main className="min-h-screen bg-background text-dark py-24">
             <div className="max-w-7xl mx-auto px-6">
 
                 {/* Page Hero */}
-                <div className="max-w-3xl mb-16 space-y-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
-                        Educator Directory
-                    </span>
+                <div className="max-w-3xl mb-16 space-y-3">
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
-                        Find Your{" "}
-                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                            Perfect Tutor
-                        </span>
+                        Find Your Perfect Tutor
                     </h1>
                     <p className="text-gray-500 text-lg leading-relaxed">
-                        Filter by subject, syllabus, academic level, and budget to find verified tutors tailored to your learning requirements.
+                        Filter by subject, syllabus, class format, and budget to find verified tutors tailored to your Sri Lankan curriculum requirements.
                     </p>
                 </div>
 
@@ -193,6 +226,42 @@ export default function TutorsClient({ tutors }) {
                                 </div>
                             </div>
 
+                            {/* Teaching Medium (Sinhala / English) */}
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Medium</h4>
+                                <div className="space-y-2.5">
+                                    {["Sinhala", "English"].map((m) => (
+                                        <label key={m} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-dark">
+                                            <input 
+                                                type="checkbox"
+                                                checked={selectedMediums.includes(m)}
+                                                onChange={() => handleToggleMedium(m)}
+                                                className="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-gray-200" 
+                                            />
+                                            <span>{m} Medium</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Class Format (Paper Classes / Theory + Revision) */}
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Class Type</h4>
+                                <div className="space-y-2.5">
+                                    {["Paper Classes", "Theory + Revision"].map((fmt) => (
+                                        <label key={fmt} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-dark">
+                                            <input 
+                                                type="checkbox"
+                                                checked={selectedClassFormats.includes(fmt)}
+                                                onChange={() => handleToggleClassFormat(fmt)}
+                                                className="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-gray-200" 
+                                            />
+                                            <span>{fmt}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
                             {/* Availability */}
                             <div className="space-y-3">
                                 <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Format</h4>
@@ -273,7 +342,7 @@ export default function TutorsClient({ tutors }) {
                             </span>
                             
                             {/* Filter Summary Tags */}
-                            {(searchQuery || selectedTypes.length > 0 || selectedSyllabuses.length > 0 || availability.online || availability.physical || minRating > 0 || maxPrice < 3000) && (
+                            {(searchQuery || selectedTypes.length > 0 || selectedSyllabuses.length > 0 || selectedMediums.length > 0 || selectedClassFormats.length > 0 || availability.online || availability.physical || minRating > 0 || maxPrice < 3000) && (
                                 <button 
                                     onClick={handleReset}
                                     className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors flex items-center gap-1 bg-red-50 px-2.5 py-1 rounded-full border border-red-100"
