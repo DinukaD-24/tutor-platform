@@ -12,15 +12,9 @@ export default async function Page() {
             <div className="max-w-7xl mx-auto px-6">
                 
                 {/* Page Hero */}
-                <div className="max-w-3xl mb-16 space-y-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
-                        Curriculum Directory
-                    </span>
+                <div className="max-w-3xl mb-16 space-y-3">
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
-                        Explore Supported{" "}
-                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                            Syllabuses
-                        </span>
+                        Explore Supported Syllabuses
                     </h1>
                     <p className="text-gray-500 text-lg leading-relaxed">
                         Select your academic curriculum to view subject-specific guidelines, structured topics, and find qualified local tutors specializing in your coursework.
