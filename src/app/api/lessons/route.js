@@ -26,6 +26,15 @@ export async function POST(request) {
       );
     }
 
+    // 2b. Verify ownership: user can only upload to their own tutor profile
+    const tutorRecord = await prisma.tutor.findUnique({ where: { id: tutorId } });
+    if (!tutorRecord || tutorRecord.email !== user.email) {
+      return NextResponse.json(
+        { error: "Forbidden. You can only upload lessons to your own profile." },
+        { status: 403 }
+      );
+    }
+
     // 3. Find a valid topic to link the video to
     // In our database structure, Videos are grouped under Topics, which are grouped under Subjects.
     const subjectRecord = await prisma.subject.findFirst({
