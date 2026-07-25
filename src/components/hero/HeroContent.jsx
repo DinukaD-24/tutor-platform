@@ -10,16 +10,16 @@ export default function HeroContent() {
                 </span>
 
                 <h1 className="text-4xl md:text-6xl font-black leading-tight text-dark tracking-tight">
-                    Find the{" "}
+                    Find the Right Tutor on{" "}
                     <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                        Right Tutor.
+                        TutorHub.
                     </span>
                     <br />
                     Learn Your Way.
                 </h1>
 
                 <p className="text-gray-500 text-lg leading-relaxed max-w-lg">
-                    Discover qualified tutors across every syllabus — Local A/L, O/L, Edexcel, and Cambridge. Browse subjects, compare teaching styles, and connect directly.
+                    TutorHub is Sri Lanka's tutor discovery platform connecting students with verified tutors across Local A/L, O/L, Edexcel, and Cambridge syllabuses. Browse subjects, compare teaching styles, and connect directly.
                 </p>
             </div>
 
