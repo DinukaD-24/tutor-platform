@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import TutorCard from "@/components/tutor/TutorCard";
-import { Search, SlidersHorizontal, Users, RefreshCw, X, Star } from "lucide-react";
+import { Search, SlidersHorizontal, Users, RefreshCw, X, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function TutorsClient({ tutors }) {
     // Search and Filter States
@@ -11,6 +11,7 @@ export default function TutorsClient({ tutors }) {
     const [availability, setAvailability] = useState({ online: false, physical: false });
     const [minRating, setMinRating] = useState(0);
     const [maxPrice, setMaxPrice] = useState(3000);
+    const [filtersOpen, setFiltersOpen] = useState(false);
 
     // Reset all filters
     const handleReset = () => {
@@ -93,12 +94,12 @@ export default function TutorsClient({ tutors }) {
 
                 {/* Page Hero */}
                 <div className="max-w-3xl mb-16 space-y-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
                         Educator Directory
                     </span>
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
                         Find Your{" "}
-                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                             Perfect Tutor
                         </span>
                     </h1>
@@ -109,8 +110,22 @@ export default function TutorsClient({ tutors }) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
+                    {/* Mobile filter toggle */}
+                    <div className="lg:hidden mb-2">
+                        <button
+                            onClick={() => setFiltersOpen(!filtersOpen)}
+                            className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-dark shadow-sm"
+                        >
+                            <span className="flex items-center gap-2">
+                                <SlidersHorizontal size={16} className="text-primary" />
+                                Filters
+                            </span>
+                            {filtersOpen ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                        </button>
+                    </div>
+
                     {/* Filter Sidebar */}
-                    <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-28">
+                    <div className={`lg:col-span-3 space-y-6 lg:sticky lg:top-28 ${filtersOpen ? 'block' : 'hidden lg:block'}`}>
                         <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6">
 
                             <div className="flex justify-between items-center pb-4 border-b border-gray-100">

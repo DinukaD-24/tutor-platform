@@ -24,6 +24,7 @@ function serializeTopic(topic) {
     syllabusSlug: topic.subject.grade.syllabus.slug,
     relatedTopics: topic.relatedTo.map((t) => t.slug),
     videos: topic.videos.map((v) => ({
+      id: v.id,
       tutorSlug: v.tutor.slug,
       youtubeId: v.youtubeId,
       title: v.title,
@@ -63,6 +64,21 @@ function serializeTutor(t) {
       rating: r.rating,
       comment: r.comment,
       date: r.date.toISOString().slice(0, 10),
+    })),
+    videos: (t.videos ?? []).map((v) => ({
+      id: v.id,
+      youtubeId: v.youtubeId,
+      title: v.title,
+      description: v.description,
+      duration: v.duration,
+      topic: v.topic ? {
+        id: v.topic.id,
+        name: v.topic.name,
+        subject: v.topic.subject ? {
+          id: v.topic.subject.id,
+          name: v.topic.subject.name,
+        } : null
+      } : null
     })),
   };
 }
@@ -175,7 +191,21 @@ export async function getAllTutors() {
 }
 
 export async function getTutorById(id) {
-  const t = await prisma.tutor.findUnique({ where: { id }, include: { reviews: true } });
+  const t = await prisma.tutor.findUnique({
+    where: { id },
+    include: {
+      reviews: true,
+      videos: {
+        include: {
+          topic: {
+            include: {
+              subject: true
+            }
+          }
+        }
+      }
+    }
+  });
   return t ? serializeTutor(t) : null;
 }
 

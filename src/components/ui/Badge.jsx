@@ -1,14 +1,14 @@
 // Reusable badge/pill component for labels, tags, and status indicators.
 // Usage:
 //   <Badge>University Student</Badge>
-//   <Badge color="secondary" size="lg">Verified</Badge>
+//   <Badge color="primary" size="lg">Verified</Badge>
 //   <Badge color="green">Beginner</Badge>
 //   <Badge color="amber">Intermediate</Badge>
 //   <Badge color="red">Advanced</Badge>
 
 const colorMap = {
     primary:   "text-primary bg-primary/10 border-primary/10",
-    secondary: "text-secondary bg-secondary/10 border-secondary/10",
+    primary: "text-primary bg-primary/10 border-primary/10",
     green:     "text-green-700 bg-green-50 border-green-100",
     amber:     "text-amber-700 bg-amber-50 border-amber-100",
     red:       "text-red-700 bg-red-50 border-red-100",

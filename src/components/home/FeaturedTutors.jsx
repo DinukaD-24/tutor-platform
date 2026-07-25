@@ -12,7 +12,7 @@ export default async function FeaturedTutors() {
             <div className="max-w-7xl mx-auto px-6">
 
                 <FadeIn className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10">
                         Educators
                     </span>
                     <h2 className="text-3xl md:text-4xl font-extrabold text-dark tracking-tight">

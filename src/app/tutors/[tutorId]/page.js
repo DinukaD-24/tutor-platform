@@ -1,8 +1,9 @@
 import { getTutorById } from "@/utils/getData";
 import Link from "next/link";
+import FollowButton from "@/components/tutor/FollowButton";
 import { 
     ChevronRight, BookOpen, Award, Star, Users, GraduationCap, 
-    CheckCircle, MessageSquare, Mail, Phone, MapPin, Globe, Clock, ShieldCheck
+    CheckCircle, MessageSquare, Mail, Phone, MapPin, Globe, Clock, ShieldCheck, Play
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -121,7 +122,7 @@ export default async function TutorProfilePage({ params }) {
                                         </div>
                                     </div>
 
-                                    {/* Secondary mini badges */}
+                                    {/* primary mini badges */}
                                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-xs text-gray-500 border-t border-gray-50 pt-4">
                                         <div className="flex items-center gap-1">
                                             <Users size={14} className="text-gray-400" />
@@ -214,6 +215,46 @@ export default async function TutorProfilePage({ params }) {
                             </div>
                         </div>
 
+                        {/* Videos Section */}
+                        {tutor.videos && tutor.videos.length > 0 && (
+                            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-5">
+                                <h2 className="text-xl font-extrabold text-dark border-b border-gray-50 pb-3 flex items-center gap-2">
+                                    <Play size={20} className="text-primary" />
+                                    Video Lessons ({tutor.videos.length})
+                                </h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {tutor.videos.map((video) => (
+                                        <a
+                                            key={video.id}
+                                            href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group rounded-2xl overflow-hidden border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all duration-200 bg-white"
+                                        >
+                                            <div className="aspect-video relative overflow-hidden bg-gray-100">
+                                                <img
+                                                    src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                                                    alt={video.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                />
+                                                <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+                                                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                        <Play fill="white" size={18} className="ml-0.5 text-white" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="p-3">
+                                                <p className="font-bold text-sm text-dark line-clamp-2">{video.title}</p>
+                                                {video.topic && (
+                                                    <p className="text-[10px] text-gray-400 mt-0.5">{video.topic.subject?.name} · {video.topic.name}</p>
+                                                )}
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                     </div>
 
                     {/* RIGHT COLUMN: Booking Sidebar */}
@@ -266,6 +307,9 @@ export default async function TutorProfilePage({ params }) {
                                     <span>{tutor.location}</span>
                                 </div>
                             </div>
+
+                            {/* Follow Button for Students */}
+                            <FollowButton tutorId={tutor.id} />
 
                             {/* Booking Action CTA */}
                             <Link

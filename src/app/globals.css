@@ -4,8 +4,6 @@
 :root {
   --color-primary: #218396;
   --color-primary-dark: #1c7282;
-  
-  --color-secondary: #2FB86F;
 
   --color-dark: #0F2537;
 
@@ -19,12 +17,9 @@
   --color-primary: var(--color-primary);
   --color-primary-dark: var(--color-primary-dark);
 
-  --color-secondary: var(--color-secondary);
-
   --color-dark: var(--color-dark);
 
   --color-background: var(--color-background);
-
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

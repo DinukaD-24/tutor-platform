@@ -50,7 +50,7 @@ export default function TutorCard({ tutor }) {
             overflow-hidden
         ">
             {/* Hover Accent Line */}
-            <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary to-secondary rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary to-primary-dark rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div>
                 {/* Header Information */}
@@ -91,7 +91,7 @@ export default function TutorCard({ tutor }) {
                             px-2.5
                             py-0.5
                             rounded-full
-                            ${isUni ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}
+                            ${isUni ? 'bg-primary/10 text-primary' : 'bg-primary/10 text-primary'}
                         `}>
                             <Award size={10} />
                             {tutor.tutorType}

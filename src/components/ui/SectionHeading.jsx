@@ -2,7 +2,7 @@
 // Usage:
 //   <SectionHeading
 //     badge="Educators"
-//     badgeColor="secondary"        // "primary" | "secondary" (default: "primary")
+//     badgeColor="primary"        // "primary" | "primary" (default: "primary")
 //     title="Meet Our Featured Tutors"
 //     subtitle="Browse top-rated educators..."
 //     align="center"               // "left" | "center" (default: "center")
@@ -18,7 +18,7 @@ export default function SectionHeading({
     const alignClass  = align === "left" ? "text-left" : "text-center mx-auto";
     const badgeColors = {
         primary:   "text-primary bg-primary/10",
-        secondary: "text-secondary bg-secondary/10",
+        primary: "text-primary bg-primary/10",
     };
 
     return (

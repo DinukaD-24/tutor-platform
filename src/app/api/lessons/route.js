@@ -17,11 +17,11 @@ export async function POST(request) {
 
     // 2. Parse request body
     const body = await request.json();
-    const { title, youtubeId, subject, tutorId } = body;
+    const { title, youtubeId, subject, tutorId, description } = body;
 
     if (!title || !youtubeId || !subject || !tutorId) {
       return NextResponse.json(
-        { error: "Please fill in all fields." },
+        { error: "Please fill in all required fields." },
         { status: 400 }
       );
     }
@@ -57,6 +57,7 @@ export async function POST(request) {
         youtubeId,
         tutorId,
         topicId: targetTopicId,
+        ...(description ? { description } : {}),
       },
     });
 

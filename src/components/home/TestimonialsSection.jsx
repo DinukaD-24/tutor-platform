@@ -20,7 +20,7 @@ const testimonials = [
         comment: "Sarah's online simulations for mechanics made everything click instantly. I never thought I'd enjoy physics revision this much.",
         tutor: "Sarah Silva",
         avatar: "K",
-        color: "from-secondary to-emerald-600",
+        color: "from-primary to-emerald-600",
     },
     {
         id: 3,

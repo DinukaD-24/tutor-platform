@@ -11,7 +11,7 @@ export default function HeroContent() {
 
                 <h1 className="text-4xl md:text-6xl font-black leading-tight text-dark tracking-tight">
                     Find the{" "}
-                    <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                         Right Tutor.
                     </span>
                     <br />

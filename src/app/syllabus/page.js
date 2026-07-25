@@ -18,7 +18,7 @@ export default async function Page() {
                     </span>
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
                         Explore Supported{" "}
-                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                             Syllabuses
                         </span>
                     </h1>
@@ -58,7 +58,7 @@ export default async function Page() {
                             <div className="space-y-3">
                                 <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Academic Levels</h4>
                                 <div className="space-y-2.5">
-                                    {["Local Ordinary Level", "Local Advanced Level", "Secondary (AS/A2)", "Secondary (A Level)"].map((lvl) => (
+                                    {["Local Ordinary Level", "Local Advanced Level", "primary (AS/A2)", "primary (A Level)"].map((lvl) => (
                                         <label key={lvl} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-dark">
                                             <input type="checkbox" className="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-gray-200" />
                                             <span>{lvl}</span>

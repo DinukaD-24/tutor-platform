@@ -17,7 +17,7 @@ export default function PageHeader({
 }) {
     const badgeColors = {
         primary:   "text-primary bg-primary/10",
-        secondary: "text-secondary bg-secondary/10",
+        primary: "text-primary bg-primary/10",
     };
 
     return (
@@ -31,7 +31,7 @@ export default function PageHeader({
             <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
                 {title}{" "}
                 {highlight && (
-                    <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                         {highlight}
                     </span>
                 )}
