@@ -67,7 +67,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
 
                 {/* Logo */}
-                <Link href="/" onClick={closeMenu} className="flex items-center gap-2">
+                <Link href="/" onClick={closeMenu}>
                     <Image 
                         src="/logo.svg"
                         alt="TutorHub Logo"
@@ -75,7 +75,6 @@ export default function Navbar() {
                         height={46}
                         priority
                     />
-                    <span className="text-xl font-black text-dark tracking-tight">TutorHub</span>
                 </Link>
                 
                 {/* Desktop Navigation */}
