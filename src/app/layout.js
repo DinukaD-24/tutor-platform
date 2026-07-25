@@ -16,6 +16,13 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "TutorHub | Sri Lanka's Tutor Discovery & Learning Platform",
   description: "TutorHub connects Sri Lankan students with qualified, verified tutors across Local A/L, O/L, Edexcel, and Cambridge syllabuses. Browse subjects, compare teaching styles, and find your ideal tutor.",
+  openGraph: {
+    title: "TutorHub",
+    siteName: "TutorHub",
+    description: "TutorHub connects Sri Lankan students with qualified, verified tutors across Local A/L, O/L, Edexcel, and Cambridge syllabuses.",
+    url: "https://www.tutorhub.lk",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
