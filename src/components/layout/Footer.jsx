@@ -13,6 +13,8 @@ const footerLinks = {
     Platform: [
         { label: "About TutorHub",    href: "/about"            },
         { label: "Become a Tutor",    href: "/become-a-tutor"   },
+        { label: "Privacy Policy",    href: "/privacy"          },
+        { label: "Terms of Service",  href: "/terms"            },
         { label: "Contact Us",        href: "/contact"          },
         { label: "Dashboard",         href: "/dashboard"        },
     ],

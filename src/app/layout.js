@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "TutorHub.LK",
-  description: "Find tutors and learning resources",
+  title: "TutorHub | Sri Lanka's Tutor Discovery & Learning Platform",
+  description: "TutorHub connects Sri Lankan students with qualified, verified tutors across Local A/L, O/L, Edexcel, and Cambridge syllabuses. Browse subjects, compare teaching styles, and find your ideal tutor.",
 };
 
 export default function RootLayout({ children }) {
