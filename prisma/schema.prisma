@@ -94,6 +94,7 @@ model Tutor {
   studentsCount     Int      @default(0)
   university        String?
   languages         String[]
+  syllabuses        String[] @default([])
   price             String?
   onlineAvailable   Boolean  @default(false)
   physicalAvailable Boolean  @default(false)

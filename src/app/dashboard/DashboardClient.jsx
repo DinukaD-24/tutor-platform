@@ -20,17 +20,21 @@ export default function DashboardClient({ tutor: initialTutor }) {
     // Profile Form State
     const [profileForm, setProfileForm] = useState({
         location: tutor.location || "",
-        onlineAvailable: tutor.availability?.online ?? true,
-        physicalAvailable: tutor.availability?.physical ?? false,
+        onlineAvailable: tutor.onlineAvailable ?? true,
+        physicalAvailable: tutor.physicalAvailable ?? false,
         phone: tutor.phone || "",
         university: tutor.university || "",
         experience: tutor.experience || "",
         bio: tutor.bio || "",
         teachingStyle: tutor.teachingStyle || "",
+        subject: tutor.subject || "",
+        syllabuses: tutor.syllabuses || [],
     });
 
     const [specializationsList, setSpecializationsList] = useState(tutor.specializations || [tutor.subject]);
     const [specInput, setSpecInput] = useState("");
+
+    const [syllabusInput, setSyllabusInput] = useState("");
 
     const [qualificationsList, setQualificationsList] = useState(tutor.qualifications || []);
     const [qualInput, setQualInput] = useState("");
@@ -96,6 +100,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
                     languages: languagesList,
                     specializations: specializationsList,
                     qualifications: qualificationsList,
+                    syllabuses: profileForm.syllabuses,
                 })
             });
             const data = await res.json();
@@ -480,6 +485,83 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                                 className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                             />
                                         </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Primary Subject</label>
+                                            <input
+                                                type="text"
+                                                value={profileForm.subject}
+                                                onChange={e => setProfileForm({ ...profileForm, subject: e.target.value })}
+                                                placeholder="e.g. Physics, Chemistry"
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Years of Experience</label>
+                                            <input
+                                                type="text"
+                                                value={profileForm.experience}
+                                                onChange={e => setProfileForm({ ...profileForm, experience: e.target.value })}
+                                                placeholder="e.g. 5 years"
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block">Target Syllabuses</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={syllabusInput}
+                                                onChange={e => setSyllabusInput(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        const trimmed = syllabusInput.trim();
+                                                        if (trimmed && !profileForm.syllabuses.includes(trimmed)) {
+                                                            setProfileForm({ ...profileForm, syllabuses: [...profileForm.syllabuses, trimmed] });
+                                                            setSyllabusInput("");
+                                                        }
+                                                    }
+                                                }}
+                                                placeholder="Add a syllabus and press Enter"
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const trimmed = syllabusInput.trim();
+                                                    if (trimmed && !profileForm.syllabuses.includes(trimmed)) {
+                                                        setProfileForm({ ...profileForm, syllabuses: [...profileForm.syllabuses, trimmed] });
+                                                        setSyllabusInput("");
+                                                    }
+                                                }}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {profileForm.syllabuses.map((syl) => (
+                                                <span key={syl} className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-xl text-xs font-bold">
+                                                    {syl}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setProfileForm({
+                                                            ...profileForm,
+                                                            syllabuses: profileForm.syllabuses.filter((item) => item !== syl)
+                                                        })}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-gray-400">Add one syllabus per tag, e.g. Local A/L, Edexcel, Cambridge.</p>
                                     </div>
 
                                     {/* Teaching Specializations Tag Manager */}

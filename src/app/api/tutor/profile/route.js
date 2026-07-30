@@ -68,6 +68,7 @@ export async function PUT(request) {
       physicalAvailable,
       location,
       languages,
+      syllabuses,
       specializations,
       qualifications,
       image
@@ -89,6 +90,7 @@ export async function PUT(request) {
         ...(physicalAvailable !== undefined && { physicalAvailable: Boolean(physicalAvailable) }),
         ...(location !== undefined && { location }),
         ...(languages !== undefined && { languages }),
+        ...(syllabuses !== undefined && { syllabuses }),
         ...(specializations !== undefined && { specializations }),
         ...(qualifications !== undefined && { qualifications }),
         ...(image !== undefined && { image }),

@@ -166,11 +166,15 @@ export default async function TutorProfilePage({ params }) {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                     <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
                                         <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Target Syllabus</span>
-                                        <span className="block text-sm font-bold text-dark mt-1">Local Syllabus, Edexcel, Cambridge</span>
+                                        <span className="block text-sm font-bold text-dark mt-1">
+                                            {tutor.syllabuses?.length ? tutor.syllabuses.join(", ") : "Not specified"}
+                                        </span>
                                     </div>
                                     <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
                                         <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Medium of Instruction</span>
-                                        <span className="block text-sm font-bold text-dark mt-1">English, Sinhala</span>
+                                        <span className="block text-sm font-bold text-dark mt-1">
+                                            {tutor.languages?.length ? tutor.languages.join(", ") : "Not specified"}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

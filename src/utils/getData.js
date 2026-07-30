@@ -49,6 +49,7 @@ function serializeTutor(t) {
     studentsCount: t.studentsCount,
     university: t.university,
     languages: t.languages,
+    syllabuses: t.syllabuses,
     price: t.price,
     availability: { online: t.onlineAvailable, physical: t.physicalAvailable },
     email: t.email,
