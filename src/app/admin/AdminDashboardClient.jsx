@@ -43,6 +43,7 @@ export default function AdminDashboardClient() {
         { id: "subject", name: "Subjects" },
         { id: "topic", name: "Topics" },
         { id: "video", name: "Videos" },
+        { id: "material", name: "Materials" },
         { id: "tutor", name: "Tutors" },
         { id: "review", name: "Reviews" },
         { id: "student", name: "Students" },
@@ -105,6 +106,7 @@ export default function AdminDashboardClient() {
 
     useEffect(() => {
         if (activeTab === "applications") {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchApplications();
         } else {
             fetchDbRecords(selectedModel);
@@ -215,9 +217,12 @@ export default function AdminDashboardClient() {
         if (selectedModel === "grade" && lookupSyllabuses.length > 0) template.syllabusId = lookupSyllabuses[0].id;
         if (selectedModel === "subject" && lookupGrades.length > 0) template.gradeId = lookupGrades[0].id;
         if (selectedModel === "topic" && lookupSubjects.length > 0) template.subjectId = lookupSubjects[0].id;
-        if (selectedModel === "video") {
+        if (selectedModel === "video" || selectedModel === "material") {
+            if (lookupSyllabuses.length > 0) template.syllabusId = lookupSyllabuses[0].id;
+            if (lookupGrades.length > 0) template.gradeId = lookupGrades[0].id;
+            if (lookupSubjects.length > 0) template.subjectId = lookupSubjects[0].id;
             if (lookupTopics.length > 0) template.topicId = lookupTopics[0].id;
-            if (lookupTutors.length > 0) template.tutorId = lookupTutors[0].id;
+            if (selectedModel === "video" && lookupTutors.length > 0) template.tutorId = lookupTutors[0].id;
         }
 
         setFormData(template);
@@ -265,6 +270,12 @@ export default function AdminDashboardClient() {
             }
         });
 
+        if (selectedModel === "video" || selectedModel === "material") {
+            delete cleanedData.syllabusId;
+            delete cleanedData.gradeId;
+            delete cleanedData.subjectId;
+        }
+
         try {
             const method = editingRecord ? "PUT" : "POST";
             const res = await fetch(`/api/admin/db/${selectedModel}`, {
@@ -287,6 +298,10 @@ export default function AdminDashboardClient() {
     };
 
     // Helper to determine table headers for display
+    const gradeOptions = lookupGrades.filter(g => g.syllabusId === formData.syllabusId);
+    const subjectOptions = lookupSubjects.filter(sub => sub.gradeId === formData.gradeId);
+    const topicOptions = lookupTopics.filter(t => t.subjectId === formData.subjectId);
+
     const getTableColumns = () => {
         if (!records || records.length === 0) return [];
         if (selectedModel === "tutor") {
@@ -608,7 +623,7 @@ export default function AdminDashboardClient() {
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Syllabus</label>
                                                 <select
                                                     value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, syllabusId: e.target.value, gradeId: "", subjectId: "", topicId: "" }))}
                                                     className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                                 >
                                                     <option value="">Select Syllabus...</option>
@@ -626,11 +641,11 @@ export default function AdminDashboardClient() {
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Grade</label>
                                                 <select
                                                     value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, gradeId: e.target.value, subjectId: "", topicId: "" }))}
                                                     className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                                 >
                                                     <option value="">Select Grade...</option>
-                                                    {lookupGrades.map(g => (
+                                                    {gradeOptions.map(g => (
                                                         <option key={g.id} value={g.id}>{g.name} ({g.slug})</option>
                                                     ))}
                                                 </select>
@@ -644,11 +659,11 @@ export default function AdminDashboardClient() {
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Subject</label>
                                                 <select
                                                     value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, subjectId: e.target.value, topicId: "" }))}
                                                     className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                                 >
                                                     <option value="">Select Subject...</option>
-                                                    {lookupSubjects.map(sub => (
+                                                    {subjectOptions.map(sub => (
                                                         <option key={sub.id} value={sub.id}>{sub.name}</option>
                                                     ))}
                                                 </select>
@@ -662,11 +677,11 @@ export default function AdminDashboardClient() {
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Topic</label>
                                                 <select
                                                     value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, topicId: e.target.value }))}
                                                     className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                                 >
                                                     <option value="">Select Topic...</option>
-                                                    {lookupTopics.map(t => (
+                                                    {topicOptions.map(t => (
                                                         <option key={t.id} value={t.id}>{t.name}</option>
                                                     ))}
                                                 </select>

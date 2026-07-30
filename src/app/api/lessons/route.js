@@ -73,26 +73,40 @@ export async function POST(request) {
     const formattedSubject = formatName(subject || "General");
     const formattedTopic = formatName(topicName || title);
 
-    // Find or create subject & topic
+    // Resolve grade by selected syllabus + grade slugs
+    const gradeRecord = await prisma.grade.findFirst({
+      where: {
+        slug: gradeSlug,
+        syllabus: { slug: syllabusSlug }
+      }
+    });
+
+    if (!gradeRecord) {
+      return NextResponse.json(
+        { error: "Selected syllabus and grade do not match any curriculum record." },
+        { status: 400 }
+      );
+    }
+
+    // Find or create subject & topic under the selected grade
     let subjectRecord = await prisma.subject.findFirst({
-      where: { name: { equals: formattedSubject, mode: "insensitive" } },
+      where: {
+        name: { equals: formattedSubject, mode: "insensitive" },
+        gradeId: gradeRecord.id
+      },
       include: { topics: true, grade: { include: { syllabus: true } } }
     });
 
-    // If subject doesn't exist, pick default Grade or fallback
     if (!subjectRecord) {
-      const defaultGrade = await prisma.grade.findFirst();
-      if (defaultGrade) {
-        const subSlug = formattedSubject.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        subjectRecord = await prisma.subject.create({
-          data: {
-            name: formattedSubject,
-            slug: subSlug,
-            gradeId: defaultGrade.id
-          },
-          include: { topics: true, grade: { include: { syllabus: true } } }
-        });
-      }
+      const subSlug = formattedSubject.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      subjectRecord = await prisma.subject.create({
+        data: {
+          name: formattedSubject,
+          slug: subSlug,
+          gradeId: gradeRecord.id
+        },
+        include: { topics: true, grade: { include: { syllabus: true } } }
+      });
     }
 
     let targetTopicId;

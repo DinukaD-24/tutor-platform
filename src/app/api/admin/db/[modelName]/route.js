@@ -9,6 +9,7 @@ function getModel(name) {
     subject: prisma.subject,
     topic: prisma.topic,
     video: prisma.video,
+    material: prisma.material,
     tutor: prisma.tutor,
     review: prisma.review,
     student: prisma.student,

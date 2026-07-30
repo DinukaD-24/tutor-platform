@@ -258,9 +258,15 @@ export default function DashboardClient({ tutor: initialTutor }) {
     const activeSyllabusObj = curriculum.find(s => s.slug === selectedSyllabus);
     const activeGrades = activeSyllabusObj?.grades || [];
     const activeGradeObj = activeGrades.find(g => g.slug === selectedGrade);
-    const activeSubjects = activeGradeObj?.subjects || [];
+    const rawSubjects = activeGradeObj?.subjects || [];
+    const activeSubjects = Array.from(
+        new Map(rawSubjects.map(sub => [sub.name.trim().toLowerCase(), sub])).values()
+    );
     const activeSubjectObj = activeSubjects.find(sub => sub.name === selectedSubject);
-    const activeTopics = activeSubjectObj?.topics || [];
+    const rawTopics = activeSubjectObj?.topics || [];
+    const activeTopics = Array.from(
+        new Map(rawTopics.map(t => [t.name.trim().toLowerCase(), t])).values()
+    );
 
     return (
         <main className="min-h-screen bg-background text-dark pt-24 pb-20">
@@ -384,7 +390,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                             ))
                                         ) : (
                                             <div className="text-center py-10 text-gray-400 text-sm">
-                                                No video lessons uploaded yet. Click "Upload Lesson" to start.
+                                                No video lessons uploaded yet. Click &quot;Upload Lesson&quot; to start.
                                             </div>
                                         )}
                                     </div>
@@ -744,6 +750,8 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                                 onChange={e => {
                                                     setSelectedSyllabus(e.target.value);
                                                     setSelectedGrade("");
+                                                    setSelectedSubject("");
+                                                    setSelectedTopic("");
                                                 }}
                                                 className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary"
                                             >
@@ -758,7 +766,11 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Target Grade</label>
                                             <select
                                                 value={selectedGrade}
-                                                onChange={e => setSelectedGrade(e.target.value)}
+                                                onChange={e => {
+                                                    setSelectedGrade(e.target.value);
+                                                    setSelectedSubject("");
+                                                    setSelectedTopic("");
+                                                }}
                                                 disabled={!selectedSyllabus}
                                                 className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary disabled:opacity-40"
                                             >
@@ -775,19 +787,18 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Subject *</label>
                                             <select
                                                 value={selectedSubject}
-                                                onChange={e => setSelectedSubject(e.target.value)}
+                                                onChange={e => {
+                                                    setSelectedSubject(e.target.value);
+                                                    setSelectedTopic("");
+                                                }}
                                                 required
-                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary"
+                                                disabled={!selectedGrade}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary disabled:opacity-40"
                                             >
                                                 <option value="">Select Subject...</option>
                                                 {activeSubjects.map(sub => (
                                                     <option key={sub.id} value={sub.name}>{sub.name}</option>
                                                 ))}
-                                                <option value="Combined Maths">Combined Maths</option>
-                                                <option value="Physics">Physics</option>
-                                                <option value="ICT">ICT</option>
-                                                <option value="Biology">Biology</option>
-                                                <option value="Chemistry">Chemistry</option>
                                                 <option value="Other">+ Add Custom Subject</option>
                                             </select>
                                         </div>
