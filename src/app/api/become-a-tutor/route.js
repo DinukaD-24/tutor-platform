@@ -20,7 +20,7 @@ export async function POST(request) {
 
     try {
       await resend.emails.send({
-        from: "TutorHub <onboarding@resend.dev>",
+        from: "TutorHub.LK <noreply@send.tutorhub.lk>",
         to: "tutorhubadmin@gmail.com",
         subject: `New Tutor Application: ${name}`,
         html: `
@@ -37,7 +37,24 @@ export async function POST(request) {
         `,
       });
     } catch (emailError) {
-      console.error("Email send failed (application still saved):", emailError);
+      console.error("Admin email send failed (application still saved):", emailError);
+    }
+
+    // NEW — confirmation to the applicant
+    try {
+      await resend.emails.send({
+        from: "TutorHub <onboarding@resend.dev>",
+        to: saved.email,
+        subject: "We've received your tutor application",
+        html: `
+          <h2>Thanks for applying, ${saved.name}!</h2>
+          <p>We've received your tutor application and our team will review it shortly.</p>
+          <p>You'll get another email as soon as a decision is made — usually within a few business days.</p>
+          <p>— The TutorHub.LK Team</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Applicant confirmation email failed (application still saved):", emailError);
     }
 
     return NextResponse.json({ success: true, id: saved.id }, { status: 201 });
