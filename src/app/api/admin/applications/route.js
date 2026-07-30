@@ -86,17 +86,17 @@ export async function POST(request) {
       }
 
       await prisma.$transaction(async (tx) => {
-        // Create tutor record
+        // Create tutor record without hardcoded defaults
         await tx.tutor.create({
           data: {
             slug,
             name: application.name,
             email: application.email,
             phone: application.phone,
-            university: application.university || "Other",
-            subject: application.subjects.split(",")[0]?.trim() || "ICT",
+            university: application.university || null,
+            subject: application.subjects.split(",")[0]?.trim() || "General",
             tutorType: application.experience?.toLowerCase().includes("school") ? "School Teacher" : "Private Tutor",
-            experience: application.experience || "1 year",
+            experience: application.experience || null,
             bio: application.bio,
             onlineAvailable: true,
             physicalAvailable: false,
@@ -105,10 +105,10 @@ export async function POST(request) {
             lessonsCount: 0,
             studentsCount: 0,
             languages: ["English", "Sinhala"],
-            price: "LKR 1,500 / hr",
-            location: "Colombo",
-            qualifications: [application.experience || "Educator"],
-            specializations: application.subjects.split(",").map(s => s.trim()),
+            price: null,
+            location: null,
+            qualifications: [application.experience].filter(Boolean),
+            specializations: application.subjects.split(",").map(s => s.trim()).filter(Boolean),
           }
         });
 

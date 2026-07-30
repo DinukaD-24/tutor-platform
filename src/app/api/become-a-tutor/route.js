@@ -6,11 +6,14 @@ import { tutorHubEmailTemplate } from "@/lib/emailTemplate";
 export async function POST(request) {
   try {
     const body = await request.json();
-    let { name, email, phone, university, subjects, syllabuses, experience, bio } = body;
+    let { name, email, phone, university, subjects, syllabuses, experience, bio, location, onlineAvailable, physicalAvailable } = body;
 
-    // Convert array of subjects to comma-separated string if needed
+    // Convert arrays to comma-separated strings if needed
     if (Array.isArray(subjects)) {
       subjects = subjects.join(", ");
+    }
+    if (Array.isArray(syllabuses)) {
+      syllabuses = syllabuses.join(", ");
     }
 
     if (!name || !email || !subjects || !syllabuses || !bio) {

@@ -262,13 +262,7 @@ export default async function TutorProfilePage({ params }) {
                         
                         {/* Instant Booking Details */}
                         <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-[0_15px_45px_rgba(0,0,0,0.03)] space-y-6">
-                            <div>
-                                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Tuition Rate</span>
-                                <strong className="text-3xl font-black text-dark mt-1 block">
-                                    {tutor.price}
-                                    <span className="text-xs text-gray-400 font-bold ml-1">/ hour</span>
-                                </strong>
-                            </div>
+                            {/* Class Format Details */}
 
                             {/* Service Badges */}
                             <div className="space-y-2 pt-2 border-t border-gray-50">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Award, ShieldCheck, Zap, Send, CheckCircle, Users, BookOpen, TrendingUp } from "lucide-react";
+import { Award, ShieldCheck, Zap, Send, CheckCircle, Users, BookOpen, TrendingUp, MapPin, Globe } from "lucide-react";
 
 const benefits = [
     {
@@ -32,19 +32,28 @@ const stats = [
     { value: "4.9",    label: "Avg. Tutor Rating" },
 ];
 
+const presetSyllabuses = ["Local A/L", "Local O/L", "Edexcel", "Cambridge"];
+
 export default function BecomeATutorPage() {
     const [submitted, setSubmitted] = useState(false);
     const [form, setForm] = useState({
         name: "", email: "", phone: "", university: "",
-        syllabuses: "", experience: "", bio: "",
+        experience: "", bio: "", location: "",
+        onlineAvailable: true, physicalAvailable: false,
     });
+
     const [subjectsList, setSubjectsList] = useState(["Combined Maths", "Physics"]);
     const [subjectInput, setSubjectInput] = useState("");
 
+    const [syllabusesList, setSyllabusesList] = useState(["Local A/L"]);
+    const [syllabusInput, setSyllabusInput] = useState("");
+
     const handleChange = (e) => {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+        setForm((prev) => ({ ...prev, [e.target.name]: value }));
     };
 
+    // Subject handlers
     const handleAddSubject = () => {
         const trimmed = subjectInput.trim();
         if (trimmed && !subjectsList.includes(trimmed)) {
@@ -55,6 +64,19 @@ export default function BecomeATutorPage() {
 
     const handleRemoveSubject = (subToRemove) => {
         setSubjectsList(subjectsList.filter((s) => s !== subToRemove));
+    };
+
+    // Syllabus handlers
+    const handleAddSyllabus = (val) => {
+        const trimmed = (val || syllabusInput).trim();
+        if (trimmed && !syllabusesList.includes(trimmed)) {
+            setSyllabusesList([...syllabusesList, trimmed]);
+            setSyllabusInput("");
+        }
+    };
+
+    const handleRemoveSyllabus = (sylToRemove) => {
+        setSyllabusesList(syllabusesList.filter((s) => s !== sylToRemove));
     };
 
     const [error, setError] = useState("");
@@ -69,6 +91,11 @@ export default function BecomeATutorPage() {
             return;
         }
 
+        if (syllabusesList.length === 0) {
+            setError("Please add at least one target syllabus.");
+            return;
+        }
+
         setLoading(true);
         try {
             const res = await fetch("/api/become-a-tutor", {
@@ -77,6 +104,7 @@ export default function BecomeATutorPage() {
                 body: JSON.stringify({
                     ...form,
                     subjects: subjectsList,
+                    syllabuses: syllabusesList,
                 }),
             });
             if (!res.ok) {
@@ -103,7 +131,7 @@ export default function BecomeATutorPage() {
                     <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-tight">
                         Grow Your Teaching Career with{" "}
                         <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                            TutorHub
+                            TutorHub.LK
                         </span>
                     </h1>
                     <p className="text-gray-500 text-lg leading-relaxed">
@@ -177,7 +205,7 @@ export default function BecomeATutorPage() {
                                     </p>
                                     <button
                                         onClick={() => setSubmitted(false)}
-                                        className="text-xs font-bold text-primary border border-primary/20 hover:border-primary px-4 py-2 rounded-xl transition-all"
+                                        className="text-xs font-bold text-primary border border-primary/20 hover:border-primary px-4 py-2 rounded-xl transition-all cursor-pointer"
                                     >
                                         Submit Another Application
                                     </button>
@@ -186,7 +214,7 @@ export default function BecomeATutorPage() {
                                 <form onSubmit={handleSubmit} className="space-y-5">
                                     <div>
                                         <h2 className="text-xl font-extrabold text-dark">Tutor Application</h2>
-                                        <p className="text-xs text-gray-400 mt-1">All fields marked * are required.</p>
+                                        <p className="text-xs text-gray-400 mt-1">Fields marked * are required.</p>
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -211,63 +239,143 @@ export default function BecomeATutorPage() {
                                         ))}
                                     </div>
 
-                                    <div className="space-y-2">
-                                         <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Subjects You Teach *</label>
-                                         <div className="flex items-center gap-2">
-                                             <input
-                                                 type="text"
-                                                 value={subjectInput}
-                                                 onChange={(e) => setSubjectInput(e.target.value)}
-                                                 onKeyDown={(e) => {
-                                                     if (e.key === "Enter") {
-                                                         e.preventDefault();
-                                                         handleAddSubject();
-                                                     }
-                                                 }}
-                                                 placeholder="Type subject & press Enter or Add..."
-                                                 className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-                                             />
-                                             <button
-                                                 type="button"
-                                                 onClick={handleAddSubject}
-                                                 className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark transition-all cursor-pointer shrink-0"
-                                             >
-                                                 + Add
-                                             </button>
-                                         </div>
-                                         <div className="flex flex-wrap gap-2 pt-1">
-                                             {subjectsList.map((sub) => (
-                                                 <span key={sub} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold">
-                                                     {sub}
-                                                     <button
-                                                         type="button"
-                                                         onClick={() => handleRemoveSubject(sub)}
-                                                         className="hover:text-red-500 font-bold ml-1 cursor-pointer"
-                                                     >
-                                                         ×
-                                                     </button>
-                                                 </span>
-                                             ))}
-                                         </div>
-                                     </div>
+                                    {/* Location & Class Format (Optional at application time) */}
+                                    <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 space-y-3">
+                                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                            <MapPin size={14} className="text-primary" /> Location & Class Format (Optional)
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-dark uppercase tracking-wider mb-1">Town / Location</label>
+                                            <input
+                                                type="text"
+                                                name="location"
+                                                value={form.location}
+                                                onChange={handleChange}
+                                                placeholder="e.g. Nugegoda, Kandy, Galle..."
+                                                className="w-full border border-gray-100 bg-white rounded-xl px-3 py-2 text-xs text-dark outline-none focus:border-primary"
+                                            />
+                                        </div>
+                                        <div className="flex flex-wrap gap-4 pt-1">
+                                            <label className="flex items-center gap-2 text-xs font-semibold text-dark cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    name="onlineAvailable"
+                                                    checked={form.onlineAvailable}
+                                                    onChange={handleChange}
+                                                    className="w-4 h-4 rounded text-primary border-gray-200"
+                                                />
+                                                Available for Online Classes
+                                            </label>
+                                            <label className="flex items-center gap-2 text-xs font-semibold text-dark cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    name="physicalAvailable"
+                                                    checked={form.physicalAvailable}
+                                                    onChange={handleChange}
+                                                    className="w-4 h-4 rounded text-primary border-gray-200"
+                                                />
+                                                Available for Physical Classes
+                                            </label>
+                                        </div>
+                                    </div>
 
-                                     <div className="space-y-1.5">
-                                         <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Syllabuses *</label>
-                                         <select
-                                             name="syllabuses"
-                                             value={form.syllabuses}
-                                             onChange={handleChange}
-                                             required
-                                             className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-3 text-sm text-dark focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-                                         >
-                                             <option value="">Select syllabus...</option>
-                                             <option>Local A/L</option>
-                                             <option>Local O/L</option>
-                                             <option>Edexcel</option>
-                                             <option>Cambridge</option>
-                                             <option>Multiple</option>
-                                         </select>
-                                     </div>
+                                    {/* Subjects Tag Input */}
+                                    <div className="space-y-2">
+                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Subjects You Teach *</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={subjectInput}
+                                                onChange={(e) => setSubjectInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        handleAddSubject();
+                                                    }
+                                                }}
+                                                placeholder="Type subject & press Enter or Add..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddSubject()}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark transition-all cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {subjectsList.map((sub) => (
+                                                <span key={sub} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold">
+                                                    {sub}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveSubject(sub)}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Syllabuses Tag Input */}
+                                    <div className="space-y-2">
+                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Target Syllabuses *</label>
+                                        
+                                        {/* Quick Preset Buttons */}
+                                        <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {presetSyllabuses.map((preset) => (
+                                                <button
+                                                    key={preset}
+                                                    type="button"
+                                                    onClick={() => handleAddSyllabus(preset)}
+                                                    className="px-2.5 py-1 text-[11px] font-semibold bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors cursor-pointer"
+                                                >
+                                                    + {preset}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={syllabusInput}
+                                                onChange={(e) => setSyllabusInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        handleAddSyllabus();
+                                                    }
+                                                }}
+                                                placeholder="Type syllabus or click presets above..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddSyllabus()}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark transition-all cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {syllabusesList.map((syl) => (
+                                                <span key={syl} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-dark/10 text-primary-dark border border-primary-dark/20 rounded-xl text-xs font-bold">
+                                                    {syl}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveSyllabus(syl)}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
 
                                     <div className="space-y-1.5">
                                         <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Years of Teaching Experience</label>

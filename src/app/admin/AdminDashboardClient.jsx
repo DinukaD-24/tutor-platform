@@ -26,6 +26,13 @@ export default function AdminDashboardClient() {
     const [formData, setFormData] = useState({});
     const [dbError, setDbError] = useState("");
 
+    // Foreign Key Lookup Tables
+    const [lookupSyllabuses, setLookupSyllabuses] = useState([]);
+    const [lookupGrades, setLookupGrades] = useState([]);
+    const [lookupSubjects, setLookupSubjects] = useState([]);
+    const [lookupTopics, setLookupTopics] = useState([]);
+    const [lookupTutors, setLookupTutors] = useState([]);
+
     // Rejection Modal States
     const [rejectingApp, setRejectingApp] = useState(null);
     const [rejectionMessage, setRejectionMessage] = useState("");
@@ -58,6 +65,25 @@ export default function AdminDashboardClient() {
         }
     };
 
+    const fetchLookups = async () => {
+        try {
+            const [sylRes, grdRes, subRes, topRes, tutRes] = await Promise.all([
+                fetch("/api/admin/db/syllabus"),
+                fetch("/api/admin/db/grade"),
+                fetch("/api/admin/db/subject"),
+                fetch("/api/admin/db/topic"),
+                fetch("/api/admin/db/tutor"),
+            ]);
+            if (sylRes.ok) setLookupSyllabuses(await sylRes.json());
+            if (grdRes.ok) setLookupGrades(await grdRes.json());
+            if (subRes.ok) setLookupSubjects(await subRes.json());
+            if (topRes.ok) setLookupTopics(await topRes.json());
+            if (tutRes.ok) setLookupTutors(await tutRes.json());
+        } catch (e) {
+            console.error("Error loading lookups:", e);
+        }
+    };
+
     const fetchDbRecords = async (model) => {
         setLoadingDb(true);
         setDbError("");
@@ -82,6 +108,7 @@ export default function AdminDashboardClient() {
             fetchApplications();
         } else {
             fetchDbRecords(selectedModel);
+            fetchLookups();
         }
     }, [activeTab, selectedModel]);
 
@@ -170,6 +197,7 @@ export default function AdminDashboardClient() {
         setEditingRecord(null);
         const template = records[0] ? { ...records[0] } : {};
         delete template.id;
+        delete template.slug; // Hide slug field from manual user entry
         delete template.createdAt;
         delete template.updatedAt;
         
@@ -182,6 +210,16 @@ export default function AdminDashboardClient() {
                 template[k] = "";
             }
         });
+
+        // Pre-set default foreign keys if lookups exist
+        if (selectedModel === "grade" && lookupSyllabuses.length > 0) template.syllabusId = lookupSyllabuses[0].id;
+        if (selectedModel === "subject" && lookupGrades.length > 0) template.gradeId = lookupGrades[0].id;
+        if (selectedModel === "topic" && lookupSubjects.length > 0) template.subjectId = lookupSubjects[0].id;
+        if (selectedModel === "video") {
+            if (lookupTopics.length > 0) template.topicId = lookupTopics[0].id;
+            if (lookupTutors.length > 0) template.tutorId = lookupTutors[0].id;
+        }
+
         setFormData(template);
         setShowFormModal(true);
     };
@@ -194,6 +232,7 @@ export default function AdminDashboardClient() {
         const data = { ...record };
         delete data.createdAt;
         delete data.updatedAt;
+        delete data.slug; // Hide slug field from manual editing
         
         Object.keys(data).forEach(k => {
             if (Array.isArray(data[k])) {
@@ -209,6 +248,13 @@ export default function AdminDashboardClient() {
         setDbError("");
 
         const cleanedData = { ...formData };
+
+        // Auto-generate slug from name or title if creating a new record
+        if (!cleanedData.slug && (cleanedData.name || cleanedData.title)) {
+            const raw = cleanedData.name || cleanedData.title;
+            cleanedData.slug = raw.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        }
+
         Object.keys(cleanedData).forEach(k => {
             const val = cleanedData[k];
             if (k === "languages" || k === "qualifications" || k === "specializations" || k === "prerequisites" || k === "learningOutcomes") {
@@ -230,6 +276,7 @@ export default function AdminDashboardClient() {
             if (res.ok) {
                 setShowFormModal(false);
                 fetchDbRecords(selectedModel);
+                fetchLookups();
             } else {
                 const err = await res.json();
                 setDbError(err.error || "Failed to save record");
@@ -237,6 +284,15 @@ export default function AdminDashboardClient() {
         } catch (err) {
             setDbError("Network error saving record");
         }
+    };
+
+    // Helper to determine table headers for display
+    const getTableColumns = () => {
+        if (!records || records.length === 0) return [];
+        if (selectedModel === "tutor") {
+            return ["name", "subject", "tutorType", "email", "phone", "location", "onlineAvailable", "physicalAvailable", "rating"];
+        }
+        return Object.keys(records[0]).slice(0, 7);
     };
 
     return (
@@ -461,7 +517,7 @@ export default function AdminDashboardClient() {
                                         <table className="w-full text-left border-collapse">
                                             <thead>
                                                 <tr className="border-b border-gray-50 bg-gray-50/50">
-                                                    {Object.keys(records[0]).slice(0, 5).map((k) => (
+                                                    {getTableColumns().map((k) => (
                                                         <th key={k} className="px-5 py-3.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                                                             {k}
                                                         </th>
@@ -476,7 +532,7 @@ export default function AdminDashboardClient() {
                                                     const isAdminAccount = selectedModel === "student" && rec.email === "tutorhubadmin@gmail.com";
                                                     return (
                                                         <tr key={rec.id} className={`hover:bg-gray-50/30 transition-colors ${isAdminAccount ? 'bg-amber-50/30 font-bold' : ''}`}>
-                                                            {Object.keys(rec).slice(0, 5).map((k) => (
+                                                            {getTableColumns().map((k) => (
                                                                 <td key={k} className="px-5 py-4 max-w-[200px] truncate font-medium text-gray-600">
                                                                     {isAdminAccount && k === "email" ? (
                                                                         <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-bold">
@@ -516,7 +572,7 @@ export default function AdminDashboardClient() {
                     </div>
                 )}
 
-                {/* Form Modal */}
+                {/* Form Modal with Foreign Key Dropdowns & Auto-slug */}
                 {showFormModal && (
                     <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-6 z-50 animate-fadeIn">
                         <div className="bg-white rounded-3xl border border-gray-100 max-w-xl w-full p-6 md:p-8 shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto">
@@ -541,8 +597,101 @@ export default function AdminDashboardClient() {
 
                             <form onSubmit={handleFormSubmit} className="space-y-4">
                                 {Object.keys(formData).map((k) => {
-                                    if (k === "id") return null;
+                                    if (k === "id" || k === "slug") return null; // Hide ID and auto-generated slug
+                                    
                                     const isBool = typeof formData[k] === "boolean";
+
+                                    // Render Foreign Key Dropdowns
+                                    if (k === "syllabusId") {
+                                        return (
+                                            <div key={k} className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Syllabus</label>
+                                                <select
+                                                    value={formData[k] ?? ""}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                >
+                                                    <option value="">Select Syllabus...</option>
+                                                    {lookupSyllabuses.map(s => (
+                                                        <option key={s.id} value={s.id}>{s.name} ({s.slug})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (k === "gradeId") {
+                                        return (
+                                            <div key={k} className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Grade</label>
+                                                <select
+                                                    value={formData[k] ?? ""}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                >
+                                                    <option value="">Select Grade...</option>
+                                                    {lookupGrades.map(g => (
+                                                        <option key={g.id} value={g.id}>{g.name} ({g.slug})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (k === "subjectId") {
+                                        return (
+                                            <div key={k} className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Subject</label>
+                                                <select
+                                                    value={formData[k] ?? ""}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                >
+                                                    <option value="">Select Subject...</option>
+                                                    {lookupSubjects.map(sub => (
+                                                        <option key={sub.id} value={sub.id}>{sub.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (k === "topicId") {
+                                        return (
+                                            <div key={k} className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Topic</label>
+                                                <select
+                                                    value={formData[k] ?? ""}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                >
+                                                    <option value="">Select Topic...</option>
+                                                    {lookupTopics.map(t => (
+                                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        );
+                                    }
+
+                                    if (k === "tutorId") {
+                                        return (
+                                            <div key={k} className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tutor</label>
+                                                <select
+                                                    value={formData[k] ?? ""}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                >
+                                                    <option value="">Select Tutor...</option>
+                                                    {lookupTutors.map(tut => (
+                                                        <option key={tut.id} value={tut.id}>{tut.name} ({tut.email})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        );
+                                    }
+
                                     return (
                                         <div key={k} className="space-y-1">
                                             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">

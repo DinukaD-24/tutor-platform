@@ -19,19 +19,25 @@ export default function DashboardClient({ tutor: initialTutor }) {
 
     // Profile Form State
     const [profileForm, setProfileForm] = useState({
-        price: tutor.price || "LKR 1,500 / hr",
-        location: tutor.location || "Colombo",
+        location: tutor.location || "",
         onlineAvailable: tutor.availability?.online ?? true,
         physicalAvailable: tutor.availability?.physical ?? false,
         phone: tutor.phone || "",
         university: tutor.university || "",
-        experience: tutor.experience || "1 year",
+        experience: tutor.experience || "",
         bio: tutor.bio || "",
         teachingStyle: tutor.teachingStyle || "",
-        languages: (tutor.languages || ["English", "Sinhala"]).join(", "),
-        specializations: (tutor.specializations || [tutor.subject]).join(", "),
-        qualifications: (tutor.qualifications || []).join(", "),
     });
+
+    const [specializationsList, setSpecializationsList] = useState(tutor.specializations || [tutor.subject]);
+    const [specInput, setSpecInput] = useState("");
+
+    const [qualificationsList, setQualificationsList] = useState(tutor.qualifications || []);
+    const [qualInput, setQualInput] = useState("");
+
+    const [languagesList, setLanguagesList] = useState(tutor.languages || ["English", "Sinhala"]);
+    const [langInput, setLangInput] = useState("");
+
     const [savingProfile, setSavingProfile] = useState(false);
     const [profileMessage, setProfileMessage] = useState("");
 
@@ -87,9 +93,9 @@ export default function DashboardClient({ tutor: initialTutor }) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...profileForm,
-                    languages: profileForm.languages.split(",").map(s => s.trim()).filter(Boolean),
-                    specializations: profileForm.specializations.split(",").map(s => s.trim()).filter(Boolean),
-                    qualifications: profileForm.qualifications.split(",").map(s => s.trim()).filter(Boolean),
+                    languages: languagesList,
+                    specializations: specializationsList,
+                    qualifications: qualificationsList,
                 })
             });
             const data = await res.json();
@@ -408,37 +414,22 @@ export default function DashboardClient({ tutor: initialTutor }) {
 
                                 <form onSubmit={handleSaveProfile} className="space-y-6">
                                     
-                                    {/* Priority Callout 1: Pricing & Availability */}
+                                    {/* Availability & Location */}
                                     <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl space-y-3">
                                         <div className="flex items-center gap-2 text-primary font-bold text-xs">
                                             <Star size={14} />
-                                            <span>HIGH PRIORITY FOR DISCOVERY: Pricing & Format</span>
+                                            <span>Location & Class Formats</span>
                                         </div>
-                                        <p className="text-[11px] text-gray-500 leading-relaxed">
-                                            Students filter tutors heavily by tuition rate and class format (online vs physical). Completing these accurately increases student contacts by up to 40%!
-                                        </p>
                                         
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                                            <div>
-                                                <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Tuition Rate / Rate Info</label>
-                                                <input
-                                                    type="text"
-                                                    value={profileForm.price}
-                                                    onChange={e => setProfileForm({ ...profileForm, price: e.target.value })}
-                                                    placeholder="e.g. LKR 2,000 / hr"
-                                                    className="w-full border border-gray-100 bg-white rounded-xl px-3 py-2.5 text-xs text-dark focus:border-primary outline-none"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Location / Town</label>
-                                                <input
-                                                    type="text"
-                                                    value={profileForm.location}
-                                                    onChange={e => setProfileForm({ ...profileForm, location: e.target.value })}
-                                                    placeholder="e.g. Nugegoda, Colombo"
-                                                    className="w-full border border-gray-100 bg-white rounded-xl px-3 py-2.5 text-xs text-dark focus:border-primary outline-none"
-                                                />
-                                            </div>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Location / Town</label>
+                                            <input
+                                                type="text"
+                                                value={profileForm.location}
+                                                onChange={e => setProfileForm({ ...profileForm, location: e.target.value })}
+                                                placeholder="e.g. Nugegoda, Colombo"
+                                                className="w-full border border-gray-100 bg-white rounded-xl px-3 py-2.5 text-xs text-dark focus:border-primary outline-none"
+                                            />
                                         </div>
 
                                         <div className="flex flex-wrap gap-6 pt-2">
@@ -463,7 +454,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                         </div>
                                     </div>
 
-                                    {/* Contact & Bio Details */}
+                                    {/* Contact & Institution */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Phone Number</label>
@@ -485,27 +476,152 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Teaching Specializations (comma separated)</label>
-                                        <input
-                                            type="text"
-                                            value={profileForm.specializations}
-                                            onChange={e => setProfileForm({ ...profileForm, specializations: e.target.value })}
-                                            placeholder="e.g. Combined Maths, Mechanics, Pure Maths"
-                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                        />
+                                    {/* Teaching Specializations Tag Manager */}
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block">Teaching Specializations</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={specInput}
+                                                onChange={e => setSpecInput(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        if (specInput.trim() && !specializationsList.includes(specInput.trim())) {
+                                                            setSpecializationsList([...specializationsList, specInput.trim()]);
+                                                            setSpecInput("");
+                                                        }
+                                                    }
+                                                }}
+                                                placeholder="Type specialization & press Enter or Add..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (specInput.trim() && !specializationsList.includes(specInput.trim())) {
+                                                        setSpecializationsList([...specializationsList, specInput.trim()]);
+                                                        setSpecInput("");
+                                                    }
+                                                }}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {specializationsList.map(s => (
+                                                <span key={s} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold">
+                                                    {s}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setSpecializationsList(specializationsList.filter(item => item !== s))}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
                                         <p className="text-[10px] text-gray-400 mt-1">⭐ Tip: Adding specific sub-topics helps students searching by topic find your profile.</p>
                                     </div>
 
-                                    <div>
-                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Qualifications (comma separated)</label>
-                                        <input
-                                            type="text"
-                                            value={profileForm.qualifications}
-                                            onChange={e => setProfileForm({ ...profileForm, qualifications: e.target.value })}
-                                            placeholder="e.g. B.Sc Engineering (Hons), 5+ Yrs Experience"
-                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                        />
+                                    {/* Qualifications Tag Manager */}
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block">Qualifications</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={qualInput}
+                                                onChange={e => setQualInput(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        if (qualInput.trim() && !qualificationsList.includes(qualInput.trim())) {
+                                                            setQualificationsList([...qualificationsList, qualInput.trim()]);
+                                                            setQualInput("");
+                                                        }
+                                                    }
+                                                }}
+                                                placeholder="e.g. B.Sc Engineering, 5+ Yrs Experience..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (qualInput.trim() && !qualificationsList.includes(qualInput.trim())) {
+                                                        setQualificationsList([...qualificationsList, qualInput.trim()]);
+                                                        setQualInput("");
+                                                    }
+                                                }}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {qualificationsList.map(q => (
+                                                <span key={q} className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-xl text-xs font-bold">
+                                                    {q}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setQualificationsList(qualificationsList.filter(item => item !== q))}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Languages Tag Manager */}
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block">Medium of Instruction / Languages</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={langInput}
+                                                onChange={e => setLangInput(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        if (langInput.trim() && !languagesList.includes(langInput.trim())) {
+                                                            setLanguagesList([...languagesList, langInput.trim()]);
+                                                            setLangInput("");
+                                                        }
+                                                    }
+                                                }}
+                                                placeholder="e.g. English, Sinhala, Tamil..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (langInput.trim() && !languagesList.includes(langInput.trim())) {
+                                                        setLanguagesList([...languagesList, langInput.trim()]);
+                                                        setLangInput("");
+                                                    }
+                                                }}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {languagesList.map(l => (
+                                                <span key={l} className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-xl text-xs font-bold">
+                                                    {l}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setLanguagesList(languagesList.filter(item => item !== l))}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
 
                                     <div>
