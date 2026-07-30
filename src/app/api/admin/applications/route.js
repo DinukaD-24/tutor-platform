@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { resend } from "@/lib/resend";
+import { tutorHubEmailTemplate } from "@/lib/emailTemplate";
 
 
 export async function GET(request) {
@@ -102,12 +103,15 @@ export async function POST(request) {
           from: "TutorHub.LK <noreply@tutorhub.lk>",
           to: application.email,
           subject: "You've been approved as a tutor on TutorHub.LK!",
-          html: `
-            <h2>Congratulations, ${application.name}!</h2>
-            <p>Your tutor application has been approved. Your profile is now live on TutorHub.LK.</p>
-            <p>Log in to your dashboard to complete your profile and start connecting with students.</p>
-            <p>— The TutorHub.LK Team</p>
-          `,
+          html: tutorHubEmailTemplate({
+            heading: `Congratulations, ${application.name}!`,
+            body: `
+              <p>Your tutor application has been approved. Your profile is now live on TutorHub.LK.</p>
+              <p>Log in to your dashboard to complete your profile and start connecting with students.</p>
+            `,
+            ctaText: "Go to Dashboard",
+            ctaUrl: "https://tutorhub.lk/dashboard",
+          }),
         });
       } catch (emailError) {
         console.error("Approval email failed (tutor still created):", emailError);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
+import { tutorHubEmailTemplate } from "@/lib/emailTemplate";
 
 export async function POST(request) {
   try {
@@ -46,12 +47,15 @@ export async function POST(request) {
         from: "TutorHub.LK <noreply@tutorhub.lk>",
         to: saved.email,
         subject: "We've received your tutor application",
-        html: `
-          <h2>Thanks for applying, ${saved.name}!</h2>
-          <p>We've received your tutor application and our team will review it shortly.</p>
-          <p>You'll get another email as soon as a decision is made — usually within a few business days.</p>
-          <p>— The TutorHub.LK Team</p>
-        `,
+        html: tutorHubEmailTemplate({
+          heading: `Hello ${saved.name},`,
+          body: `
+            <p>Thanks for applying to become a tutor on TutorHub.LK. We've received your application and our team will review it shortly.</p>
+            <p>You'll get another email as soon as a decision is made — usually within a few business days.</p>
+          `,
+          ctaText: "Go to TutorHub.LK",
+          ctaUrl: "https://tutorhub.lk",
+        }),
       });
     } catch (emailError) {
       console.error("Applicant confirmation email failed (application still saved):", emailError);
