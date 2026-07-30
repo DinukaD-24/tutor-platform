@@ -1,6 +1,6 @@
 export function tutorHubEmailTemplate({ heading, body, ctaText, ctaUrl }) {
   return `
-  <div style="background-color:#f4f5f7; padding:40px 20px; font-family:'Segoe UI', Arial, sans-serif;">
+  <div style="background-color:#F8FBFC; padding:40px 20px; font-family:'Segoe UI', Arial, sans-serif;">
     <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:8px; overflow:hidden; border:1px solid #e5e7eb;">
       
       <!-- Header -->
@@ -10,30 +10,30 @@ export function tutorHubEmailTemplate({ heading, body, ctaText, ctaUrl }) {
 
       <!-- Body -->
       <div style="padding:40px;">
-        <p style="font-size:16px; color:#1e293b; margin:0 0 20px;">${heading}</p>
-        <div style="font-size:15px; color:#475569; line-height:1.6;">
+        <p style="font-size:16px; color:#0F2537; margin:0 0 20px;">${heading}</p>
+        <div style="font-size:15px; color:#0F2537; line-height:1.6; opacity:0.85;">
           ${body}
         </div>
 
         ${ctaUrl ? `
         <div style="text-align:center; margin:32px 0;">
-          <a href="${ctaUrl}" style="background-color:#2563eb; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:6px; font-weight:600; font-size:15px; display:inline-block;">
+          <a href="${ctaUrl}" style="background-color:#218396; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:6px; font-weight:600; font-size:15px; display:inline-block;">
             ${ctaText}
           </a>
         </div>` : ""}
 
-        <p style="font-size:14px; color:#94a3b8; margin-top:32px;">
+        <p style="font-size:14px; color:#0F2537; opacity:0.6; margin-top:32px;">
           If you have any questions, feel free to reply to this email or contact our support team.
         </p>
 
-        <p style="font-size:14px; color:#475569; margin-top:24px;">
+        <p style="font-size:14px; color:#0F2537; margin-top:24px;">
           Warm regards,<br/>
           <strong>The TutorHub.LK Team</strong>
         </p>
       </div>
 
       <!-- Footer -->
-      <div style="background-color:#f8fafc; padding:20px 40px; text-align:center; font-size:12px; color:#94a3b8;">
+      <div style="background-color:#F8FBFC; padding:20px 40px; text-align:center; font-size:12px; color:#0F2537; opacity:0.6; border-top:1px solid #e5e7eb;">
         © ${new Date().getFullYear()} TutorHub.LK — Connecting students with the perfect tutors across Sri Lanka.
       </div>
 
