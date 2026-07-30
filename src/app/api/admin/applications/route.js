@@ -99,7 +99,7 @@ export async function POST(request) {
       // NEW — approval email to the applicant
       try {
         await resend.emails.send({
-          from: "TutorHub.LK <noreply@send.tutorhub.lk>",
+          from: "TutorHub.LK <noreply@tutorhub.lk>",
           to: application.email,
           subject: "You've been approved as a tutor on TutorHub.LK!",
           html: `
