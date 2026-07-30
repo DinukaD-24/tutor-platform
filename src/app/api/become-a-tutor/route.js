@@ -43,7 +43,7 @@ export async function POST(request) {
     // NEW — confirmation to the applicant
     try {
       await resend.emails.send({
-        from: "TutorHub <onboarding@resend.dev>",
+        from: "TutorHub.LK <noreply@send.tutorhub.lk>",
         to: saved.email,
         subject: "We've received your tutor application",
         html: `
