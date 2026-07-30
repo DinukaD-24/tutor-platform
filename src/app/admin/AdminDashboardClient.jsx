@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import {
     Database, Inbox, Check, X, Plus, Trash2, Edit2,
-    RefreshCw, LogOut, ShieldCheck, FileText, AlertCircle
+    RefreshCw, LogOut, ShieldCheck, FileText, AlertCircle,
+    Info, Copy, Mail, AlertTriangle, ArrowRight
 } from "lucide-react";
 
 export default function AdminDashboardClient() {
@@ -24,6 +25,10 @@ export default function AdminDashboardClient() {
     const [showFormModal, setShowFormModal] = useState(false);
     const [formData, setFormData] = useState({});
     const [dbError, setDbError] = useState("");
+
+    // Rejection Modal States
+    const [rejectingApp, setRejectingApp] = useState(null);
+    const [rejectionMessage, setRejectionMessage] = useState("");
 
     const modelsList = [
         { id: "syllabus", name: "Syllabuses" },
@@ -80,12 +85,12 @@ export default function AdminDashboardClient() {
         }
     }, [activeTab, selectedModel]);
 
-    const handleApplicationAction = async (id, action) => {
+    const handleApplicationApprove = async (id) => {
         try {
             const res = await fetch("/api/admin/applications", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, action })
+                body: JSON.stringify({ id, action: "approve" })
             });
             if (res.ok) {
                 fetchApplications();
@@ -98,6 +103,40 @@ export default function AdminDashboardClient() {
         }
     };
 
+    const handleApplicationRejectConfirm = async () => {
+        if (!rejectingApp) return;
+        try {
+            const res = await fetch("/api/admin/applications", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: rejectingApp.id,
+                    action: "reject",
+                    rejectionMessage
+                })
+            });
+            if (res.ok) {
+                setRejectingApp(null);
+                fetchApplications();
+            } else {
+                const err = await res.json();
+                alert(err.error || "Failed to reject application");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const openRejectModal = (app) => {
+        setRejectingApp(app);
+        setRejectionMessage(
+`<p>Dear ${app.name},</p>
+<p>Thank you for your application to join TutorHub.LK as a tutor.</p>
+<p>After reviewing your application, we are unable to approve your tutor profile at this time.</p>
+<p>If you have any questions or feel this decision was made in error, please contact us directly at <a href="mailto:tutorhubadmin@gmail.com">tutorhubadmin@gmail.com</a>.</p>`
+        );
+    };
+
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         router.push("/login");
@@ -105,10 +144,15 @@ export default function AdminDashboardClient() {
     };
 
     // Database CRUD Handlers
-    const handleDeleteRecord = async (id) => {
-        if (!confirm("Are you sure you want to delete this record?")) return;
+    const handleDeleteRecord = async (rec) => {
+        if (selectedModel === "student" && rec.email === "tutorhubadmin@gmail.com") {
+            if (!confirm("⚠️ WARNING: This is the primary Administrator account! Are you sure you want to delete the admin record?")) return;
+        } else {
+            if (!confirm("Are you sure you want to delete this record?")) return;
+        }
+
         try {
-            const res = await fetch(`/api/admin/db/${selectedModel}?id=${id}`, {
+            const res = await fetch(`/api/admin/db/${selectedModel}?id=${rec.id}`, {
                 method: "DELETE"
             });
             if (res.ok) {
@@ -124,16 +168,14 @@ export default function AdminDashboardClient() {
 
     const openCreateModal = () => {
         setEditingRecord(null);
-        // Pre-fill model fields based on existing record keys or defaults
         const template = records[0] ? { ...records[0] } : {};
         delete template.id;
         delete template.createdAt;
         delete template.updatedAt;
         
-        // Ensure all values are empty strings/null for typing
         Object.keys(template).forEach(k => {
             if (Array.isArray(template[k])) {
-                template[k] = ""; // input parses list separated by comma
+                template[k] = "";
             } else if (typeof template[k] === "boolean") {
                 template[k] = false;
             } else {
@@ -145,12 +187,14 @@ export default function AdminDashboardClient() {
     };
 
     const openEditModal = (record) => {
+        if (selectedModel === "student" && record.email === "tutorhubadmin@gmail.com") {
+            if (!confirm("⚠️ NOTICE: You are editing the Administrator student account record (tutorhubadmin@gmail.com). Proceed with caution.")) return;
+        }
         setEditingRecord(record);
         const data = { ...record };
         delete data.createdAt;
         delete data.updatedAt;
         
-        // Convert arrays to comma-separated strings for easy input fields
         Object.keys(data).forEach(k => {
             if (Array.isArray(data[k])) {
                 data[k] = data[k].join(", ");
@@ -164,11 +208,9 @@ export default function AdminDashboardClient() {
         e.preventDefault();
         setDbError("");
 
-        // Parse list formats and types
         const cleanedData = { ...formData };
         Object.keys(cleanedData).forEach(k => {
             const val = cleanedData[k];
-            // If the field name usually represents an array or was originally one
             if (k === "languages" || k === "qualifications" || k === "specializations" || k === "prerequisites" || k === "learningOutcomes") {
                 cleanedData[k] = typeof val === "string" ? val.split(",").map(s => s.trim()).filter(Boolean) : val;
             }
@@ -276,7 +318,17 @@ export default function AdminDashboardClient() {
                                     <div key={app.id} className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-4">
                                         <div className="flex flex-wrap items-start justify-between gap-4">
                                             <div>
-                                                <h3 className="font-extrabold text-lg text-dark">{app.name}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className="font-extrabold text-lg text-dark">{app.name}</h3>
+                                                    
+                                                    {/* Duplicate warning badge */}
+                                                    {app.isDuplicate && (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200">
+                                                            <AlertTriangle size={11} />
+                                                            {app.hasExistingTutorAccount ? "Already Approved Tutor" : `Submitted ${app.submissionCount}x`}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-xs text-gray-400">{app.email} · {app.phone || "No phone"}</p>
                                             </div>
                                             <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border ${
@@ -313,18 +365,18 @@ export default function AdminDashboardClient() {
                                         {app.status === "pending" && (
                                             <div className="flex items-center gap-3 pt-2">
                                                 <button
-                                                    onClick={() => handleApplicationAction(app.id, "approve")}
+                                                    onClick={() => handleApplicationApprove(app.id)}
                                                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl shadow-glow-primary transition-all cursor-pointer"
                                                 >
                                                     <Check size={14} />
                                                     Approve Application
                                                 </button>
                                                 <button
-                                                    onClick={() => handleApplicationAction(app.id, "reject")}
+                                                    onClick={() => openRejectModal(app)}
                                                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-red-50 border border-gray-100 hover:border-red-200 text-red-600 text-xs font-bold rounded-xl transition-all cursor-pointer"
                                                 >
                                                     <X size={14} />
-                                                    Reject
+                                                    Reject with Message...
                                                 </button>
                                             </div>
                                         )}
@@ -358,6 +410,29 @@ export default function AdminDashboardClient() {
 
                         {/* DB Table Content */}
                         <div className="lg:col-span-9 space-y-6">
+                            
+                            {/* Visual Entity-Relationship Architecture Guide Banner */}
+                            <div className="p-4 bg-gradient-to-r from-gray-900 to-dark rounded-3xl text-white space-y-2">
+                                <div className="flex items-center gap-2 text-xs font-bold text-primary-light uppercase tracking-wider">
+                                    <Info size={14} />
+                                    <span>Database Entity Relationships Map</span>
+                                </div>
+                                <div className="text-[11px] text-gray-300 flex flex-wrap items-center gap-2 font-mono pt-1">
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Syllabus</span>
+                                    <ArrowRight size={12} className="text-primary" />
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Grade</span>
+                                    <ArrowRight size={12} className="text-primary" />
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Subject</span>
+                                    <ArrowRight size={12} className="text-primary" />
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Topic</span>
+                                    <ArrowRight size={12} className="text-primary" />
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Video / Material</span>
+                                </div>
+                                <div className="text-[10px] text-gray-400 pt-1">
+                                    Tutors are linked to Topics via <code>TopicTutors</code> and Videos via <code>tutorId</code>. Students follow Tutors and visit Videos.
+                                </div>
+                            </div>
+
                             <div className="flex flex-wrap items-center justify-between gap-4">
                                 <h2 className="text-lg font-extrabold text-dark flex items-center gap-2">
                                     <Database size={18} className="text-primary" />
@@ -397,31 +472,41 @@ export default function AdminDashboardClient() {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50 text-xs">
-                                                {records.map((rec) => (
-                                                    <tr key={rec.id} className="hover:bg-gray-50/30 transition-colors">
-                                                        {Object.keys(rec).slice(0, 5).map((k) => (
-                                                            <td key={k} className="px-5 py-4 max-w-[200px] truncate font-medium text-gray-600">
-                                                                {typeof rec[k] === "object" && rec[k] !== null
-                                                                    ? JSON.stringify(rec[k])
-                                                                    : String(rec[k] ?? "")}
+                                                {records.map((rec) => {
+                                                    const isAdminAccount = selectedModel === "student" && rec.email === "tutorhubadmin@gmail.com";
+                                                    return (
+                                                        <tr key={rec.id} className={`hover:bg-gray-50/30 transition-colors ${isAdminAccount ? 'bg-amber-50/30 font-bold' : ''}`}>
+                                                            {Object.keys(rec).slice(0, 5).map((k) => (
+                                                                <td key={k} className="px-5 py-4 max-w-[200px] truncate font-medium text-gray-600">
+                                                                    {isAdminAccount && k === "email" ? (
+                                                                        <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-bold">
+                                                                            <ShieldCheck size={12} />
+                                                                            {rec[k]} (ADMIN)
+                                                                        </span>
+                                                                    ) : (
+                                                                        typeof rec[k] === "object" && rec[k] !== null
+                                                                            ? JSON.stringify(rec[k])
+                                                                            : String(rec[k] ?? "")
+                                                                    )}
+                                                                </td>
+                                                            ))}
+                                                            <td className="px-5 py-4 text-right space-x-1.5 whitespace-nowrap">
+                                                                <button
+                                                                    onClick={() => openEditModal(rec)}
+                                                                    className="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all cursor-pointer"
+                                                                >
+                                                                    <Edit2 size={13} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteRecord(rec)}
+                                                                    className="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50/50 rounded-lg transition-all cursor-pointer"
+                                                                >
+                                                                    <Trash2 size={13} />
+                                                                </button>
                                                             </td>
-                                                        ))}
-                                                        <td className="px-5 py-4 text-right space-x-1.5 whitespace-nowrap">
-                                                            <button
-                                                                onClick={() => openEditModal(rec)}
-                                                                className="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all cursor-pointer"
-                                                            >
-                                                                <Edit2 size={13} />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDeleteRecord(rec.id)}
-                                                                className="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50/50 rounded-lg transition-all cursor-pointer"
-                                                            >
-                                                                <Trash2 size={13} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                        </tr>
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
                                     </div>
@@ -499,6 +584,54 @@ export default function AdminDashboardClient() {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Rejection Modal */}
+                {rejectingApp && (
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-6 z-50">
+                        <div className="bg-white rounded-3xl border border-gray-100 max-w-lg w-full p-6 shadow-2xl space-y-4">
+                            <div className="flex justify-between items-center border-b border-gray-50 pb-3">
+                                <h3 className="text-base font-extrabold text-dark flex items-center gap-2">
+                                    <Mail size={16} className="text-red-500" />
+                                    Reject Application & Send Email
+                                </h3>
+                                <button onClick={() => setRejectingApp(null)} className="text-gray-400 hover:text-dark">
+                                    <X size={16} />
+                                </button>
+                            </div>
+
+                            <p className="text-xs text-gray-500">
+                                Applicant: <strong>{rejectingApp.name}</strong> ({rejectingApp.email})
+                            </p>
+
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+                                    Custom Rejection Email Body (HTML Supported)
+                                </label>
+                                <textarea
+                                    value={rejectionMessage}
+                                    onChange={e => setRejectionMessage(e.target.value)}
+                                    rows={8}
+                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl p-3 text-xs text-dark font-mono outline-none focus:bg-white focus:border-red-400"
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-3 pt-2">
+                                <button
+                                    onClick={() => setRejectingApp(null)}
+                                    className="px-4 py-2 bg-gray-100 text-gray-600 font-bold text-xs rounded-xl cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleApplicationRejectConfirm}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
+                                >
+                                    Confirm Rejection & Send Email
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

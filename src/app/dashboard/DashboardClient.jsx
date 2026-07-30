@@ -1,28 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import {
     LayoutDashboard, BookOpen, Upload, FileText,
     BarChart2, Users, Star, Clock, TrendingUp,
-    CheckCircle, AlertCircle, Plus, Settings, ArrowRight, LogOut
+    CheckCircle, AlertCircle, Plus, Settings, ArrowRight, LogOut,
+    Edit3, Trash2, MapPin, Globe, DollarSign, Award, HelpCircle, Save
 } from "lucide-react";
 
-export default function DashboardClient({ tutor }) {
+export default function DashboardClient({ tutor: initialTutor }) {
     const supabase = createClient();
     const router = useRouter();
+    const [tutor, setTutor] = useState(initialTutor);
     const [activeTab, setActiveTab] = useState("Overview");
 
-    // Upload lesson form states
+    // Profile Form State
+    const [profileForm, setProfileForm] = useState({
+        price: tutor.price || "LKR 1,500 / hr",
+        location: tutor.location || "Colombo",
+        onlineAvailable: tutor.availability?.online ?? true,
+        physicalAvailable: tutor.availability?.physical ?? false,
+        phone: tutor.phone || "",
+        university: tutor.university || "",
+        experience: tutor.experience || "1 year",
+        bio: tutor.bio || "",
+        teachingStyle: tutor.teachingStyle || "",
+        languages: (tutor.languages || ["English", "Sinhala"]).join(", "),
+        specializations: (tutor.specializations || [tutor.subject]).join(", "),
+        qualifications: (tutor.qualifications || []).join(", "),
+    });
+    const [savingProfile, setSavingProfile] = useState(false);
+    const [profileMessage, setProfileMessage] = useState("");
+
+    // Curriculum state for lesson upload
+    const [curriculum, setCurriculum] = useState([]);
+    const [selectedSyllabus, setSelectedSyllabus] = useState("");
+    const [selectedGrade, setSelectedGrade] = useState("");
+    const [selectedSubject, setSelectedSubject] = useState(tutor.subject || "");
+    const [selectedTopic, setSelectedTopic] = useState("");
+    const [customSubject, setCustomSubject] = useState("");
+    const [customTopic, setCustomTopic] = useState("");
+    const [promptAddSubject, setPromptAddSubject] = useState(false);
+    const [pendingSubjectToAdd, setPendingSubjectToAdd] = useState("");
+
+    // Video form states
     const [title, setTitle] = useState("");
     const [youtubeUrl, setYoutubeUrl] = useState("");
     const [description, setDescription] = useState("");
-    const [subject, setSubject] = useState("Combined Maths");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+
+    // Video Editing Modal State
+    const [editingVideo, setEditingVideo] = useState(null);
+    const [editTitle, setEditTitle] = useState("");
+    const [editYoutubeUrl, setEditYoutubeUrl] = useState("");
+    const [editDescription, setEditDescription] = useState("");
+
+    useEffect(() => {
+        fetch("/api/lessons")
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setCurriculum(data);
+                }
+            })
+            .catch(err => console.error(err));
+    }, []);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -30,8 +77,37 @@ export default function DashboardClient({ tutor }) {
         router.refresh();
     };
 
-    const handleUploadLesson = async (e) => {
+    const handleSaveProfile = async (e) => {
         e.preventDefault();
+        setSavingProfile(true);
+        setProfileMessage("");
+        try {
+            const res = await fetch("/api/tutor/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...profileForm,
+                    languages: profileForm.languages.split(",").map(s => s.trim()).filter(Boolean),
+                    specializations: profileForm.specializations.split(",").map(s => s.trim()).filter(Boolean),
+                    qualifications: profileForm.qualifications.split(",").map(s => s.trim()).filter(Boolean),
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setProfileMessage("Profile updated successfully!");
+                setTutor(data.tutor);
+            } else {
+                setProfileMessage(`Error: ${data.error}`);
+            }
+        } catch (err) {
+            setProfileMessage("Failed to save profile.");
+        } finally {
+            setSavingProfile(false);
+        }
+    };
+
+    const handleUploadLesson = async (e, forceAddToProfile = false) => {
+        if (e) e.preventDefault();
         setError("");
         setSuccess("");
         setLoading(true);
@@ -42,7 +118,7 @@ export default function DashboardClient({ tutor }) {
             const url = new URL(youtubeUrl.trim());
             youtubeId = url.searchParams.get("v") || url.pathname.replace("/", "").split("/").pop();
         } catch {
-            // If not a valid URL, use as-is (raw ID fallback)
+            // fallback raw string
         }
 
         if (!youtubeId) {
@@ -50,6 +126,9 @@ export default function DashboardClient({ tutor }) {
             setLoading(false);
             return;
         }
+
+        const finalSubject = selectedSubject === "Other" ? customSubject : selectedSubject;
+        const finalTopic = selectedTopic === "Other" ? customTopic : selectedTopic;
 
         try {
             const res = await fetch("/api/lessons", {
@@ -59,21 +138,42 @@ export default function DashboardClient({ tutor }) {
                     title,
                     youtubeId,
                     description,
-                    subject,
-                    tutorId: tutor.id
+                    subject: finalSubject,
+                    topicName: finalTopic,
+                    syllabusSlug: selectedSyllabus,
+                    gradeSlug: selectedGrade,
+                    tutorId: tutor.id,
+                    addToProfile: forceAddToProfile || promptAddSubject
                 })
             });
 
+            const data = await res.json();
             if (!res.ok) {
-                const data = await res.json();
                 throw new Error(data.error || "Failed to upload lesson.");
+            }
+
+            if (data.isNewSubjectForTutor && !forceAddToProfile && !promptAddSubject) {
+                setPendingSubjectToAdd(data.subjectName);
+                setPromptAddSubject(true);
+                setLoading(false);
+                return;
             }
 
             setSuccess("Lesson uploaded successfully!");
             setTitle("");
             setYoutubeUrl("");
             setDescription("");
-            router.refresh();
+            setCustomSubject("");
+            setCustomTopic("");
+            setPromptAddSubject(false);
+            setPendingSubjectToAdd("");
+            
+            // Refresh tutor profile videos
+            const profileRes = await fetch("/api/tutor/profile");
+            if (profileRes.ok) {
+                const freshTutor = await profileRes.json();
+                setTutor(freshTutor);
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -81,19 +181,80 @@ export default function DashboardClient({ tutor }) {
         }
     };
 
+    const handleDeleteVideo = async (videoId) => {
+        if (!confirm("Are you sure you want to delete this lesson?")) return;
+        try {
+            const res = await fetch(`/api/lessons?id=${videoId}`, { method: "DELETE" });
+            if (res.ok) {
+                setTutor(prev => ({
+                    ...prev,
+                    videos: prev.videos.filter(v => v.id !== videoId)
+                }));
+            } else {
+                alert("Failed to delete lesson");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleEditVideoSubmit = async (e) => {
+        e.preventDefault();
+        if (!editingVideo) return;
+        try {
+            let youtubeId = editYoutubeUrl.trim();
+            try {
+                const url = new URL(editYoutubeUrl.trim());
+                youtubeId = url.searchParams.get("v") || url.pathname.replace("/", "").split("/").pop();
+            } catch {}
+
+            const res = await fetch("/api/lessons", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: editingVideo.id,
+                    title: editTitle,
+                    youtubeId,
+                    description: editDescription
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setTutor(prev => ({
+                    ...prev,
+                    videos: prev.videos.map(v => v.id === editingVideo.id ? data.lesson : v)
+                }));
+                setEditingVideo(null);
+            } else {
+                alert("Failed to edit lesson");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     // Calculate dynamic stats
     const stats = [
         { label: "Total Students",    value: tutor.studentsCount.toString(),  change: "Active students", icon: <Users size={20} />,     color: "text-primary bg-primary/10"    },
         { label: "Lessons Uploaded",  value: (tutor.videos?.length || 0).toString(),   change: "Published video tutorials",   icon: <BookOpen size={20} />,  color: "text-primary-dark bg-primary/10" },
-        { label: "Average Rating",    value: tutor.rating.toFixed(1),  change: `${tutor.reviewsCount} reviews`,     icon: <Star size={20} />,      color: "text-amber-600 bg-amber-50"    },
+        { label: "Average Rating",    value: tutor.rating ? tutor.rating.toFixed(1) : "5.0",  change: `${tutor.reviewsCount || 0} reviews`,     icon: <Star size={20} />,      color: "text-amber-600 bg-amber-50"    },
         { label: "Lessons Conducted", value: tutor.lessonsCount.toString(), change: "In-person/Online hours",  icon: <TrendingUp size={20} />,color: "text-purple-600 bg-purple-50"  },
     ];
 
     const navItems = [
         { label: "Overview",          icon: <LayoutDashboard size={18} /> },
+        { label: "Edit Profile",      icon: <Edit3 size={18} /> },
         { label: "Upload Lesson",     icon: <Upload size={18} /> },
         { label: "Sign Out",          icon: <LogOut size={18} />, onClick: handleSignOut, isDestructive: true },
     ];
+
+    // Get current syllabus object
+    const activeSyllabusObj = curriculum.find(s => s.slug === selectedSyllabus);
+    const activeGrades = activeSyllabusObj?.grades || [];
+    const activeGradeObj = activeGrades.find(g => g.slug === selectedGrade);
+    const activeSubjects = activeGradeObj?.subjects || [];
+    const activeSubjectObj = activeSubjects.find(sub => sub.name === selectedSubject);
+    const activeTopics = activeSubjectObj?.topics || [];
 
     return (
         <main className="min-h-screen bg-background text-dark pt-24 pb-20">
@@ -110,14 +271,14 @@ export default function DashboardClient({ tutor }) {
                     </div>
                     <div className="flex items-center gap-3">
                         <Link
-                            href={`/tutors/${tutor.slug}`}
+                            href={`/tutors/${tutor.slug || tutor.id}`}
                             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-primary border border-gray-100 bg-white hover:border-primary/20 px-4 py-2.5 rounded-xl transition-all"
                         >
                             View Public Profile
                         </Link>
                         <button 
                             onClick={() => setActiveTab("Upload Lesson")}
-                            className="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark px-4 py-2.5 rounded-xl shadow-glow-primary transition-all"
+                            className="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark px-4 py-2.5 rounded-xl shadow-glow-primary transition-all cursor-pointer"
                         >
                             <Plus size={16} />
                             Upload Lesson
@@ -135,7 +296,7 @@ export default function DashboardClient({ tutor }) {
                                     key={item.label}
                                     onClick={item.onClick ? item.onClick : () => setActiveTab(item.label)}
                                     className={`
-                                        w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-left
+                                        w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-left cursor-pointer
                                         ${item.isDestructive
                                             ? "text-red-500 hover:bg-red-50"
                                             : activeTab === item.label
@@ -194,10 +355,24 @@ export default function DashboardClient({ tutor }) {
                                                             <span className="text-[10px] text-gray-400 font-semibold">YouTube ID: {lesson.youtubeId}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-3 shrink-0">
-                                                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg border text-green-700 bg-green-50 border-green-100">
-                                                            Published
-                                                        </span>
+                                                    <div className="flex items-center gap-2 shrink-0">
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingVideo(lesson);
+                                                                setEditTitle(lesson.title);
+                                                                setEditYoutubeUrl(`https://www.youtube.com/watch?v=${lesson.youtubeId}`);
+                                                                setEditDescription(lesson.description || "");
+                                                            }}
+                                                            className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors cursor-pointer"
+                                                        >
+                                                            <Edit3 size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteVideo(lesson.id)}
+                                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ))
@@ -211,9 +386,164 @@ export default function DashboardClient({ tutor }) {
                             </>
                         )}
 
+                        {activeTab === "Edit Profile" && (
+                            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6">
+                                <div>
+                                    <h2 className="text-xl font-extrabold text-dark flex items-center gap-2">
+                                        <Edit3 size={20} className="text-primary" />
+                                        Edit Educator Profile
+                                    </h2>
+                                    <p className="text-xs text-gray-400 mt-1">Keep your profile updated so students find accurate class details.</p>
+                                </div>
+
+                                {profileMessage && (
+                                    <div className={`p-3.5 rounded-xl text-xs font-semibold ${
+                                        profileMessage.includes("Error")
+                                            ? "bg-red-50 text-red-600 border border-red-100"
+                                            : "bg-green-50 text-green-700 border border-green-100"
+                                    }`}>
+                                        {profileMessage}
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleSaveProfile} className="space-y-6">
+                                    
+                                    {/* Priority Callout 1: Pricing & Availability */}
+                                    <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl space-y-3">
+                                        <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                                            <Star size={14} />
+                                            <span>HIGH PRIORITY FOR DISCOVERY: Pricing & Format</span>
+                                        </div>
+                                        <p className="text-[11px] text-gray-500 leading-relaxed">
+                                            Students filter tutors heavily by tuition rate and class format (online vs physical). Completing these accurately increases student contacts by up to 40%!
+                                        </p>
+                                        
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                                            <div>
+                                                <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Tuition Rate / Rate Info</label>
+                                                <input
+                                                    type="text"
+                                                    value={profileForm.price}
+                                                    onChange={e => setProfileForm({ ...profileForm, price: e.target.value })}
+                                                    placeholder="e.g. LKR 2,000 / hr"
+                                                    className="w-full border border-gray-100 bg-white rounded-xl px-3 py-2.5 text-xs text-dark focus:border-primary outline-none"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Location / Town</label>
+                                                <input
+                                                    type="text"
+                                                    value={profileForm.location}
+                                                    onChange={e => setProfileForm({ ...profileForm, location: e.target.value })}
+                                                    placeholder="e.g. Nugegoda, Colombo"
+                                                    className="w-full border border-gray-100 bg-white rounded-xl px-3 py-2.5 text-xs text-dark focus:border-primary outline-none"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-6 pt-2">
+                                            <label className="flex items-center gap-2 text-xs font-semibold text-dark cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={profileForm.onlineAvailable}
+                                                    onChange={e => setProfileForm({ ...profileForm, onlineAvailable: e.target.checked })}
+                                                    className="w-4 h-4 rounded text-primary border-gray-200"
+                                                />
+                                                Available for Online Classes
+                                            </label>
+                                            <label className="flex items-center gap-2 text-xs font-semibold text-dark cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={profileForm.physicalAvailable}
+                                                    onChange={e => setProfileForm({ ...profileForm, physicalAvailable: e.target.checked })}
+                                                    className="w-4 h-4 rounded text-primary border-gray-200"
+                                                />
+                                                Available for Physical / Home Tuition
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Contact & Bio Details */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Phone Number</label>
+                                            <input
+                                                type="text"
+                                                value={profileForm.phone}
+                                                onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">University / Institution</label>
+                                            <input
+                                                type="text"
+                                                value={profileForm.university}
+                                                onChange={e => setProfileForm({ ...profileForm, university: e.target.value })}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Teaching Specializations (comma separated)</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.specializations}
+                                            onChange={e => setProfileForm({ ...profileForm, specializations: e.target.value })}
+                                            placeholder="e.g. Combined Maths, Mechanics, Pure Maths"
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                        />
+                                        <p className="text-[10px] text-gray-400 mt-1">⭐ Tip: Adding specific sub-topics helps students searching by topic find your profile.</p>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Qualifications (comma separated)</label>
+                                        <input
+                                            type="text"
+                                            value={profileForm.qualifications}
+                                            onChange={e => setProfileForm({ ...profileForm, qualifications: e.target.value })}
+                                            placeholder="e.g. B.Sc Engineering (Hons), 5+ Yrs Experience"
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Biography / About You</label>
+                                        <textarea
+                                            value={profileForm.bio}
+                                            onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })}
+                                            rows={4}
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none resize-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Teaching Methodology</label>
+                                        <textarea
+                                            value={profileForm.teachingStyle}
+                                            onChange={e => setProfileForm({ ...profileForm, teachingStyle: e.target.value })}
+                                            rows={2}
+                                            placeholder="Describe how you structure lessons, revision, and exam paper practice..."
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none resize-none"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={savingProfile}
+                                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl shadow-glow-primary transition-all cursor-pointer disabled:opacity-50"
+                                    >
+                                        <Save size={14} />
+                                        {savingProfile ? "Saving Profile..." : "Save Profile Changes"}
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+
                         {activeTab === "Upload Lesson" && (
-                            /* Upload Form */
-                            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-5 max-w-xl">
+                            /* Upload Form with Curriculum Dropdowns */
+                            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-5 max-w-2xl">
                                 <h2 className="font-extrabold text-dark border-b border-gray-50 pb-3 flex items-center gap-2">
                                     <Upload size={18} className="text-primary" />
                                     Upload New Lesson
@@ -231,30 +561,166 @@ export default function DashboardClient({ tutor }) {
                                     </p>
                                 )}
 
-                                <form onSubmit={handleUploadLesson} className="space-y-4">
+                                {/* Prompt modal / warning if subject is new for tutor */}
+                                {promptAddSubject && (
+                                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-3">
+                                        <div className="flex items-center gap-2 text-amber-800 font-bold text-xs">
+                                            <AlertCircle size={16} />
+                                            <span>Add &ldquo;{pendingSubjectToAdd}&rdquo; to your Profile Specializations?</span>
+                                        </div>
+                                        <p className="text-xs text-amber-700">
+                                            You uploaded a video for <strong>{pendingSubjectToAdd}</strong>, but it&apos;s not listed in your profile specializations yet. Would you like to add it to your profile so students searching for {pendingSubjectToAdd} find you?
+                                        </p>
+                                        <div className="flex items-center gap-3 pt-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUploadLesson(null, true)}
+                                                className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-glow-primary cursor-pointer"
+                                            >
+                                                Yes, Add to My Profile & Publish
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPromptAddSubject(false);
+                                                    setSuccess("Lesson published without adding subject to profile specializations.");
+                                                }}
+                                                className="px-4 py-2 bg-gray-100 text-gray-600 text-xs font-bold rounded-xl hover:bg-gray-200 cursor-pointer"
+                                            >
+                                                No, Keep Profile As-Is
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <form onSubmit={e => handleUploadLesson(e, false)} className="space-y-4">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Lesson Title</label>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Lesson Title *</label>
                                         <input
                                             type="text"
                                             value={title}
                                             onChange={(e) => setTitle(e.target.value)}
                                             required
                                             placeholder="e.g. Trigonometry — Part 3"
-                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary outline-none transition-all"
                                         />
                                     </div>
+
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">YouTube Video URL</label>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">YouTube Video URL *</label>
                                         <input
                                             type="url"
                                             value={youtubeUrl}
                                             onChange={(e) => setYoutubeUrl(e.target.value)}
                                             required
                                             placeholder="https://www.youtube.com/watch?v=..."
-                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary outline-none transition-all"
                                         />
                                         <p className="text-[10px] text-gray-400 pl-1">Paste any YouTube link — youtu.be, full URL, or short URL.</p>
                                     </div>
+
+                                    {/* Curriculum Cascading Selection */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Target Syllabus</label>
+                                            <select
+                                                value={selectedSyllabus}
+                                                onChange={e => {
+                                                    setSelectedSyllabus(e.target.value);
+                                                    setSelectedGrade("");
+                                                }}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary"
+                                            >
+                                                <option value="">Select Syllabus...</option>
+                                                {curriculum.map(s => (
+                                                    <option key={s.id} value={s.slug}>{s.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Target Grade</label>
+                                            <select
+                                                value={selectedGrade}
+                                                onChange={e => setSelectedGrade(e.target.value)}
+                                                disabled={!selectedSyllabus}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary disabled:opacity-40"
+                                            >
+                                                <option value="">Select Grade...</option>
+                                                {activeGrades.map(g => (
+                                                    <option key={g.id} value={g.slug}>{g.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Subject *</label>
+                                            <select
+                                                value={selectedSubject}
+                                                onChange={e => setSelectedSubject(e.target.value)}
+                                                required
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary"
+                                            >
+                                                <option value="">Select Subject...</option>
+                                                {activeSubjects.map(sub => (
+                                                    <option key={sub.id} value={sub.name}>{sub.name}</option>
+                                                ))}
+                                                <option value="Combined Maths">Combined Maths</option>
+                                                <option value="Physics">Physics</option>
+                                                <option value="ICT">ICT</option>
+                                                <option value="Biology">Biology</option>
+                                                <option value="Chemistry">Chemistry</option>
+                                                <option value="Other">+ Add Custom Subject</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Topic</label>
+                                            <select
+                                                value={selectedTopic}
+                                                onChange={e => setSelectedTopic(e.target.value)}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark outline-none focus:bg-white focus:border-primary"
+                                            >
+                                                <option value="">Select Topic...</option>
+                                                {activeTopics.map(t => (
+                                                    <option key={t.id} value={t.name}>{t.name}</option>
+                                                ))}
+                                                <option value="Other">+ Add Custom Topic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Custom Subject / Topic Input if "Other" selected */}
+                                    {selectedSubject === "Other" && (
+                                        <div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Custom Subject Name</label>
+                                            <input
+                                                type="text"
+                                                value={customSubject}
+                                                onChange={e => setCustomSubject(e.target.value)}
+                                                placeholder="e.g. Further Mathematics"
+                                                required
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {selectedTopic === "Other" && (
+                                        <div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Custom Topic Name</label>
+                                            <input
+                                                type="text"
+                                                value={customTopic}
+                                                onChange={e => setCustomTopic(e.target.value)}
+                                                placeholder="e.g. Vectors & Matrices"
+                                                required
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Description (optional)</label>
                                         <textarea
@@ -262,21 +728,8 @@ export default function DashboardClient({ tutor }) {
                                             onChange={(e) => setDescription(e.target.value)}
                                             rows={3}
                                             placeholder="Brief description of what this lesson covers..."
-                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none"
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary outline-none transition-all resize-none"
                                         />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Subject</label>
-                                        <select 
-                                            value={subject}
-                                            onChange={(e) => setSubject(e.target.value)}
-                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-                                        >
-                                            <option>Combined Maths</option>
-                                            <option>Physics</option>
-                                            <option>ICT</option>
-                                            <option>Biology</option>
-                                        </select>
                                     </div>
                                     
                                     <button 
@@ -293,6 +746,61 @@ export default function DashboardClient({ tutor }) {
                     </div>
                 </div>
             </div>
+
+            {/* Video Edit Modal */}
+            {editingVideo && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-6 z-50">
+                    <div className="bg-white rounded-3xl border border-gray-100 max-w-md w-full p-6 shadow-2xl space-y-4">
+                        <h3 className="text-lg font-black text-dark border-b border-gray-50 pb-2">Edit Lesson</h3>
+                        <form onSubmit={handleEditVideoSubmit} className="space-y-3 text-xs">
+                            <div>
+                                <label className="font-bold text-gray-400 block mb-1">Title</label>
+                                <input
+                                    type="text"
+                                    value={editTitle}
+                                    onChange={e => setEditTitle(e.target.value)}
+                                    className="w-full border border-gray-100 rounded-xl p-2.5"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="font-bold text-gray-400 block mb-1">YouTube URL</label>
+                                <input
+                                    type="text"
+                                    value={editYoutubeUrl}
+                                    onChange={e => setEditYoutubeUrl(e.target.value)}
+                                    className="w-full border border-gray-100 rounded-xl p-2.5"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="font-bold text-gray-400 block mb-1">Description</label>
+                                <textarea
+                                    value={editDescription}
+                                    onChange={e => setEditDescription(e.target.value)}
+                                    rows={3}
+                                    className="w-full border border-gray-100 rounded-xl p-2.5 resize-none"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingVideo(null)}
+                                    className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-primary text-white rounded-xl font-bold shadow-glow-primary cursor-pointer"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

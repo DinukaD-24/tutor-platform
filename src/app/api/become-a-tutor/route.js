@@ -6,7 +6,12 @@ import { tutorHubEmailTemplate } from "@/lib/emailTemplate";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, email, phone, university, subjects, syllabuses, experience, bio } = body;
+    let { name, email, phone, university, subjects, syllabuses, experience, bio } = body;
+
+    // Convert array of subjects to comma-separated string if needed
+    if (Array.isArray(subjects)) {
+      subjects = subjects.join(", ");
+    }
 
     if (!name || !email || !subjects || !syllabuses || !bio) {
       return NextResponse.json(
@@ -35,27 +40,28 @@ export async function POST(request) {
           <p><strong>Experience:</strong> ${experience || "Not provided"}</p>
           <p><strong>Bio:</strong></p>
           <p>${bio.replace(/\n/g, "<br>")}</p>
+          <hr />
+          <p style="font-size:12px;color:#666;">Need admin help? Reach out at <a href="mailto:tutorhubadmin@gmail.com">tutorhubadmin@gmail.com</a></p>
         `,
       });
     } catch (emailError) {
       console.error("Admin email send failed (application still saved):", emailError);
     }
 
-    // NEW — confirmation to the applicant
+    // Confirmation to applicant
     try {
       await resend.emails.send({
         from: "TutorHub.LK <noreply@tutorhub.lk>",
         to: saved.email,
-        subject: "We've received your tutor application",
-        html: tutorHubEmailTemplate({
-          heading: `Hello ${saved.name},`,
-          body: `
-            <p>Thanks for applying to become a tutor on TutorHub.LK. We've received your application and our team will review it shortly.</p>
-            <p>You'll get another email as soon as a decision is made — usually within a few business days.</p>
-          `,
-          ctaText: "Go to TutorHub.LK",
-          ctaUrl: "https://tutorhub.lk",
-        }),
+        subject: "We've received your tutor application — TutorHub.LK",
+        html: `
+          <h2>Thanks for applying, ${saved.name}!</h2>
+          <p>We've received your tutor application and our team will review it shortly.</p>
+          <p>You'll get another email as soon as a decision is made — usually within a few business days.</p>
+          <p>If you have any questions or need support, please contact us directly at <a href="mailto:tutorhubadmin@gmail.com">tutorhubadmin@gmail.com</a>.</p>
+          <br>
+          <p>— The TutorHub.LK Team</p>
+        `,
       });
     } catch (emailError) {
       console.error("Applicant confirmation email failed (application still saved):", emailError);

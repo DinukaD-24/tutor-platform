@@ -190,9 +190,14 @@ export async function getAllTutors() {
   return tutors.map(serializeTutor);
 }
 
-export async function getTutorById(id) {
-  const t = await prisma.tutor.findUnique({
-    where: { id },
+export async function getTutorById(idOrSlug) {
+  const t = await prisma.tutor.findFirst({
+    where: {
+      OR: [
+        { id: idOrSlug },
+        { slug: idOrSlug }
+      ]
+    },
     include: {
       reviews: true,
       videos: {

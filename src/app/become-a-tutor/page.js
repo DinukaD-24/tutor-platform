@@ -36,11 +36,25 @@ export default function BecomeATutorPage() {
     const [submitted, setSubmitted] = useState(false);
     const [form, setForm] = useState({
         name: "", email: "", phone: "", university: "",
-        subjects: "", syllabuses: "", experience: "", bio: "",
+        syllabuses: "", experience: "", bio: "",
     });
+    const [subjectsList, setSubjectsList] = useState(["Combined Maths", "Physics"]);
+    const [subjectInput, setSubjectInput] = useState("");
 
     const handleChange = (e) => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleAddSubject = () => {
+        const trimmed = subjectInput.trim();
+        if (trimmed && !subjectsList.includes(trimmed)) {
+            setSubjectsList([...subjectsList, trimmed]);
+            setSubjectInput("");
+        }
+    };
+
+    const handleRemoveSubject = (subToRemove) => {
+        setSubjectsList(subjectsList.filter((s) => s !== subToRemove));
     };
 
     const [error, setError] = useState("");
@@ -49,12 +63,21 @@ export default function BecomeATutorPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+
+        if (subjectsList.length === 0) {
+            setError("Please add at least one subject you teach.");
+            return;
+        }
+
         setLoading(true);
         try {
             const res = await fetch("/api/become-a-tutor", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+                body: JSON.stringify({
+                    ...form,
+                    subjects: subjectsList,
+                }),
             });
             if (!res.ok) {
                 const data = await res.json();
@@ -188,37 +211,63 @@ export default function BecomeATutorPage() {
                                         ))}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Subjects You Teach *</label>
-                                            <input
-                                                type="text"
-                                                name="subjects"
-                                                value={form.subjects}
-                                                onChange={handleChange}
-                                                required
-                                                placeholder="e.g. Combined Maths, Physics"
-                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-3 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-                                            />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Syllabuses *</label>
-                                            <select
-                                                name="syllabuses"
-                                                value={form.syllabuses}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-3 text-sm text-dark focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-                                            >
-                                                <option value="">Select syllabus...</option>
-                                                <option>Local A/L</option>
-                                                <option>Local O/L</option>
-                                                <option>Edexcel</option>
-                                                <option>Cambridge</option>
-                                                <option>Multiple</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <div className="space-y-2">
+                                         <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Subjects You Teach *</label>
+                                         <div className="flex items-center gap-2">
+                                             <input
+                                                 type="text"
+                                                 value={subjectInput}
+                                                 onChange={(e) => setSubjectInput(e.target.value)}
+                                                 onKeyDown={(e) => {
+                                                     if (e.key === "Enter") {
+                                                         e.preventDefault();
+                                                         handleAddSubject();
+                                                     }
+                                                 }}
+                                                 placeholder="Type subject & press Enter or Add..."
+                                                 className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                             />
+                                             <button
+                                                 type="button"
+                                                 onClick={handleAddSubject}
+                                                 className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark transition-all cursor-pointer shrink-0"
+                                             >
+                                                 + Add
+                                             </button>
+                                         </div>
+                                         <div className="flex flex-wrap gap-2 pt-1">
+                                             {subjectsList.map((sub) => (
+                                                 <span key={sub} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold">
+                                                     {sub}
+                                                     <button
+                                                         type="button"
+                                                         onClick={() => handleRemoveSubject(sub)}
+                                                         className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                     >
+                                                         ×
+                                                     </button>
+                                                 </span>
+                                             ))}
+                                         </div>
+                                     </div>
+
+                                     <div className="space-y-1.5">
+                                         <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Syllabuses *</label>
+                                         <select
+                                             name="syllabuses"
+                                             value={form.syllabuses}
+                                             onChange={handleChange}
+                                             required
+                                             className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-3 text-sm text-dark focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                         >
+                                             <option value="">Select syllabus...</option>
+                                             <option>Local A/L</option>
+                                             <option>Local O/L</option>
+                                             <option>Edexcel</option>
+                                             <option>Cambridge</option>
+                                             <option>Multiple</option>
+                                         </select>
+                                     </div>
 
                                     <div className="space-y-1.5">
                                         <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Years of Teaching Experience</label>
