@@ -36,6 +36,29 @@ const presetSyllabuses = ["Local A/L", "Local O/L", "Edexcel", "Cambridge"];
 
 export default function BecomeATutorPage() {
     const [submitted, setSubmitted] = useState(false);
+    const [liveStats, setLiveStats] = useState({ tutors: "50+", students: "1,000+", avgRating: "4.9" });
+
+    useEffect(() => {
+        fetch("/api/stats")
+            .then(res => res.json())
+            .then(data => {
+                if (data?.formatted) {
+                    setLiveStats({
+                        tutors: data.formatted.tutors,
+                        students: data.formatted.students,
+                        avgRating: data.formatted.avgRating,
+                    });
+                }
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    const stats = [
+        { value: liveStats.tutors,    label: "Tutors Onboarded" },
+        { value: liveStats.students, label: "Active Students"  },
+        { value: liveStats.avgRating,    label: "Avg. Tutor Rating" },
+    ];
+
     const [form, setForm] = useState({
         name: "", email: "", phone: "", university: "",
         experience: "", bio: "", location: "",

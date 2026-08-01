@@ -1,6 +1,7 @@
 import { getTutorById } from "@/utils/getData";
 import Link from "next/link";
 import FollowButton from "@/components/tutor/FollowButton";
+import AddReviewModal from "@/components/tutor/AddReviewModal";
 import { 
     ChevronRight, BookOpen, Award, Star, Users, GraduationCap, 
     CheckCircle, MessageSquare, Mail, Phone, MapPin, Globe, Clock, ShieldCheck, Play
@@ -195,10 +196,13 @@ export default async function TutorProfilePage({ params }) {
 
                         {/* Reviews / Testimonials */}
                         <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6">
-                            <h2 className="text-xl font-extrabold text-dark border-b border-gray-50 pb-3 flex items-center gap-2">
-                                <MessageSquare size={20} className="text-primary" />
-                                Student Reviews ({tutor.reviewsCount})
-                            </h2>
+                            <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                                <h2 className="text-xl font-extrabold text-dark flex items-center gap-2">
+                                    <MessageSquare size={20} className="text-primary" />
+                                    Student Reviews ({tutor.reviewsCount})
+                                </h2>
+                                <AddReviewModal tutorId={tutor.id} tutorName={tutor.name} />
+                            </div>
                             
                             <div className="space-y-4 divide-y divide-gray-100">
                                 {tutor.reviews.map((rev) => (

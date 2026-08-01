@@ -1,11 +1,11 @@
 import { StaggerContainer, StaggerItem } from "@/components/ui";
 
-export default function StatisticsSection() {
+export default function StatisticsSection({ dynamicStats }) {
     const stats = [
-        { number: "500+",   label: "Subjects Offered",    description: "Local & International Syllabuses" },
-        { number: "50+",    label: "Verified Tutors",      description: "Direct Student Matches"          },
-        { number: "1,000+", label: "Active Students",      description: "Empowered Daily"                 },
-        { number: "4",      label: "Syllabuses Supported", description: "Local, Edexcel, and Cambridge"   },
+        { number: dynamicStats?.formatted?.subjects || "500+",   label: "Subjects Offered",    description: "Local & International Syllabuses" },
+        { number: dynamicStats?.formatted?.tutors || "50+",    label: "Verified Tutors",      description: "Direct Student Matches"          },
+        { number: dynamicStats?.formatted?.students || "1,000+", label: "Active Students",      description: "Empowered Daily"                 },
+        { number: dynamicStats?.formatted?.syllabuses || "4",      label: "Syllabuses Supported", description: "Local, Edexcel, and Cambridge"   },
     ];
 
     return (
