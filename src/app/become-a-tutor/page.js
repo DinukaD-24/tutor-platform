@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Award, ShieldCheck, Zap, Send, CheckCircle, Users, BookOpen, TrendingUp, MapPin, Globe } from "lucide-react";
 
 const benefits = [
