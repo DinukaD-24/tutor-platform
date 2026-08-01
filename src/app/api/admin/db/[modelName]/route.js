@@ -19,6 +19,48 @@ function getModel(name) {
   return mapping[name.toLowerCase()];
 }
 
+function getModelIncludes(name) {
+  const modelKey = name.toLowerCase();
+  if (modelKey === "grade") {
+    return { syllabus: true };
+  }
+  if (modelKey === "subject") {
+    return { grade: { include: { syllabus: true } } };
+  }
+  if (modelKey === "topic") {
+    return { subject: { include: { grade: { include: { syllabus: true } } } } };
+  }
+  if (modelKey === "video") {
+    return {
+      topic: { include: { subject: { include: { grade: { include: { syllabus: true } } } } } },
+      tutor: true,
+    };
+  }
+  if (modelKey === "material") {
+    return {
+      topic: { include: { subject: { include: { grade: { include: { syllabus: true } } } } } },
+    };
+  }
+  if (modelKey === "review") {
+    return { tutor: true };
+  }
+  return undefined;
+}
+
+function sanitizeData(data) {
+  const sanitized = { ...data };
+  // Remove nested relation objects that might be present when editing
+  const relationKeys = [
+    "syllabus", "grade", "subject", "topic", "tutor",
+    "materials", "videos", "grades", "subjects", "topics",
+    "reviews", "followers", "visitors", "relatedTo", "relatedBy"
+  ];
+  relationKeys.forEach(k => {
+    delete sanitized[k];
+  });
+  return sanitized;
+}
+
 async function verifyAdmin() {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
@@ -40,8 +82,10 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Invalid model name" }, { status: 400 });
     }
 
+    const includes = getModelIncludes(modelName);
     const records = await model.findMany({
-      take: 100
+      take: 200,
+      ...(includes ? { include: includes } : {})
     });
     return NextResponse.json(records);
   } catch (error) {
@@ -62,7 +106,9 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: "Invalid model name" }, { status: 400 });
     }
 
-    const data = await request.json();
+    const rawData = await request.json();
+    const data = sanitizeData(rawData);
+
     const created = await model.create({ data });
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
@@ -83,11 +129,13 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Invalid model name" }, { status: 400 });
     }
 
-    const { id, ...data } = await request.json();
+    const rawData = await request.json();
+    const { id, ...rest } = rawData;
     if (!id) {
       return NextResponse.json({ error: "ID is required for update" }, { status: 400 });
     }
 
+    const data = sanitizeData(rest);
     const updated = await model.update({
       where: { id },
       data

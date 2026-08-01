@@ -21,8 +21,18 @@ export async function GET(request) {
         where: { email }
       })
 
+      // Check if user has an application
+      const application = await prisma.tutorApplication.findFirst({
+        where: { email }
+      })
+
+      // If tutor login was selected but user has no tutor profile AND no application
+      if (role === 'tutor' && !tutor && !application) {
+        return NextResponse.redirect(`${origin}/login?error=no_tutor_app`)
+      }
+
       if (!tutor) {
-        // If not tutor, ensure they have a Student profile
+        // Ensure student profile for student login flow
         const student = await prisma.student.findUnique({
           where: { email }
         })

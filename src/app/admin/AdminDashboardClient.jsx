@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import {
     Database, Inbox, Check, X, Plus, Trash2, Edit2,
-    RefreshCw, LogOut, ShieldCheck, FileText, AlertCircle,
-    Info, Copy, Mail, AlertTriangle, ArrowRight
+    RefreshCw, LogOut, ShieldCheck, Info, Mail, AlertTriangle, ArrowRight, AlertCircle
 } from "lucide-react";
 
 export default function AdminDashboardClient() {
@@ -25,6 +24,12 @@ export default function AdminDashboardClient() {
     const [showFormModal, setShowFormModal] = useState(false);
     const [formData, setFormData] = useState({});
     const [dbError, setDbError] = useState("");
+
+    // Cascading Dropdown States for Modal
+    const [formSyllabusId, setFormSyllabusId] = useState("");
+    const [formGradeId, setFormGradeId] = useState("");
+    const [formSubjectId, setFormSubjectId] = useState("");
+    const [formTopicId, setFormTopicId] = useState("");
 
     // Foreign Key Lookup Tables
     const [lookupSyllabuses, setLookupSyllabuses] = useState([]);
@@ -106,7 +111,6 @@ export default function AdminDashboardClient() {
 
     useEffect(() => {
         if (activeTab === "applications") {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchApplications();
         } else {
             fetchDbRecords(selectedModel);
@@ -197,12 +201,20 @@ export default function AdminDashboardClient() {
 
     const openCreateModal = () => {
         setEditingRecord(null);
+        setFormSyllabusId("");
+        setFormGradeId("");
+        setFormSubjectId("");
+        setFormTopicId("");
+
         const template = records[0] ? { ...records[0] } : {};
         delete template.id;
-        delete template.slug; // Hide slug field from manual user entry
+        delete template.slug; // Hide slug field from manual entry
         delete template.createdAt;
         delete template.updatedAt;
         
+        // Remove relation objects from template
+        ["syllabus", "grade", "subject", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"].forEach(k => delete template[k]);
+
         Object.keys(template).forEach(k => {
             if (Array.isArray(template[k])) {
                 template[k] = "";
@@ -213,16 +225,40 @@ export default function AdminDashboardClient() {
             }
         });
 
-        // Pre-set default foreign keys if lookups exist
-        if (selectedModel === "grade" && lookupSyllabuses.length > 0) template.syllabusId = lookupSyllabuses[0].id;
-        if (selectedModel === "subject" && lookupGrades.length > 0) template.gradeId = lookupGrades[0].id;
-        if (selectedModel === "topic" && lookupSubjects.length > 0) template.subjectId = lookupSubjects[0].id;
-        if (selectedModel === "video" || selectedModel === "material") {
-            if (lookupSyllabuses.length > 0) template.syllabusId = lookupSyllabuses[0].id;
-            if (lookupGrades.length > 0) template.gradeId = lookupGrades[0].id;
-            if (lookupSubjects.length > 0) template.subjectId = lookupSubjects[0].id;
-            if (lookupTopics.length > 0) template.topicId = lookupTopics[0].id;
-            if (selectedModel === "video" && lookupTutors.length > 0) template.tutorId = lookupTutors[0].id;
+        // Set default foreign keys if lookups exist
+        if (selectedModel === "grade" && lookupSyllabuses.length > 0) {
+            const sylId = lookupSyllabuses[0].id;
+            setFormSyllabusId(sylId);
+            template.syllabusId = sylId;
+        }
+        if (selectedModel === "subject" && lookupGrades.length > 0) {
+            const grd = lookupGrades[0];
+            setFormSyllabusId(grd.syllabusId || (grd.syllabus ? grd.syllabus.id : ""));
+            setFormGradeId(grd.id);
+            template.gradeId = grd.id;
+        }
+        if (selectedModel === "topic" && lookupSubjects.length > 0) {
+            const sub = lookupSubjects[0];
+            const grdId = sub.gradeId || (sub.grade ? sub.grade.id : "");
+            const sylId = sub.grade?.syllabusId || (sub.grade?.syllabus ? sub.grade.syllabus.id : "");
+            setFormSyllabusId(sylId);
+            setFormGradeId(grdId);
+            setFormSubjectId(sub.id);
+            template.subjectId = sub.id;
+        }
+        if ((selectedModel === "video" || selectedModel === "material") && lookupTopics.length > 0) {
+            const top = lookupTopics[0];
+            const subId = top.subjectId || (top.subject ? top.subject.id : "");
+            const grdId = top.subject?.gradeId || (top.subject?.grade ? top.subject.grade.id : "");
+            const sylId = top.subject?.grade?.syllabusId || (top.subject?.grade?.syllabus ? top.subject.grade.syllabus.id : "");
+            setFormSyllabusId(sylId);
+            setFormGradeId(grdId);
+            setFormSubjectId(subId);
+            setFormTopicId(top.id);
+            template.topicId = top.id;
+            if (selectedModel === "video" && lookupTutors.length > 0) {
+                template.tutorId = lookupTutors[0].id;
+            }
         }
 
         setFormData(template);
@@ -234,11 +270,30 @@ export default function AdminDashboardClient() {
             if (!confirm("⚠️ NOTICE: You are editing the Administrator student account record (tutorhubadmin@gmail.com). Proceed with caution.")) return;
         }
         setEditingRecord(record);
+        
+        // Populate cascading states from record relationships
+        if (selectedModel === "grade") {
+            setFormSyllabusId(record.syllabusId || record.syllabus?.id || "");
+        } else if (selectedModel === "subject") {
+            setFormGradeId(record.gradeId || record.grade?.id || "");
+            setFormSyllabusId(record.grade?.syllabusId || record.grade?.syllabus?.id || "");
+        } else if (selectedModel === "topic") {
+            setFormSubjectId(record.subjectId || record.subject?.id || "");
+            setFormGradeId(record.subject?.gradeId || record.subject?.grade?.id || "");
+            setFormSyllabusId(record.subject?.grade?.syllabusId || record.subject?.grade?.syllabus?.id || "");
+        } else if (selectedModel === "video" || selectedModel === "material") {
+            setFormTopicId(record.topicId || record.topic?.id || "");
+            setFormSubjectId(record.topic?.subjectId || record.topic?.subject?.id || "");
+            setFormGradeId(record.topic?.subject?.gradeId || record.topic?.subject?.grade?.id || "");
+            setFormSyllabusId(record.topic?.subject?.grade?.syllabusId || record.topic?.subject?.grade?.syllabus?.id || "");
+        }
+
         const data = { ...record };
         delete data.createdAt;
         delete data.updatedAt;
-        delete data.slug; // Hide slug field from manual editing
-        
+        delete data.slug;
+        ["syllabus", "grade", "subject", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"].forEach(k => delete data[k]);
+
         Object.keys(data).forEach(k => {
             if (Array.isArray(data[k])) {
                 data[k] = data[k].join(", ");
@@ -270,12 +325,6 @@ export default function AdminDashboardClient() {
             }
         });
 
-        if (selectedModel === "video" || selectedModel === "material") {
-            delete cleanedData.syllabusId;
-            delete cleanedData.gradeId;
-            delete cleanedData.subjectId;
-        }
-
         try {
             const method = editingRecord ? "PUT" : "POST";
             const res = await fetch(`/api/admin/db/${selectedModel}`, {
@@ -297,17 +346,62 @@ export default function AdminDashboardClient() {
         }
     };
 
-    // Helper to determine table headers for display
-    const gradeOptions = lookupGrades.filter(g => g.syllabusId === formData.syllabusId);
-    const subjectOptions = lookupSubjects.filter(sub => sub.gradeId === formData.gradeId);
-    const topicOptions = lookupTopics.filter(t => t.subjectId === formData.subjectId);
+    // Filter lookup options for cascading dropdowns
+    const filteredGrades = lookupGrades.filter(g => !formSyllabusId || g.syllabusId === formSyllabusId || g.syllabus?.id === formSyllabusId);
+    const filteredSubjects = lookupSubjects.filter(s => !formGradeId || s.gradeId === formGradeId || s.grade?.id === formGradeId);
+    const filteredTopics = lookupTopics.filter(t => !formSubjectId || t.subjectId === formSubjectId || t.subject?.id === formSubjectId);
 
-    const getTableColumns = () => {
-        if (!records || records.length === 0) return [];
-        if (selectedModel === "tutor") {
-            return ["name", "subject", "tutorType", "email", "phone", "location", "onlineAvailable", "physicalAvailable", "rating"];
+    // Dynamic table columns for clean relational rendering
+    const renderTableHeaders = () => {
+        if (selectedModel === "syllabus") return ["Name", "Slug"];
+        if (selectedModel === "grade") return ["Name", "Slug", "Order", "Target Syllabus"];
+        if (selectedModel === "subject") return ["Name", "Slug", "Target Grade", "Target Syllabus"];
+        if (selectedModel === "topic") return ["Name", "Slug", "Target Subject", "Target Grade", "Target Syllabus"];
+        if (selectedModel === "video") return ["Title", "YouTube ID", "Topic", "Subject", "Grade", "Syllabus", "Tutor"];
+        if (selectedModel === "material") return ["Title", "URL", "Topic", "Subject", "Grade", "Syllabus"];
+        if (selectedModel === "tutor") return ["Name", "Subject", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
+        if (records.length > 0) return Object.keys(records[0]).slice(0, 6);
+        return [];
+    };
+
+    const renderTableCell = (rec, colName) => {
+        const lower = colName.toLowerCase();
+        if (lower === "name") return rec.name;
+        if (lower === "slug") return rec.slug;
+        if (lower === "order") return rec.order ?? 0;
+        if (lower === "title") return rec.title;
+        if (lower === "youtube id") return rec.youtubeId;
+        if (lower === "url") return <a href={rec.url} target="_blank" rel="noreferrer" className="text-primary underline">{rec.url}</a>;
+        if (lower === "subject") return rec.subject || rec.topic?.subject?.name || "-";
+        if (lower === "type") return rec.tutorType;
+        if (lower === "email") return rec.email;
+        if (lower === "phone") return rec.phone || "-";
+        if (lower === "location") return rec.location || "-";
+        if (lower === "online") return rec.onlineAvailable ? "Yes" : "No";
+        if (lower === "physical") return rec.physicalAvailable ? "Yes" : "No";
+        if (lower === "rating") return rec.rating ? rec.rating.toFixed(1) : "5.0";
+
+        // Relational Parent Columns
+        if (lower.includes("syllabus")) {
+            return rec.syllabus?.name || rec.grade?.syllabus?.name || rec.subject?.grade?.syllabus?.name || rec.topic?.subject?.grade?.syllabus?.name || "-";
         }
-        return Object.keys(records[0]).slice(0, 7);
+        if (lower.includes("grade")) {
+            return rec.grade?.name || rec.subject?.grade?.name || rec.topic?.subject?.grade?.name || "-";
+        }
+        if (lower.includes("subject")) {
+            return rec.subject?.name || rec.topic?.subject?.name || rec.subject || "-";
+        }
+        if (lower.includes("topic")) {
+            return rec.topic?.name || "-";
+        }
+        if (lower.includes("tutor")) {
+            return rec.tutor?.name || "-";
+        }
+
+        const key = Object.keys(rec).find(k => k.toLowerCase() === lower);
+        const val = key ? rec[key] : undefined;
+        if (typeof val === "object" && val !== null) return JSON.stringify(val);
+        return String(val ?? "-");
     };
 
     return (
@@ -482,7 +576,7 @@ export default function AdminDashboardClient() {
                         {/* DB Table Content */}
                         <div className="lg:col-span-9 space-y-6">
                             
-                            {/* Visual Entity-Relationship Architecture Guide Banner */}
+                            {/* Entity Relationships Map Banner */}
                             <div className="p-4 bg-gradient-to-r from-gray-900 to-dark rounded-3xl text-white space-y-2">
                                 <div className="flex items-center gap-2 text-xs font-bold text-primary-light uppercase tracking-wider">
                                     <Info size={14} />
@@ -498,9 +592,6 @@ export default function AdminDashboardClient() {
                                     <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Topic</span>
                                     <ArrowRight size={12} className="text-primary" />
                                     <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Video / Material</span>
-                                </div>
-                                <div className="text-[10px] text-gray-400 pt-1">
-                                    Tutors are linked to Topics via <code>TopicTutors</code> and Videos via <code>tutorId</code>. Students follow Tutors and visit Videos.
                                 </div>
                             </div>
 
@@ -532,9 +623,9 @@ export default function AdminDashboardClient() {
                                         <table className="w-full text-left border-collapse">
                                             <thead>
                                                 <tr className="border-b border-gray-50 bg-gray-50/50">
-                                                    {getTableColumns().map((k) => (
-                                                        <th key={k} className="px-5 py-3.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                                                            {k}
+                                                    {renderTableHeaders().map((h) => (
+                                                        <th key={h} className="px-5 py-3.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                                            {h}
                                                         </th>
                                                     ))}
                                                     <th className="px-5 py-3.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">
@@ -547,17 +638,15 @@ export default function AdminDashboardClient() {
                                                     const isAdminAccount = selectedModel === "student" && rec.email === "tutorhubadmin@gmail.com";
                                                     return (
                                                         <tr key={rec.id} className={`hover:bg-gray-50/30 transition-colors ${isAdminAccount ? 'bg-amber-50/30 font-bold' : ''}`}>
-                                                            {getTableColumns().map((k) => (
-                                                                <td key={k} className="px-5 py-4 max-w-[200px] truncate font-medium text-gray-600">
-                                                                    {isAdminAccount && k === "email" ? (
+                                                            {renderTableHeaders().map((h) => (
+                                                                <td key={h} className="px-5 py-4 max-w-[200px] truncate font-medium text-gray-600">
+                                                                    {isAdminAccount && h.toLowerCase() === "email" ? (
                                                                         <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-bold">
                                                                             <ShieldCheck size={12} />
-                                                                            {rec[k]} (ADMIN)
+                                                                            {rec.email} (ADMIN)
                                                                         </span>
                                                                     ) : (
-                                                                        typeof rec[k] === "object" && rec[k] !== null
-                                                                            ? JSON.stringify(rec[k])
-                                                                            : String(rec[k] ?? "")
+                                                                        renderTableCell(rec, h)
                                                                     )}
                                                                 </td>
                                                             ))}
@@ -587,7 +676,7 @@ export default function AdminDashboardClient() {
                     </div>
                 )}
 
-                {/* Form Modal with Foreign Key Dropdowns & Auto-slug */}
+                {/* Form Modal with Full Cascading Selections & Auto-slug */}
                 {showFormModal && (
                     <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-6 z-50 animate-fadeIn">
                         <div className="bg-white rounded-3xl border border-gray-100 max-w-xl w-full p-6 md:p-8 shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto">
@@ -611,91 +700,131 @@ export default function AdminDashboardClient() {
                             )}
 
                             <form onSubmit={handleFormSubmit} className="space-y-4">
+
+                                {/* 1. Cascading Syllabus Selector for Grade, Subject, Topic, Video, Material */}
+                                {(selectedModel === "grade" || selectedModel === "subject" || selectedModel === "topic" || selectedModel === "video" || selectedModel === "material") && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Syllabus</label>
+                                        <select
+                                            value={formSyllabusId}
+                                            onChange={(e) => {
+                                                const sylId = e.target.value;
+                                                setFormSyllabusId(sylId);
+                                                setFormGradeId("");
+                                                setFormSubjectId("");
+                                                setFormTopicId("");
+                                                if (selectedModel === "grade") {
+                                                    setFormData(prev => ({ ...prev, syllabusId: sylId }));
+                                                } else {
+                                                    setFormData(prev => ({ ...prev, gradeId: "", subjectId: "", topicId: "" }));
+                                                }
+                                            }}
+                                            required
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                        >
+                                            <option value="">Select Syllabus...</option>
+                                            {lookupSyllabuses.map(s => (
+                                                <option key={s.id} value={s.id}>{s.name} ({s.slug})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* 2. Cascading Grade Selector for Subject, Topic, Video, Material */}
+                                {(selectedModel === "subject" || selectedModel === "topic" || selectedModel === "video" || selectedModel === "material") && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Grade</label>
+                                        <select
+                                            value={formGradeId}
+                                            onChange={(e) => {
+                                                const grdId = e.target.value;
+                                                setFormGradeId(grdId);
+                                                setFormSubjectId("");
+                                                setFormTopicId("");
+                                                if (selectedModel === "subject") {
+                                                    setFormData(prev => ({ ...prev, gradeId: grdId }));
+                                                } else {
+                                                    setFormData(prev => ({ ...prev, subjectId: "", topicId: "" }));
+                                                }
+                                            }}
+                                            required
+                                            disabled={!formSyllabusId}
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none disabled:opacity-40"
+                                        >
+                                            <option value="">Select Grade...</option>
+                                            {filteredGrades.map(g => (
+                                                <option key={g.id} value={g.id}>{g.name} ({g.slug})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* 3. Cascading Subject Selector for Topic, Video, Material */}
+                                {(selectedModel === "topic" || selectedModel === "video" || selectedModel === "material") && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Subject</label>
+                                        <select
+                                            value={formSubjectId}
+                                            onChange={(e) => {
+                                                const subId = e.target.value;
+                                                setFormSubjectId(subId);
+                                                setFormTopicId("");
+                                                if (selectedModel === "topic") {
+                                                    setFormData(prev => ({ ...prev, subjectId: subId }));
+                                                } else {
+                                                    setFormData(prev => ({ ...prev, topicId: "" }));
+                                                }
+                                            }}
+                                            required
+                                            disabled={!formGradeId}
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none disabled:opacity-40"
+                                        >
+                                            <option value="">Select Subject...</option>
+                                            {filteredSubjects.map(s => (
+                                                <option key={s.id} value={s.id}>{s.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* 4. Cascading Topic Selector for Video & Material */}
+                                {(selectedModel === "video" || selectedModel === "material") && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Topic</label>
+                                        <select
+                                            value={formTopicId}
+                                            onChange={(e) => {
+                                                const topId = e.target.value;
+                                                setFormTopicId(topId);
+                                                setFormData(prev => ({ ...prev, topicId: topId }));
+                                            }}
+                                            required
+                                            disabled={!formSubjectId}
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none disabled:opacity-40"
+                                        >
+                                            <option value="">Select Topic...</option>
+                                            {filteredTopics.map(t => (
+                                                <option key={t.id} value={t.id}>{t.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* Other standard input fields */}
                                 {Object.keys(formData).map((k) => {
-                                    if (k === "id" || k === "slug") return null; // Hide ID and auto-generated slug
+                                    if (k === "id" || k === "slug") return null;
+                                    if (k === "syllabusId" || k === "gradeId" || k === "subjectId" || k === "topicId") return null; // already rendered above
                                     
                                     const isBool = typeof formData[k] === "boolean";
-
-                                    // Render Foreign Key Dropdowns
-                                    if (k === "syllabusId") {
-                                        return (
-                                            <div key={k} className="space-y-1">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Syllabus</label>
-                                                <select
-                                                    value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, syllabusId: e.target.value, gradeId: "", subjectId: "", topicId: "" }))}
-                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                                >
-                                                    <option value="">Select Syllabus...</option>
-                                                    {lookupSyllabuses.map(s => (
-                                                        <option key={s.id} value={s.id}>{s.name} ({s.slug})</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        );
-                                    }
-
-                                    if (k === "gradeId") {
-                                        return (
-                                            <div key={k} className="space-y-1">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Grade</label>
-                                                <select
-                                                    value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, gradeId: e.target.value, subjectId: "", topicId: "" }))}
-                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                                >
-                                                    <option value="">Select Grade...</option>
-                                                    {gradeOptions.map(g => (
-                                                        <option key={g.id} value={g.id}>{g.name} ({g.slug})</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        );
-                                    }
-
-                                    if (k === "subjectId") {
-                                        return (
-                                            <div key={k} className="space-y-1">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Subject</label>
-                                                <select
-                                                    value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, subjectId: e.target.value, topicId: "" }))}
-                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                                >
-                                                    <option value="">Select Subject...</option>
-                                                    {subjectOptions.map(sub => (
-                                                        <option key={sub.id} value={sub.id}>{sub.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        );
-                                    }
-
-                                    if (k === "topicId") {
-                                        return (
-                                            <div key={k} className="space-y-1">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Target Topic</label>
-                                                <select
-                                                    value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, topicId: e.target.value }))}
-                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                                >
-                                                    <option value="">Select Topic...</option>
-                                                    {topicOptions.map(t => (
-                                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        );
-                                    }
 
                                     if (k === "tutorId") {
                                         return (
                                             <div key={k} className="space-y-1">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tutor</label>
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tutor *</label>
                                                 <select
                                                     value={formData[k] ?? ""}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                    required
                                                     className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                                 >
                                                     <option value="">Select Tutor...</option>
