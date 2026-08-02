@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
-import { tutorHubEmailTemplate } from "@/lib/emailTemplate";
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    let { name, email, phone, university, subjects, syllabuses, experience, bio, location, onlineAvailable, physicalAvailable } = body;
+    let { name, email, phone, university, subjects, syllabuses, mediums, experience, bio, location, onlineAvailable, physicalAvailable } = body;
 
     // Convert arrays to comma-separated strings if needed
     if (Array.isArray(subjects)) {
@@ -14,6 +13,9 @@ export async function POST(request) {
     }
     if (Array.isArray(syllabuses)) {
       syllabuses = syllabuses.join(", ");
+    }
+    if (Array.isArray(mediums)) {
+      mediums = mediums.join(", ");
     }
 
     if (!name || !email || !subjects || !syllabuses || !bio) {
@@ -24,7 +26,20 @@ export async function POST(request) {
     }
 
     const saved = await prisma.tutorApplication.create({
-      data: { name, email, phone, university, subjects, syllabuses, experience, bio },
+      data: {
+        name,
+        email,
+        phone: phone || null,
+        university: university || null,
+        subjects,
+        syllabuses,
+        mediums: mediums || "English, Sinhala",
+        location: location || null,
+        onlineAvailable: onlineAvailable ?? true,
+        physicalAvailable: physicalAvailable ?? false,
+        experience: experience || null,
+        bio,
+      },
     });
 
     try {
@@ -37,9 +52,12 @@ export async function POST(request) {
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
+          <p><strong>Location:</strong> ${location || "Not provided"}</p>
+          <p><strong>Class Format:</strong> ${onlineAvailable ? "Online" : ""} ${physicalAvailable ? "Physical" : ""}</p>
           <p><strong>University:</strong> ${university || "Not provided"}</p>
           <p><strong>Subjects:</strong> ${subjects}</p>
           <p><strong>Syllabuses:</strong> ${syllabuses}</p>
+          <p><strong>Mediums:</strong> ${mediums || "English, Sinhala"}</p>
           <p><strong>Experience:</strong> ${experience || "Not provided"}</p>
           <p><strong>Bio:</strong></p>
           <p>${bio.replace(/\n/g, "<br>")}</p>

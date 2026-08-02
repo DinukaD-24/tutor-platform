@@ -8,7 +8,7 @@ export default function FollowButton({ tutorId }) {
     const supabase = createClient();
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [isStudent, setIsStudent] = useState(false);
+    const [canFollow, setCanFollow] = useState(false); // only true for authenticated, non-tutor students
 
     useEffect(() => {
         const checkStatus = async () => {
@@ -22,8 +22,13 @@ export default function FollowButton({ tutorId }) {
                 const res = await fetch(`/api/student/follow?tutorId=${tutorId}`);
                 if (res.ok) {
                     const data = await res.json();
-                    setIsFollowing(data.following);
-                    setIsStudent(true);
+                    // If the API says this user is a tutor, don't show the follow button
+                    if (data.isTutor) {
+                        setCanFollow(false);
+                    } else {
+                        setIsFollowing(data.following);
+                        setCanFollow(true);
+                    }
                 }
             } catch (err) {
                 console.error("Error checking follow status:", err);
@@ -35,7 +40,7 @@ export default function FollowButton({ tutorId }) {
     }, [tutorId, supabase]);
 
     const handleFollow = async () => {
-        if (!isStudent) return;
+        if (!canFollow) return;
         setLoading(true);
         try {
             const res = await fetch("/api/student/follow", {
@@ -54,15 +59,8 @@ export default function FollowButton({ tutorId }) {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="w-full py-3.5 bg-gray-50 border border-gray-100 text-gray-400 text-xs font-bold rounded-xl text-center">
-                Loading follow status...
-            </div>
-        );
-    }
-
-    if (!isStudent) {
+    // Don't show anything during loading or if not a student
+    if (loading || !canFollow) {
         return null;
     }
 

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, X, Send, CheckCircle } from "lucide-react";
 
 export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }) {
     const [open, setOpen] = useState(false);
+    const [canReview, setCanReview] = useState(false); // hide for tutors
     const [rating, setRating] = useState(0);
     const [hovered, setHovered] = useState(0);
     const [studentName, setStudentName] = useState("");
@@ -13,7 +14,19 @@ export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
 
+    useEffect(() => {
+        // Only show review button for non-tutor users
+        fetch(`/api/student/follow?tutorId=${tutorId}`)
+            .then(res => res.json())
+            .then(data => {
+                // if isTutor === true, the user is a tutor — hide the review button
+                setCanReview(!data.isTutor);
+            })
+            .catch(() => setCanReview(false));
+    }, [tutorId]);
+
     const handleSubmit = async (e) => {
+
         e.preventDefault();
         if (rating === 0) {
             setError("Please select a star rating.");
@@ -63,14 +76,14 @@ export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }
 
     return (
         <>
-            {/* Trigger Button */}
-            <button
+            {/* Trigger Button — only for non-tutor users */}
+            {canReview && <button
                 onClick={() => setOpen(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 hover:border-amber-300 font-bold text-xs rounded-xl transition-all duration-200 cursor-pointer"
             >
                 <Star size={14} className="fill-amber-400 text-amber-400" />
                 Write a Review
-            </button>
+            </button>}
 
             {/* Modal Overlay */}
             {open && (

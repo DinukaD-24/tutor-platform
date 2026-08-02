@@ -71,6 +71,9 @@ export default function BecomeATutorPage() {
     const [syllabusesList, setSyllabusesList] = useState(["Local A/L"]);
     const [syllabusInput, setSyllabusInput] = useState("");
 
+    const [mediumsList, setMediumsList] = useState(["English", "Sinhala"]);
+    const [mediumInput, setMediumInput] = useState("");
+
     const handleChange = (e) => {
         const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
         setForm((prev) => ({ ...prev, [e.target.name]: value }));
@@ -102,6 +105,19 @@ export default function BecomeATutorPage() {
         setSyllabusesList(syllabusesList.filter((s) => s !== sylToRemove));
     };
 
+    // Medium handlers
+    const handleAddMedium = (val) => {
+        const trimmed = (val || mediumInput).trim();
+        if (trimmed && !mediumsList.includes(trimmed)) {
+            setMediumsList([...mediumsList, trimmed]);
+            setMediumInput("");
+        }
+    };
+
+    const handleRemoveMedium = (medToRemove) => {
+        setMediumsList(mediumsList.filter((m) => m !== medToRemove));
+    };
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -119,6 +135,11 @@ export default function BecomeATutorPage() {
             return;
         }
 
+        if (mediumsList.length === 0) {
+            setError("Please add at least one medium of instruction.");
+            return;
+        }
+
         setLoading(true);
         try {
             const res = await fetch("/api/become-a-tutor", {
@@ -128,6 +149,7 @@ export default function BecomeATutorPage() {
                     ...form,
                     subjects: subjectsList,
                     syllabuses: syllabusesList,
+                    mediums: mediumsList,
                 }),
             });
             if (!res.ok) {
@@ -391,6 +413,63 @@ export default function BecomeATutorPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveSyllabus(syl)}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Mediums of Instruction Tag Input */}
+                                    <div className="space-y-2">
+                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Mediums of Instruction *</label>
+                                        
+                                        {/* Quick Preset Buttons */}
+                                        <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {["English", "Sinhala", "Tamil"].map((preset) => (
+                                                <button
+                                                    key={preset}
+                                                    type="button"
+                                                    onClick={() => handleAddMedium(preset)}
+                                                    className="px-2.5 py-1 text-[11px] font-semibold bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors cursor-pointer"
+                                                >
+                                                    + {preset}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={mediumInput}
+                                                onChange={(e) => setMediumInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        handleAddMedium();
+                                                    }
+                                                }}
+                                                placeholder="Type medium or click presets above..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddMedium()}
+                                                className="px-4 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-dark transition-all cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {mediumsList.map((med) => (
+                                                <span key={med} className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold">
+                                                    {med}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveMedium(med)}
                                                         className="hover:text-red-500 font-bold ml-1 cursor-pointer"
                                                     >
                                                         ×

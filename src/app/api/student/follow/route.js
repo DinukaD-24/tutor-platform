@@ -16,6 +16,18 @@ export async function POST(request) {
       return NextResponse.json({ error: "Tutor ID is required" }, { status: 400 });
     }
 
+    // Role Guard: Check if the user is a registered Tutor
+    const isTutorAccount = await prisma.tutor.findUnique({
+      where: { email: user.email },
+    });
+
+    if (isTutorAccount) {
+      return NextResponse.json(
+        { error: "Tutors cannot follow tutors." },
+        { status: 403 }
+      );
+    }
+
     // Find the student
     const student = await prisma.student.findUnique({
       where: { email: user.email },
@@ -54,14 +66,13 @@ export async function POST(request) {
   }
 }
 
-// Add GET route to query if student is following a specific tutor
 export async function GET(request) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ following: false });
+      return NextResponse.json({ following: false, isTutor: false });
     }
 
     const { searchParams } = new URL(request.url);
@@ -71,12 +82,21 @@ export async function GET(request) {
       return NextResponse.json({ error: "Tutor ID is required" }, { status: 400 });
     }
 
+    // Role Guard: Check if user is a registered Tutor
+    const isTutorAccount = await prisma.tutor.findUnique({
+      where: { email: user.email },
+    });
+
+    if (isTutorAccount) {
+      return NextResponse.json({ following: false, isTutor: true });
+    }
+
     const student = await prisma.student.findUnique({
       where: { email: user.email },
     });
 
     if (!student) {
-      return NextResponse.json({ following: false });
+      return NextResponse.json({ following: false, isTutor: false });
     }
 
     const followingRecord = await prisma.student.findFirst({
@@ -88,9 +108,9 @@ export async function GET(request) {
       },
     });
 
-    return NextResponse.json({ following: !!followingRecord });
+    return NextResponse.json({ following: !!followingRecord, isTutor: false });
   } catch (error) {
     console.error("Check follow status error:", error);
-    return NextResponse.json({ following: false });
+    return NextResponse.json({ following: false, isTutor: false });
   }
 }

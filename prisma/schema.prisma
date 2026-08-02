@@ -132,17 +132,21 @@ model ContactMessage {
 }
 
 model TutorApplication {
-  id          String   @id @default(cuid())
-  name        String
-  email       String
-  phone       String?
-  university  String?
-  subjects    String
-  syllabuses  String
-  experience  String?
-  bio         String
-  status      String   @default("pending") // pending | approved | rejected
-  createdAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  name              String
+  email             String
+  phone             String?
+  university        String?
+  subjects          String
+  syllabuses        String
+  mediums           String   @default("English, Sinhala")
+  location          String?
+  onlineAvailable   Boolean  @default(true)
+  physicalAvailable Boolean  @default(false)
+  experience        String?
+  bio               String
+  status            String   @default("pending") // pending | approved | rejected
+  createdAt         DateTime @default(now())
 }
 
 model Student {

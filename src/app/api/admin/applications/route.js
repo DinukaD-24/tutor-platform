@@ -85,28 +85,38 @@ export async function POST(request) {
         slug = `${baseSlug}-${count}`;
       }
 
+      // Parse mediums and syllabuses arrays from application
+      const parsedMediums = application.mediums
+        ? application.mediums.split(",").map(m => m.trim()).filter(Boolean)
+        : ["English", "Sinhala"];
+
+      const parsedSyllabuses = application.syllabuses
+        ? application.syllabuses.split(",").map(s => s.trim()).filter(Boolean)
+        : [];
+
       await prisma.$transaction(async (tx) => {
-        // Create tutor record without hardcoded defaults
+        // Create tutor record using actual application data
         await tx.tutor.create({
           data: {
             slug,
             name: application.name,
             email: application.email,
-            phone: application.phone,
+            phone: application.phone || null,
+            location: application.location || null,
             university: application.university || null,
             subject: application.subjects.split(",")[0]?.trim() || "General",
             tutorType: application.experience?.toLowerCase().includes("school") ? "School Teacher" : "Private Tutor",
             experience: application.experience || null,
             bio: application.bio,
-            onlineAvailable: true,
-            physicalAvailable: false,
+            onlineAvailable: application.onlineAvailable ?? true,
+            physicalAvailable: application.physicalAvailable ?? false,
             rating: 5.0,
             reviewsCount: 0,
             lessonsCount: 0,
             studentsCount: 0,
-            languages: ["English", "Sinhala"],
+            languages: parsedMediums.length > 0 ? parsedMediums : ["English", "Sinhala"],
+            syllabuses: parsedSyllabuses,
             price: null,
-            location: null,
             qualifications: [application.experience].filter(Boolean),
             specializations: application.subjects.split(",").map(s => s.trim()).filter(Boolean),
           }
