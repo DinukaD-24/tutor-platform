@@ -360,7 +360,8 @@ export default function AdminDashboardClient() {
         if (selectedModel === "video") return ["Title", "YouTube ID", "Topic", "Subject", "Grade", "Syllabus", "Tutor"];
         if (selectedModel === "material") return ["Title", "URL", "Topic", "Subject", "Grade", "Syllabus"];
         if (selectedModel === "tutor") return ["Name", "Subject", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
-        if (records.length > 0) return Object.keys(records[0]).slice(0, 6);
+        if (selectedModel === "tutorapplication") return ["Name", "Email", "Phone", "Category", "Subjects", "Syllabuses", "Mediums", "Location", "Online", "Physical", "Status"];
+        if (records.length > 0) return Object.keys(records[0]).slice(0, 8);
         return [];
     };
 
@@ -373,13 +374,21 @@ export default function AdminDashboardClient() {
         if (lower === "youtube id") return rec.youtubeId;
         if (lower === "url") return <a href={rec.url} target="_blank" rel="noreferrer" className="text-primary underline">{rec.url}</a>;
         if (lower === "subject") return rec.subject || rec.topic?.subject?.name || "-";
-        if (lower === "type") return rec.tutorType;
+        if (lower === "type" || lower === "category") return rec.tutorType || "-";
         if (lower === "email") return rec.email;
         if (lower === "phone") return rec.phone || "-";
         if (lower === "location") return rec.location || "-";
-        if (lower === "online") return rec.onlineAvailable ? "Yes" : "No";
-        if (lower === "physical") return rec.physicalAvailable ? "Yes" : "No";
+        if (lower === "online") return rec.onlineAvailable ? "✅ Yes" : "No";
+        if (lower === "physical") return rec.physicalAvailable ? "✅ Yes" : "No";
         if (lower === "rating") return rec.rating ? rec.rating.toFixed(1) : "5.0";
+        if (lower === "mediums") return rec.mediums || rec.languages?.join(", ") || "-";
+        if (lower === "subjects") return rec.subjects || rec.specializations?.join(", ") || "-";
+        if (lower === "syllabuses") return rec.syllabuses || (Array.isArray(rec.syllabuses) ? rec.syllabuses.join(", ") : "-");
+        if (lower === "status") {
+            const s = rec.status || "pending";
+            const colors = { approved: "text-green-700 bg-green-50", rejected: "text-red-700 bg-red-50", pending: "text-amber-700 bg-amber-50" };
+            return <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg ${colors[s] || ""}`}>{s}</span>;
+        }
 
         // Relational Parent Columns
         if (lower.includes("syllabus")) {
@@ -507,18 +516,24 @@ export default function AdminDashboardClient() {
                                             </span>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs bg-gray-50/50 p-4 rounded-2xl border border-gray-50">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs bg-gray-50/50 p-4 rounded-2xl border border-gray-50">
                                             <div>
-                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">University</span>
-                                                <span className="block text-dark mt-0.5 font-semibold">{app.university || "Not specified"}</span>
+                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Tutor Category</span>
+                                                <span className="block text-primary mt-0.5 font-bold">{app.tutorType || "Private Tutor"}</span>
                                             </div>
                                             <div>
-                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Subjects</span>
-                                                <span className="block text-dark mt-0.5 font-semibold">{app.subjects}</span>
+                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Location & Formats</span>
+                                                <span className="block text-dark mt-0.5 font-semibold">
+                                                    {app.location || "Online only"} ({[app.onlineAvailable && "Online", app.physicalAvailable && "Physical"].filter(Boolean).join(", ") || "Online"})
+                                                </span>
                                             </div>
                                             <div>
-                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Syllabuses</span>
-                                                <span className="block text-dark mt-0.5 font-semibold">{app.syllabuses}</span>
+                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Subjects & Syllabuses</span>
+                                                <span className="block text-dark mt-0.5 font-semibold">{app.subjects} ({app.syllabuses})</span>
+                                            </div>
+                                            <div>
+                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Mediums & University</span>
+                                                <span className="block text-dark mt-0.5 font-semibold">{app.mediums || "English"} · {app.university || "N/A"}</span>
                                             </div>
                                         </div>
 

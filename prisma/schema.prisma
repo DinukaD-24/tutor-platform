@@ -137,6 +137,7 @@ model TutorApplication {
   email             String
   phone             String?
   university        String?
+  tutorType         String?  @default("Private Tutor")
   subjects          String
   syllabuses        String
   mediums           String   @default("English, Sinhala")

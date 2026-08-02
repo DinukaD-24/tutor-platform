@@ -24,6 +24,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
         physicalAvailable: tutor.physicalAvailable ?? false,
         phone: tutor.phone || "",
         university: tutor.university || "",
+        tutorType: tutor.tutorType || "Private Tutor",
         experience: tutor.experience || "",
         bio: tutor.bio || "",
         teachingStyle: tutor.teachingStyle || "",
@@ -487,7 +488,21 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Tutor Category / Type</label>
+                                            <select
+                                                value={profileForm.tutorType}
+                                                onChange={e => setProfileForm({ ...profileForm, tutorType: e.target.value })}
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none cursor-pointer"
+                                            >
+                                                <option value="Private Tutor">Private Tutor</option>
+                                                <option value="School Teacher">School Teacher</option>
+                                                <option value="University Lecturer">University Lecturer</option>
+                                                <option value="Institute Educator">Institute Educator</option>
+                                                <option value="Online Specialist">Online Specialist</option>
+                                            </select>
+                                        </div>
                                         <div>
                                             <label className="text-[10px] font-bold text-dark uppercase tracking-wider block mb-1">Primary Subject</label>
                                             <input

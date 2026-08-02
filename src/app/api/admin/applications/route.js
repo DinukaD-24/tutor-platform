@@ -105,7 +105,7 @@ export async function POST(request) {
             location: application.location || null,
             university: application.university || null,
             subject: application.subjects.split(",")[0]?.trim() || "General",
-            tutorType: application.experience?.toLowerCase().includes("school") ? "School Teacher" : "Private Tutor",
+            tutorType: application.tutorType || (application.experience?.toLowerCase().includes("school") ? "School Teacher" : "Private Tutor"),
             experience: application.experience || null,
             bio: application.bio,
             onlineAvailable: application.onlineAvailable ?? true,

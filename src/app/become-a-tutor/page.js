@@ -61,6 +61,7 @@ export default function BecomeATutorPage() {
 
     const [form, setForm] = useState({
         name: "", email: "", phone: "", university: "",
+        tutorType: "Private Tutor",
         experience: "", bio: "", location: "",
         onlineAvailable: true, physicalAvailable: false,
     });
@@ -282,6 +283,24 @@ export default function BecomeATutorPage() {
                                                 />
                                             </div>
                                         ))}
+                                    </div>
+
+                                    {/* Tutor Type / Category */}
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Tutor Category / Type *</label>
+                                        <select
+                                            name="tutorType"
+                                            value={form.tutorType}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-3 text-sm text-dark focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all cursor-pointer"
+                                        >
+                                            <option value="Private Tutor">Private Tutor</option>
+                                            <option value="School Teacher">School Teacher</option>
+                                            <option value="University Lecturer">University Lecturer</option>
+                                            <option value="Institute Educator">Institute Educator</option>
+                                            <option value="Online Specialist">Online Specialist</option>
+                                        </select>
                                     </div>
 
                                     {/* Location & Class Format (Optional at application time) */}
