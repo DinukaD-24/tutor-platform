@@ -232,32 +232,32 @@ export default async function TutorProfilePage({ params }) {
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {tutor.videos.map((video) => (
-                                        <a
-                                            key={video.id}
-                                            href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="group rounded-2xl overflow-hidden border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all duration-200 bg-white"
+                                        <Link
+                                        key={video.id}
+                                        href={`/watch/${video.id}`}
+                                        className="group rounded-2xl overflow-hidden border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all duration-200 bg-white"
                                         >
-                                            <div className="aspect-video relative overflow-hidden bg-gray-100">
-                                                <img
-                                                    src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
-                                                    alt={video.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                />
-                                                <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
-                                                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                                        <Play fill="white" size={18} className="ml-0.5 text-white" />
-                                                    </div>
-                                                </div>
+                                        <div className="aspect-video relative overflow-hidden bg-gray-100">
+                                            <img
+                                            src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
+                                            alt={video.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                            <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                <Play fill="white" size={18} className="ml-0.5 text-white" />
                                             </div>
-                                            <div className="p-3">
-                                                <p className="font-bold text-sm text-dark line-clamp-2">{video.title}</p>
-                                                {video.topic && (
-                                                    <p className="text-[10px] text-gray-400 mt-0.5">{video.topic.subject?.name} · {video.topic.name}</p>
-                                                )}
                                             </div>
-                                        </a>
+                                        </div>
+                                        <div className="p-3">
+                                            <p className="font-bold text-sm text-dark line-clamp-2">{video.title}</p>
+                                            {video.topic && (
+                                            <p className="text-[10px] text-gray-400 mt-0.5">
+                                                {video.topic.subject?.name} · {video.topic.name}
+                                            </p>
+                                            )}
+                                        </div>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>

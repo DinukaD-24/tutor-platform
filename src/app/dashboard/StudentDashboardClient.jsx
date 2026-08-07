@@ -145,14 +145,12 @@ export default function StudentDashboardClient({ student }) {
                                                         <p className="font-bold text-sm text-dark truncate">{video.title}</p>
                                                         <p className="text-[10px] text-gray-400">{video.tutorName}</p>
                                                     </div>
-                                                    <a
-                                                        href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
+                                                    <Link
+                                                        href={`/watch/${video.id}`}
                                                         className="text-[10px] font-bold text-primary bg-primary/5 px-2.5 py-1 rounded-lg hover:bg-primary/10 transition-colors shrink-0"
                                                     >
                                                         Watch
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                             ))
                                         ) : (
@@ -227,14 +225,12 @@ export default function StudentDashboardClient({ student }) {
                                                     <p className="font-bold text-sm text-dark line-clamp-2">{video.title}</p>
                                                     <p className="text-[10px] text-gray-400 mt-0.5">{video.tutorName} {video.topicName ? `· ${video.topicName}` : ""}</p>
                                                 </div>
-                                                <a
-                                                    href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                <Link
+                                                    href={`/watch/${video.id}`}
                                                     className="text-[10px] font-bold text-primary bg-primary/5 px-2.5 py-1 rounded-lg hover:bg-primary/10 transition-colors shrink-0"
                                                 >
                                                     Rewatch
-                                                </a>
+                                                </Link>
                                             </div>
                                         ))
                                     ) : (

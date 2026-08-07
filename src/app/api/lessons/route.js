@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
+import { extractYoutubeId } from "@/utils/youtube";
+
 
 // Format helper: capitalize first letter of each word cleanly
 function formatName(str) {
@@ -59,6 +61,12 @@ export async function POST(request) {
         { error: "Please fill in all required fields (title, video link)." },
         { status: 400 }
       );
+    }
+
+    // Clean and validate YouTube ID
+    const cleanYoutubeId = extractYoutubeId(youtubeId);
+    if (!cleanYoutubeId) {
+      return NextResponse.json({ error: "Invalid YouTube video link or ID." }, { status: 400 });
     }
 
     // Verify ownership
@@ -139,7 +147,7 @@ export async function POST(request) {
     const savedVideo = await prisma.video.create({
       data: {
         title,
-        youtubeId,
+        youtubeId: cleanYoutubeId,
         tutorId,
         topicId: targetTopicId,
         ...(description ? { description } : {}),
