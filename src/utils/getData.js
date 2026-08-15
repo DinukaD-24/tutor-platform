@@ -365,15 +365,16 @@ export async function getPaidTutorAds() {
     return ads.map(ad => ({
       id: ad.id,
       tutorId: ad.tutorId,
-      tutorSlug: ad.tutor.slug || ad.tutor.id,
-      tutorName: ad.tutor.name,
-      tutorImage: ad.imageUrl || ad.tutor.image,
-      tutorSubject: ad.tutor.subject,
+      tutorSlug: ad.tutor?.slug || ad.tutor?.id || ad.tutorId,
+      tutorName: ad.tutor?.name || "Verified Tutor",
+      tutorImage: ad.imageUrl || ad.tutor?.image || null,
+      tutorSubject: ad.tutor?.subject || "",
       title: ad.title,
       tagline: ad.tagline,
       ctaText: ad.ctaText || "View Tutor Profile",
       badge: ad.badge || "PAID AD"
     }));
+
   } catch (error) {
     console.error("Error fetching paid tutor ads:", error);
     return [];

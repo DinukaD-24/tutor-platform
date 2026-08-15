@@ -6,10 +6,11 @@ import { getPopularVideos, getNewlyJoinedTutors, getPaidTutorAds } from "@/utils
 
 export default async function HeroSection() {
     const [popularVideos, newTutors, paidAds] = await Promise.all([
-        getPopularVideos(3),
-        getNewlyJoinedTutors(6),
-        getPaidTutorAds()
+        getPopularVideos(3).catch(() => []),
+        getNewlyJoinedTutors(6).catch(() => []),
+        getPaidTutorAds().catch(() => [])
     ]);
+
     
     return (
         <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24">
