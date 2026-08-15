@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, UserCheck } from "lucide-react";
+import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, UserCheck, ArrowUpRight } from "lucide-react";
 
 export default function PaidTutorAdsCard({ ads }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -52,7 +52,7 @@ export default function PaidTutorAdsCard({ ads }) {
   return (
     <div className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 p-4 lg:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between h-full relative">
       <div className="flex flex-col h-full space-y-3">
-        {/* Header */}
+        {/* Top Card Header */}
         <div className="flex items-center justify-between border-b border-gray-50 pb-2.5 shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-teal-500/10 text-teal-600 flex items-center justify-center">
@@ -60,92 +60,107 @@ export default function PaidTutorAdsCard({ ads }) {
             </div>
             <h3 className="font-extrabold text-sm text-dark">Featured Tutor Ads</h3>
           </div>
-          <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-teal-700 text-white shadow-2xs">
+          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-teal-700 text-white shadow-2xs">
             {currentAd.badge || "PAID AD"}
           </span>
         </div>
 
-        {/* Tall Big Paid Advertisement Banner */}
-        <div className="relative flex-1 min-h-[340px] rounded-2xl bg-gradient-to-br from-[#e6f7f2] via-[#d2f1e8] to-[#bde7dc] p-4 lg:p-5 border border-teal-200/80 shadow-inner flex flex-col justify-between overflow-hidden">
+        {/* Big Paid Advertisement Card */}
+        <div className="flex-1 rounded-2xl bg-gradient-to-br from-[#e6f7f2] via-[#d2f1e8] to-[#bde7dc] p-4 border border-teal-200/80 shadow-inner flex flex-col justify-between">
           
-          {/* Top Info Section */}
-          <div className="space-y-2.5 z-10 max-w-[62%] sm:max-w-[58%]">
-            
-            {/* Tutor Name Pill Tag */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-black text-dark shadow-2xs border border-white/80">
-              <UserCheck size={12} className="text-teal-700 shrink-0" />
-              <span className="truncate max-w-[140px]">{currentAd.tutorName}</span>
-            </div>
-
-            {/* Ad Headline */}
-            <h4 className="font-black text-lg sm:text-xl lg:text-2xl text-dark leading-tight tracking-tight">
-              {currentAd.title}
-            </h4>
-
-            {/* Tagline Bullet Points */}
-            <div className="space-y-1 text-[11px] font-bold text-gray-700 leading-snug">
-              {currentAd.tagline ? (
-                currentAd.tagline.split(".").map((line, idx) => {
-                  const trimmed = line.trim();
-                  if (!trimmed) return null;
-                  return (
-                    <p key={idx} className="flex items-center gap-1.5 truncate">
-                      <span className="w-1.5 h-1.5 rounded-full bg-teal-700 shrink-0" />
-                      <span className="truncate">{trimmed}.</span>
-                    </p>
-                  );
-                })
-              ) : (
-                <>
-                  <p className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-teal-700 shrink-0" />Clear concepts.</p>
-                  <p className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-teal-700 shrink-0" />Better grades.</p>
-                </>
-              )}
-            </div>
-
-            {/* Rich Tutor Metadata Pills */}
-            <div className="space-y-1 pt-1 text-[10px] text-teal-950 font-medium">
-              <div className="flex items-center gap-1 truncate bg-white/40 backdrop-blur-2xs px-2 py-0.5 rounded-md border border-teal-200/50">
-                <GraduationCap size={11} className="text-teal-800 shrink-0" />
-                <span className="truncate">{currentAd.university || "Qualified Educator"}</span>
+          <div className="space-y-3">
+            {/* Tutor Profile Header Bar */}
+            <div className="flex items-center justify-between gap-2 bg-white/80 backdrop-blur-md p-2 rounded-xl border border-white/90 shadow-2xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 rounded-lg overflow-hidden border border-teal-200 bg-teal-100 shrink-0">
+                  {currentAd.tutorImage ? (
+                    <img src={currentAd.tutorImage} alt={currentAd.tutorName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full text-teal-800 font-bold flex items-center justify-center text-xs">
+                      {currentAd.tutorName?.charAt(0)}
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <h5 className="font-extrabold text-xs text-dark truncate">{currentAd.tutorName}</h5>
+                  <p className="text-[10px] font-semibold text-teal-700 truncate">{currentAd.tutorSubject || "Verified Tutor"}</p>
+                </div>
               </div>
-              <div className="flex items-center gap-1 truncate bg-white/40 backdrop-blur-2xs px-2 py-0.5 rounded-md border border-teal-200/50">
-                <MapPin size={11} className="text-teal-800 shrink-0" />
-                <span className="truncate">{currentAd.location || "Online & Physical Classes"}</span>
-              </div>
-              <div className="flex items-center gap-1 truncate bg-white/40 backdrop-blur-2xs px-2 py-0.5 rounded-md border border-teal-200/50">
-                <Star size={11} className="text-amber-500 fill-amber-500 shrink-0" />
-                <span>{currentAd.rating || 5.0} • Verified Tutor</span>
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 rounded-md text-[10px] font-extrabold text-amber-700 border border-amber-200/60 shrink-0">
+                <Star size={11} className="fill-amber-400 text-amber-400" />
+                <span>{currentAd.rating || 5.0}</span>
               </div>
             </div>
-          </div>
 
-          {/* Right Standing Tutor Portrait Photo (Elegantly Framed) */}
-          <div className="absolute right-3.5 top-3.5 bottom-3.5 w-[36%] sm:w-[38%] flex items-center justify-end z-10">
-            <div className="w-full h-full rounded-2xl overflow-hidden border-2 border-white/90 shadow-xl bg-teal-900/10 relative group">
-              {currentAd.tutorImage ? (
-                <img
-                  src={currentAd.tutorImage}
-                  alt={currentAd.tutorName}
-                  className="w-full h-full object-cover object-[top_center] transition-transform duration-300 group-hover:scale-105"
-                />
-              ) : (
-                <div className="w-full h-full bg-teal-800 text-white font-black text-4xl flex items-center justify-center">
-                  {currentAd.tutorName?.charAt(0) || "T"}
+            {/* Ad Headline & Photo Section */}
+            <div className="grid grid-cols-12 gap-3 items-center pt-1">
+              <div className="col-span-7 space-y-2">
+                <h4 className="font-black text-base lg:text-lg text-dark leading-tight tracking-tight">
+                  {currentAd.title}
+                </h4>
+
+                {/* Tagline list */}
+                <div className="space-y-1 text-[11px] font-bold text-gray-700 leading-snug">
+                  {currentAd.tagline ? (
+                    currentAd.tagline.split(".").map((line, idx) => {
+                      const trimmed = line.trim();
+                      if (!trimmed) return null;
+                      return (
+                        <p key={idx} className="flex items-start gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-teal-700 shrink-0 mt-1" />
+                          <span className="leading-tight">{trimmed}.</span>
+                        </p>
+                      );
+                    })
+                  ) : (
+                    <p className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-teal-700 shrink-0" />Clear concepts & better grades.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Tutor Photo Card */}
+              <div className="col-span-5 flex justify-end">
+                <div className="w-24 h-28 lg:w-28 lg:h-32 rounded-xl overflow-hidden border-2 border-white shadow-md bg-teal-900/10 shrink-0">
+                  {currentAd.tutorImage ? (
+                    <img
+                      src={currentAd.tutorImage}
+                      alt={currentAd.tutorName}
+                      className="w-full h-full object-cover object-[top_center]"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-teal-800 text-white font-black text-2xl flex items-center justify-center">
+                      {currentAd.tutorName?.charAt(0) || "T"}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Metadata Badges */}
+            <div className="grid grid-cols-1 gap-1 text-[10px] text-teal-950 font-medium pt-1">
+              {currentAd.university && (
+                <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                  <GraduationCap size={12} className="text-teal-800 shrink-0" />
+                  <span className="truncate">{currentAd.university}</span>
                 </div>
               )}
-              {/* Soft overlay gradient at bottom of photo */}
-              <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-teal-950/60 to-transparent pointer-events-none" />
+              {currentAd.location && (
+                <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                  <MapPin size={12} className="text-teal-800 shrink-0" />
+                  <span className="truncate">{currentAd.location}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Bottom Left CTA Button */}
-          <div className="z-10 pt-3">
+          {/* Bottom CTA Button */}
+          <div className="pt-3">
             <Link
               href={`/tutors/${currentAd.tutorSlug || currentAd.tutorId}`}
-              className="inline-flex items-center justify-center px-4 py-2 bg-[#0d8a6e] hover:bg-[#096d57] text-white font-bold text-xs rounded-xl shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 bg-[#0d8a6e] hover:bg-[#096d57] text-white font-bold text-xs rounded-xl shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
               {currentAd.ctaText || "View Tutor Profile"}
+              <ArrowUpRight size={14} />
             </Link>
           </div>
         </div>
