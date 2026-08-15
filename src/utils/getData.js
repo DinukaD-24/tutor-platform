@@ -299,3 +299,83 @@ export async function getTopReviews(limit = 6) {
     return [];
   }
 }
+
+export async function getPopularVideos(limit = 3) {
+  try {
+    const videos = await prisma.video.findMany({
+      take: limit,
+      include: {
+        tutor: true,
+        topic: {
+          include: {
+            subject: {
+              include: {
+                grade: true
+              }
+            }
+          }
+        },
+        visitors: { select: { id: true } }
+      },
+      orderBy: [
+        { visitors: { _count: "desc" } },
+        { id: "desc" }
+      ]
+    });
+
+    return videos.map(v => ({
+      id: v.id,
+      youtubeId: v.youtubeId,
+      title: v.title,
+      duration: v.duration || "10:00",
+      tutorName: v.tutor?.name || "Verified Tutor",
+      tutorSlug: v.tutor?.slug || v.tutorId,
+      subjectName: v.topic?.subject?.name || "Subject",
+      gradeName: v.topic?.subject?.grade?.name || "Grade",
+      topicName: v.topic?.name || "Topic"
+    }));
+  } catch (error) {
+    console.error("Error fetching popular videos:", error);
+    return [];
+  }
+}
+
+export async function getNewlyJoinedTutors(limit = 6) {
+  try {
+    const tutors = await prisma.tutor.findMany({
+      take: limit,
+      orderBy: { createdAt: "desc" }
+    });
+
+    return tutors.map(serializeTutor);
+  } catch (error) {
+    console.error("Error fetching newly joined tutors:", error);
+    return [];
+  }
+}
+
+export async function getPaidTutorAds() {
+  try {
+    const ads = await prisma.tutorAd.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+      include: { tutor: true }
+    });
+
+    return ads.map(ad => ({
+      id: ad.id,
+      tutorId: ad.tutorId,
+      tutorSlug: ad.tutor.slug || ad.tutor.id,
+      tutorName: ad.tutor.name,
+      tutorImage: ad.imageUrl || ad.tutor.image,
+      tutorSubject: ad.tutor.subject,
+      title: ad.title,
+      tagline: ad.tagline,
+      ctaText: ad.ctaText || "View Tutor Profile",
+      badge: ad.badge || "PAID AD"
+    }));
+  } catch (error) {
+    console.error("Error fetching paid tutor ads:", error);
+    return [];
+  }
+}

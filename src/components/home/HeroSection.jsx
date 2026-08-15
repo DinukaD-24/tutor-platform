@@ -1,21 +1,32 @@
-import HeroContent from "../hero/HeroContent";
-import TutorCarousel from "../hero/TutorCarousel";
-import { getAllTutors } from "@/utils/getData";
+import HeroHeader from "../hero/HeroHeader";
+import PopularVideosCard from "../hero/PopularVideosCard";
+import NewlyJoinedTutorsCard from "../hero/NewlyJoinedTutorsCard";
+import PaidTutorAdsCard from "../hero/PaidTutorAdsCard";
+import { getPopularVideos, getNewlyJoinedTutors, getPaidTutorAds } from "@/utils/getData";
 
 export default async function HeroSection() {
-    const tutors = await getAllTutors();
+    const [popularVideos, newTutors, paidAds] = await Promise.all([
+        getPopularVideos(3),
+        getNewlyJoinedTutors(6),
+        getPaidTutorAds()
+    ]);
     
     return (
-        <section className="relative overflow-hidden">
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-10 right-20 h-72 w-72 rounded-full bg-cyan-100 blur-3xl"/>
-                <div className="absolute bottom-0 left-20 h-72 w-72 rounded-full bg-green-100 blur-3xl"/>
+        <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24">
+            <div className="absolute inset-0 -z-10 pointer-events-none">
+                <div className="absolute top-10 right-20 h-80 w-80 rounded-full bg-emerald-100/50 blur-3xl"/>
+                <div className="absolute bottom-0 left-20 h-80 w-80 rounded-full bg-cyan-100/50 blur-3xl"/>
             </div>
 
-            <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <HeroContent/>
-                    <TutorCarousel tutors={tutors} />
+            <div className="max-w-7xl mx-auto px-6 space-y-12">
+                {/* Hero Header Banner */}
+                <HeroHeader />
+
+                {/* 3-Column Hero Feature Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                    <PopularVideosCard videos={popularVideos} />
+                    <NewlyJoinedTutorsCard tutors={newTutors} />
+                    <PaidTutorAdsCard ads={paidAds} />
                 </div>
             </div>
         </section>

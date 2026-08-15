@@ -105,12 +105,29 @@ model Tutor {
   specializations   String[]
   teachingStyle     String?
   bio               String?
+  createdAt         DateTime @default(now())
 
   reviews   Review[]
   videos    Video[]
   topics    Topic[]   @relation("TopicTutors")
   followers Student[] @relation("StudentFollowedTutors")
+  ads       TutorAd[]
 }
+
+model TutorAd {
+  id        String   @id @default(cuid())
+  tutorId   String
+  tutor     Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  title     String
+  tagline   String?
+  imageUrl  String?
+  ctaText   String   @default("View Tutor Profile")
+  badge     String   @default("PAID AD")
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 
 model Review {
   id      String   @id @default(cuid())

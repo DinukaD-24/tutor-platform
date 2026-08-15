@@ -15,12 +15,17 @@ function getModel(name) {
     student: prisma.student,
     tutorapplication: prisma.tutorApplication,
     contactmessage: prisma.contactMessage,
+    tutorad: prisma.tutorAd,
   };
   return mapping[name.toLowerCase()];
 }
 
 function getModelIncludes(name) {
   const modelKey = name.toLowerCase();
+  if (modelKey === "tutorad") {
+    return { tutor: true };
+  }
+
   if (modelKey === "grade") {
     return { syllabus: true };
   }

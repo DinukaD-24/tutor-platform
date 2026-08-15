@@ -52,6 +52,7 @@ export default function AdminDashboardClient() {
         { id: "tutor", name: "Tutors" },
         { id: "review", name: "Reviews" },
         { id: "student", name: "Students" },
+        { id: "tutorad", name: "Tutor Ads (Paid)" },
         { id: "tutorapplication", name: "Applications" },
         { id: "contactmessage", name: "Contact Messages" }
     ];
@@ -206,7 +207,7 @@ export default function AdminDashboardClient() {
         setFormSubjectId("");
         setFormTopicId("");
 
-        const template = records[0] ? { ...records[0] } : {};
+        let template = records[0] ? { ...records[0] } : {};
         delete template.id;
         delete template.slug; // Hide slug field from manual entry
         delete template.createdAt;
@@ -259,6 +260,18 @@ export default function AdminDashboardClient() {
             if (selectedModel === "video" && lookupTutors.length > 0) {
                 template.tutorId = lookupTutors[0].id;
             }
+        }
+        if (selectedModel === "tutorad") {
+            template = {
+                title: "",
+                tagline: "",
+                imageUrl: "",
+                ctaText: "View Tutor Profile",
+                badge: "PAID AD",
+                order: 0,
+                isActive: true,
+                tutorId: lookupTutors.length > 0 ? lookupTutors[0].id : ""
+            };
         }
 
         setFormData(template);
@@ -360,6 +373,7 @@ export default function AdminDashboardClient() {
         if (selectedModel === "video") return ["Title", "YouTube ID", "Topic", "Subject", "Grade", "Syllabus", "Tutor"];
         if (selectedModel === "material") return ["Title", "URL", "Topic", "Subject", "Grade", "Syllabus"];
         if (selectedModel === "tutor") return ["Name", "Subject", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
+        if (selectedModel === "tutorad") return ["Title", "Tagline", "Badge", "Order", "Active", "Tutor"];
         if (selectedModel === "tutorapplication") return ["Name", "Email", "Phone", "Category", "Subjects", "Syllabuses", "Mediums", "Location", "Online", "Physical", "Status"];
         if (records.length > 0) return Object.keys(records[0]).slice(0, 8);
         return [];
@@ -375,6 +389,8 @@ export default function AdminDashboardClient() {
         if (lower === "url") return <a href={rec.url} target="_blank" rel="noreferrer" className="text-primary underline">{rec.url}</a>;
         if (lower === "subject") return rec.subject || rec.topic?.subject?.name || "-";
         if (lower === "type" || lower === "category") return rec.tutorType || "-";
+        if (lower === "active") return rec.isActive ? "✅ Yes" : "❌ No";
+        if (lower === "badge") return <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg text-purple-700 bg-purple-50">{rec.badge || "PAID AD"}</span>;
         if (lower === "email") return rec.email;
         if (lower === "phone") return rec.phone || "-";
         if (lower === "location") return rec.location || "-";
