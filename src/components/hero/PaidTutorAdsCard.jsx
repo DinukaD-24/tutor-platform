@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, UserCheck, ArrowUpRight } from "lucide-react";
+import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, ArrowUpRight, PlayCircle, Clock } from "lucide-react";
 
 export default function PaidTutorAdsCard({ ads }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -152,6 +152,55 @@ export default function PaidTutorAdsCard({ ads }) {
               )}
             </div>
           </div>
+
+          {/* Sample Lessons Strip */}
+          {currentAd.videos && currentAd.videos.length > 0 && (
+            <div className="mt-3 space-y-1.5">
+              <p className="text-[9px] font-black uppercase tracking-widest text-teal-800/70 flex items-center gap-1">
+                <PlayCircle size={10} />
+                Sample Lessons by this Tutor
+              </p>
+              <div className="space-y-1.5">
+                {currentAd.videos.slice(0, 3).map((video) => (
+                  <Link
+                    key={video.id}
+                    href={`/watch/${video.id}`}
+                    className="flex items-center gap-2 bg-white/70 hover:bg-white border border-white/80 hover:border-teal-200 rounded-lg px-2 py-1.5 transition-all duration-150 group"
+                  >
+                    {/* YouTube Thumbnail */}
+                    <div className="relative w-14 h-9 rounded-md overflow-hidden shrink-0 bg-teal-900/10">
+                      <img
+                        src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-all">
+                        <PlayCircle size={16} className="text-white drop-shadow" />
+                      </div>
+                    </div>
+                    {/* Video Info */}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-bold text-dark leading-tight line-clamp-2 group-hover:text-teal-700 transition-colors">
+                        {video.title}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[9px] font-semibold text-teal-700/80">{video.subjectName}</span>
+                        {video.duration && (
+                          <>
+                            <span className="text-gray-300">·</span>
+                            <span className="inline-flex items-center gap-0.5 text-[9px] text-gray-400 font-medium">
+                              <Clock size={8} />
+                              {video.duration}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Bottom CTA Button */}
           <div className="pt-3">

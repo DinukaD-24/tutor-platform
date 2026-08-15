@@ -359,7 +359,19 @@ export async function getPaidTutorAds() {
     const ads = await prisma.tutorAd.findMany({
       where: { isActive: true },
       orderBy: { order: "asc" },
-      include: { tutor: true }
+      include: {
+        tutor: {
+          include: {
+            videos: {
+              take: 3,
+              orderBy: { id: "desc" },
+              include: {
+                topic: { include: { subject: true } }
+              }
+            }
+          }
+        }
+      }
     });
 
     return ads.map(ad => ({
@@ -377,7 +389,14 @@ export async function getPaidTutorAds() {
       title: ad.title,
       tagline: ad.tagline,
       ctaText: ad.ctaText || "View Tutor Profile",
-      badge: ad.badge || "PAID AD"
+      badge: ad.badge || "PAID AD",
+      videos: (ad.tutor?.videos ?? []).map(v => ({
+        id: v.id,
+        youtubeId: v.youtubeId,
+        title: v.title,
+        duration: v.duration || null,
+        subjectName: v.topic?.subject?.name || ad.tutor?.subject || "Subject",
+      }))
     }));
 
   } catch (error) {
