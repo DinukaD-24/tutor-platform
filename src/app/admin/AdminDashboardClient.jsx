@@ -324,9 +324,12 @@ export default function AdminDashboardClient() {
         const cleanedData = { ...formData };
 
         // Auto-generate slug from name or title if creating a new record
-        if (!cleanedData.slug && (cleanedData.name || cleanedData.title)) {
+        if (selectedModel !== "tutorad" && !cleanedData.slug && (cleanedData.name || cleanedData.title)) {
             const raw = cleanedData.name || cleanedData.title;
             cleanedData.slug = raw.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        }
+        if (selectedModel === "tutorad") {
+            delete cleanedData.slug;
         }
 
         Object.keys(cleanedData).forEach(k => {
