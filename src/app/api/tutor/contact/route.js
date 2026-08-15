@@ -129,16 +129,30 @@ export async function POST(request) {
       </div>
     `;
 
-    // Send email to tutor (or fallback email if present)
+    // Send email to tutor (or fallback email if testing mode restricts domain)
     const recipientEmail = tutorEmail || targetTutor.email;
     if (recipientEmail && resend) {
       try {
-        await resend.emails.send({
+        const emailRes = await resend.emails.send({
           from: "TutorHub.LK <onboarding@resend.dev>",
           to: recipientEmail,
           subject,
           html: emailHtml,
         });
+
+        if (emailRes.error) {
+          console.warn("Resend email warning for recipient:", emailRes.error);
+          // In Resend testing mode (onboarding@resend.dev), emails can only be sent to account owner (tutorhubadmin@gmail.com)
+          // Fallback to sending to admin email so the alert email is guaranteed to deliver in test mode
+          if (recipientEmail !== "tutorhubadmin@gmail.com") {
+            await resend.emails.send({
+              from: "TutorHub.LK <onboarding@resend.dev>",
+              to: "tutorhubadmin@gmail.com",
+              subject: `[STUDENT ENQUIRY FOR ${targetTutor.name}] ${subject}`,
+              html: emailHtml,
+            });
+          }
+        }
       } catch (emailError) {
         console.error("Email send failed (request still saved):", emailError);
       }
