@@ -20,7 +20,7 @@ export async function POST(request) {
 
     try {
       await resend.emails.send({
-        from: "TutorHub <onboarding@resend.dev>",
+        from: "TutorHub.LK <noreply@tutorhub.lk>",
         to: "tutorhubadmin@gmail.com",
         subject: `New Contact Form Message: ${subject}`,
         html: `

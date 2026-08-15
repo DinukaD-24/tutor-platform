@@ -46,7 +46,7 @@ export async function POST(request) {
     // Safely send emails without blocking application creation if Resend fails
     Promise.allSettled([
       resend.emails.send({
-        from: "onboarding@resend.dev",
+        from: "TutorHub.LK <noreply@tutorhub.lk>",
         to: "tutorhubadmin@gmail.com",
         subject: `New Tutor Application: ${saved.name}`,
         html: `
@@ -67,7 +67,7 @@ export async function POST(request) {
         `,
       }),
       resend.emails.send({
-        from: "onboarding@resend.dev",
+        from: "TutorHub.LK <noreply@tutorhub.lk>",
         to: saved.email,
         subject: "We've received your tutor application — TutorHub.LK",
         html: `
