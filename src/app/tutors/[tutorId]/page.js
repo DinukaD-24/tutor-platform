@@ -2,6 +2,7 @@ import { getTutorById } from "@/utils/getData";
 import Link from "next/link";
 import FollowButton from "@/components/tutor/FollowButton";
 import AddReviewModal from "@/components/tutor/AddReviewModal";
+import ContactTutorButton from "@/components/tutor/ContactTutorButton";
 import { 
     ChevronRight, BookOpen, Award, Star, Users, GraduationCap, 
     CheckCircle, MessageSquare, Mail, Phone, MapPin, Globe, Clock, ShieldCheck, Play
@@ -313,30 +314,14 @@ export default async function TutorProfilePage({ params }) {
                             {/* Follow Button for Students */}
                             <FollowButton tutorId={tutor.id} />
 
-                            {/* Booking Action CTA */}
-                            <Link
-                                href={`/contact?tutor=${encodeURIComponent(tutor.name)}`}
-                                className="
-                                    w-full
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                    py-4
-                                    bg-primary
-                                    text-white
-                                    font-bold
-                                    text-sm
-                                    rounded-xl
-                                    shadow-glow-primary
-                                    hover:bg-primary-dark
-                                    hover:-translate-y-0.5
-                                    transition-all
-                                    duration-200
-                                "
-                            >
-                                Book a Trial Lesson
-                            </Link>
+                            {/* Contact CTA */}
+                            <ContactTutorButton
+                                tutor={{
+                                    id: tutor.id,
+                                    name: tutor.name,
+                                    email: tutor.email,
+                                }}
+                            />
                         </div>
                     </div>
 

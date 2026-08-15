@@ -8,7 +8,8 @@ import {
     LayoutDashboard, BookOpen, Upload, FileText,
     BarChart2, Users, Star, Clock, TrendingUp,
     CheckCircle, AlertCircle, Plus, Settings, ArrowRight, LogOut,
-    Edit3, Trash2, MapPin, Globe, DollarSign, Award, HelpCircle, Save
+    Edit3, Trash2, MapPin, Globe, DollarSign, Award, HelpCircle, Save,
+    Mail, Bell, Phone, MessageSquare
 } from "lucide-react";
 
 export default function DashboardClient({ tutor: initialTutor }) {
@@ -46,6 +47,11 @@ export default function DashboardClient({ tutor: initialTutor }) {
     const [savingProfile, setSavingProfile] = useState(false);
     const [profileMessage, setProfileMessage] = useState("");
 
+    // Student contact requests state
+    const [contactRequests, setContactRequests] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [loadingRequests, setLoadingRequests] = useState(false);
+
     // Curriculum state for lesson upload
     const [curriculum, setCurriculum] = useState([]);
     const [selectedSyllabus, setSelectedSyllabus] = useState("");
@@ -71,6 +77,46 @@ export default function DashboardClient({ tutor: initialTutor }) {
     const [editYoutubeUrl, setEditYoutubeUrl] = useState("");
     const [editDescription, setEditDescription] = useState("");
 
+    // Fetch contact requests when tab is selected
+    useEffect(() => {
+        if (activeTab === "Student Requests") {
+            setLoadingRequests(true);
+            fetch("/api/tutor/contact-requests")
+                .then(r => r.json())
+                .then(data => {
+                    if (data.requests) {
+                        setContactRequests(data.requests);
+                        setUnreadCount(data.unreadCount || 0);
+                    }
+                })
+                .catch(() => {})
+                .finally(() => setLoadingRequests(false));
+        }
+    }, [activeTab]);
+
+    // Also fetch unread count on mount (for badge)
+    useEffect(() => {
+        fetch("/api/tutor/contact-requests")
+            .then(r => r.json())
+            .then(data => { if (data.unreadCount) setUnreadCount(data.unreadCount); })
+            .catch(() => {});
+    }, []);
+
+    const markRequestAsRead = async (id) => {
+        try {
+            await fetch("/api/tutor/contact-requests", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+            });
+            setContactRequests(prev =>
+                prev.map(r => r.id === id ? { ...r, isRead: true } : r)
+            );
+            setUnreadCount(prev => Math.max(0, prev - 1));
+        } catch {}
+    };
+
+    // Fetch curriculum for lesson upload dropdowns
     useEffect(() => {
         fetch("/api/lessons")
             .then(res => res.json())
@@ -257,6 +303,11 @@ export default function DashboardClient({ tutor: initialTutor }) {
         { label: "Overview",          icon: <LayoutDashboard size={18} /> },
         { label: "Edit Profile",      icon: <Edit3 size={18} /> },
         { label: "Upload Lesson",     icon: <Upload size={18} /> },
+        {
+            label: "Student Requests",
+            icon: <Mail size={18} />,
+            badge: unreadCount > 0 ? unreadCount : null,
+        },
         { label: "Sign Out",          icon: <LogOut size={18} />, onClick: handleSignOut, isDestructive: true },
     ];
 
@@ -324,7 +375,12 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                     `}
                                 >
                                     {item.icon}
-                                    <span>{item.label}</span>
+                                    <span className="flex-1">{item.label}</span>
+                                    {item.badge && (
+                                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-[9px] font-black">
+                                            {item.badge > 9 ? "9+" : item.badge}
+                                        </span>
+                                    )}
                                 </button>
                             ))}
                         </div>
@@ -757,6 +813,120 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                         {savingProfile ? "Saving Profile..." : "Save Profile Changes"}
                                     </button>
                                 </form>
+                            </div>
+                        )}
+
+                        {activeTab === "Student Requests" && (
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-xl font-black text-dark flex items-center gap-2">
+                                            <Mail size={20} className="text-primary" />
+                                            Student Requests
+                                        </h2>
+                                        <p className="text-xs text-gray-400 mt-1">Students who contacted you via your profile page.</p>
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-100">
+                                            <Bell size={12} />
+                                            {unreadCount} New
+                                        </span>
+                                    )}
+                                </div>
+
+                                {loadingRequests ? (
+                                    <div className="flex items-center justify-center py-16">
+                                        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                    </div>
+                                ) : contactRequests.length === 0 ? (
+                                    <div className="bg-white rounded-3xl border border-gray-100 p-12 flex flex-col items-center text-center gap-3">
+                                        <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center">
+                                            <Mail size={24} className="text-gray-300" />
+                                        </div>
+                                        <p className="font-bold text-dark">No student requests yet</p>
+                                        <p className="text-xs text-gray-400 max-w-xs">When students contact you from your profile, their requests will appear here.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {contactRequests.map((req) => (
+                                            <div
+                                                key={req.id}
+                                                className={`bg-white rounded-2xl border p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] transition-all ${
+                                                    !req.isRead ? "border-primary/30 ring-1 ring-primary/10" : "border-gray-100"
+                                                }`}
+                                            >
+                                                <div className="flex items-start justify-between gap-4 mb-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-black text-sm flex items-center justify-center shrink-0">
+                                                            {req.studentName?.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <h4 className="font-extrabold text-dark text-sm">{req.studentName}</h4>
+                                                                {!req.isRead && (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase tracking-wider">NEW</span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-[10px] text-gray-400 font-medium">
+                                                                {new Date(req.createdAt).toLocaleDateString("en-LK", {
+                                                                    year: "numeric", month: "short", day: "numeric",
+                                                                    hour: "2-digit", minute: "2-digit"
+                                                                })}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    {!req.isRead && (
+                                                        <button
+                                                            onClick={() => markRequestAsRead(req.id)}
+                                                            className="text-[10px] font-bold text-primary hover:underline shrink-0 cursor-pointer"
+                                                        >
+                                                            Mark as Read
+                                                        </button>
+                                                    )}
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                                                    {req.whatsapp && (
+                                                        <div className="flex items-center gap-2 text-xs text-gray-600 bg-green-50 border border-green-100 rounded-lg px-3 py-2">
+                                                            <Phone size={12} className="text-green-600 shrink-0" />
+                                                            <span className="font-bold">WhatsApp:</span>
+                                                            <a href={`https://wa.me/${req.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="text-green-700 font-bold hover:underline">{req.whatsapp}</a>
+                                                        </div>
+                                                    )}
+                                                    {req.phone && (
+                                                        <div className="flex items-center gap-2 text-xs text-gray-600 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                                                            <Phone size={12} className="text-blue-600 shrink-0" />
+                                                            <span className="font-bold">Phone:</span>
+                                                            <span className="text-blue-700 font-bold">{req.phone}</span>
+                                                        </div>
+                                                    )}
+                                                    {req.studentEmail && (
+                                                        <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+                                                            <Mail size={12} className="text-gray-500 shrink-0" />
+                                                            <span className="font-bold">Email:</span>
+                                                            <span className="truncate">{req.studentEmail}</span>
+                                                        </div>
+                                                    )}
+                                                    {(req.syllabusName || req.gradeName || req.subjectName) && (
+                                                        <div className="flex items-center gap-2 text-xs text-gray-600 bg-primary/5 border border-primary/10 rounded-lg px-3 py-2">
+                                                            <BookOpen size={12} className="text-primary shrink-0" />
+                                                            <span className="font-bold text-primary">
+                                                                {[req.syllabusName, req.gradeName, req.subjectName].filter(Boolean).join(" → ")}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {req.message && (
+                                                    <div className="bg-gray-50 rounded-xl px-4 py-3 flex items-start gap-2">
+                                                        <MessageSquare size={13} className="text-gray-400 shrink-0 mt-0.5" />
+                                                        <p className="text-xs text-gray-600 leading-relaxed italic">&ldquo;{req.message}&rdquo;</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
 

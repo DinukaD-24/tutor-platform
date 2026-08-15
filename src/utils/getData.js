@@ -363,7 +363,7 @@ export async function getPaidTutorAds() {
         tutor: {
           include: {
             videos: {
-              take: 3,
+              take: 2,
               orderBy: { id: "desc" },
               include: {
                 topic: { include: { subject: true } }
@@ -386,6 +386,7 @@ export async function getPaidTutorAds() {
       languages: ad.tutor?.languages || [],
       rating: ad.tutor?.rating || 5.0,
       tutorType: ad.tutor?.tutorType || "",
+      phone: ad.tutor?.phone || "",
       title: ad.title,
       tagline: ad.tagline,
       ctaText: ad.ctaText || "View Tutor Profile",

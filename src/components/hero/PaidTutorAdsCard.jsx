@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, ArrowUpRight, PlayCircle, Clock } from "lucide-react";
+import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, ArrowUpRight, PlayCircle, Clock, Phone } from "lucide-react";
 
 export default function PaidTutorAdsCard({ ads }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -150,6 +150,12 @@ export default function PaidTutorAdsCard({ ads }) {
                   <span className="truncate">{currentAd.location}</span>
                 </div>
               )}
+              {currentAd.phone && (
+                <div className="flex items-center gap-1.5 bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                  <Phone size={12} className="text-teal-800 shrink-0" />
+                  <span className="font-semibold">{currentAd.phone}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -161,7 +167,7 @@ export default function PaidTutorAdsCard({ ads }) {
                 Sample Lessons by this Tutor
               </p>
               <div className="space-y-1.5">
-                {currentAd.videos.slice(0, 3).map((video) => (
+                {currentAd.videos.slice(0, 2).map((video) => (
                   <Link
                     key={video.id}
                     href={`/watch/${video.id}`}

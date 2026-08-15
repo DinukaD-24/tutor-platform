@@ -107,11 +107,12 @@ model Tutor {
   bio               String?
   createdAt         DateTime @default(now())
 
-  reviews   Review[]
-  videos    Video[]
-  topics    Topic[]   @relation("TopicTutors")
-  followers Student[] @relation("StudentFollowedTutors")
-  ads       TutorAd[]
+  reviews         Review[]
+  videos          Video[]
+  topics          Topic[]              @relation("TopicTutors")
+  followers       Student[]            @relation("StudentFollowedTutors")
+  ads             TutorAd[]
+  contactRequests TutorContactRequest[]
 }
 
 model TutorAd {
@@ -128,6 +129,22 @@ model TutorAd {
   createdAt DateTime @default(now())
 }
 
+
+model TutorContactRequest {
+  id           String   @id @default(cuid())
+  tutorId      String
+  tutor        Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  studentName  String
+  studentEmail String?
+  whatsapp     String?
+  phone        String?
+  syllabusName String?
+  gradeName    String?
+  subjectName  String?
+  message      String?
+  isRead       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
 
 model Review {
   id      String   @id @default(cuid())
