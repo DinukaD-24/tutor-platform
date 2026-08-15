@@ -118,7 +118,7 @@ export async function POST(request, { params }) {
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     console.error("Admin DB POST error:", error);
-    return NextResponse.json({ error: "An error occurred while creating the record." }, { status: 500 });
+    return NextResponse.json({ error: error.message || "An error occurred while creating the record." }, { status: 500 });
   }
 }
 
@@ -148,7 +148,7 @@ export async function PUT(request, { params }) {
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Admin DB PUT error:", error);
-    return NextResponse.json({ error: "An error occurred while updating the record." }, { status: 500 });
+    return NextResponse.json({ error: error.message || "An error occurred while updating the record." }, { status: 500 });
   }
 }
 
