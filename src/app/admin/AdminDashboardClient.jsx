@@ -262,15 +262,16 @@ export default function AdminDashboardClient() {
             }
         }
         if (selectedModel === "tutorad") {
+            const firstTut = lookupTutors[0];
             template = {
-                title: "",
-                tagline: "",
-                imageUrl: "",
+                tutorId: firstTut ? firstTut.id : "",
+                title: firstTut ? `${firstTut.subject || firstTut.name} Specialist` : "",
+                tagline: firstTut?.bio ? firstTut.bio.slice(0, 120) : (firstTut?.university ? `${firstTut.university} | Qualified Educator` : "Clear concepts. Better grades. Brighter future."),
+                imageUrl: firstTut?.image || "",
                 ctaText: "View Tutor Profile",
                 badge: "PAID AD",
                 order: 0,
-                isActive: true,
-                tutorId: lookupTutors.length > 0 ? lookupTutors[0].id : ""
+                isActive: true
             };
         }
 
@@ -834,63 +835,256 @@ export default function AdminDashboardClient() {
                                             className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none disabled:opacity-40"
                                         >
                                             <option value="">Select Topic...</option>
-                                            {filteredTopics.map(t => (
+                            {filteredTopics.map(t => (
                                                 <option key={t.id} value={t.id}>{t.name}</option>
                                             ))}
                                         </select>
                                     </div>
                                 )}
 
-                                {/* Other standard input fields */}
-                                {Object.keys(formData).map((k) => {
-                                    if (k === "id" || k === "slug") return null;
-                                    if (k === "syllabusId" || k === "gradeId" || k === "subjectId" || k === "topicId") return null; // already rendered above
-                                    
-                                    const isBool = typeof formData[k] === "boolean";
-
-                                    if (k === "tutorId") {
-                                        return (
-                                            <div key={k} className="space-y-1">
-                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tutor *</label>
-                                                <select
-                                                    value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
-                                                    required
-                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
-                                                >
-                                                    <option value="">Select Tutor...</option>
-                                                    {lookupTutors.map(tut => (
-                                                        <option key={tut.id} value={tut.id}>{tut.name} ({tut.email})</option>
-                                                    ))}
-                                                </select>
+                                {/* Custom Dedicated Form for Paid Tutor Ads */}
+                                {selectedModel === "tutorad" ? (
+                                    <div className="space-y-4">
+                                        {/* 1. Target Tutor Selector AT THE TOP */}
+                                        <div className="space-y-1 bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-100/80">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
+                                                    1. Select Target Tutor *
+                                                </label>
+                                                {formData.tutorId && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const tut = lookupTutors.find(t => t.id === formData.tutorId);
+                                                            if (tut) {
+                                                                setFormData(prev => ({
+                                                                    ...prev,
+                                                                    title: `${tut.subject || tut.name} Specialist`,
+                                                                    tagline: tut.bio ? tut.bio.slice(0, 100) : (tut.university ? `${tut.university} | ${tut.subject} Educator` : "Clear concepts. Better grades. Brighter future."),
+                                                                    imageUrl: tut.image || prev.imageUrl
+                                                                }));
+                                                            }
+                                                        }}
+                                                        className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+                                                    >
+                                                        🔄 Re-Auto-Fill from Profile
+                                                    </button>
+                                                )}
                                             </div>
-                                        );
-                                    }
+                                            <select
+                                                value={formData.tutorId ?? ""}
+                                                onChange={(e) => {
+                                                    const tutId = e.target.value;
+                                                    const tut = lookupTutors.find(t => t.id === tutId);
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        tutorId: tutId,
+                                                        title: tut ? `${tut.subject || tut.name} Specialist` : prev.title,
+                                                        tagline: tut?.bio ? tut.bio.slice(0, 100) : (tut?.university ? `${tut.university} | ${tut.subject} Educator` : prev.tagline),
+                                                        imageUrl: tut?.image || prev.imageUrl
+                                                    }));
+                                                }}
+                                                required
+                                                className="w-full border border-gray-200 bg-white rounded-xl px-3.5 py-2.5 text-xs text-dark font-bold focus:border-primary outline-none"
+                                            >
+                                                <option value="">Select a Tutor...</option>
+                                                {lookupTutors.map(tut => (
+                                                    <option key={tut.id} value={tut.id}>
+                                                        {tut.name} — {tut.subject} ({tut.email})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
 
-                                    return (
-                                        <div key={k} className="space-y-1">
-                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
-                                                {k}
-                                            </label>
-                                            {isBool ? (
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData[k]}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.checked }))}
-                                                    className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-200 cursor-pointer"
-                                                />
-                                            ) : (
+                                        {/* 2. Ad Title */}
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">2. Ad Headline / Title *</label>
+                                            <input
+                                                type="text"
+                                                value={formData.title ?? ""}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                                placeholder="e.g. Physics Expert A/L & O/L"
+                                                required
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+
+                                        {/* 3. Ad Tagline */}
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">3. Ad Tagline / Highlights</label>
+                                            <input
+                                                type="text"
+                                                value={formData.tagline ?? ""}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
+                                                placeholder="e.g. Clear concepts. Better grades. Brighter future."
+                                                className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                            />
+                                        </div>
+
+                                        {/* 4. Banner Photo with Preview & PC Upload */}
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">4. Ad Banner Photo</label>
+                                            
+                                            <div className="flex gap-3 items-center">
+                                                {/* Thumbnail Preview */}
+                                                <div className="w-16 h-20 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
+                                                    {formData.imageUrl ? (
+                                                        <img src={formData.imageUrl} alt="Ad Preview" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span className="text-[9px] text-gray-400 font-bold text-center px-1">No Photo</span>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex-1 space-y-2">
+                                                    <input
+                                                        type="text"
+                                                        value={formData.imageUrl ?? ""}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+                                                        placeholder="Image URL or upload from PC below..."
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                    />
+
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {/* File upload button from PC */}
+                                                        <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-[11px] rounded-lg cursor-pointer transition-all">
+                                                            📁 Upload from PC
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                className="hidden"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (!file) return;
+                                                                    const reader = new FileReader();
+                                                                    reader.onload = (event) => {
+                                                                        setFormData(prev => ({ ...prev, imageUrl: event.target.result }));
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                }}
+                                                            />
+                                                        </label>
+
+                                                        {/* Use Tutor's profile photo */}
+                                                        {formData.tutorId && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const tut = lookupTutors.find(t => t.id === formData.tutorId);
+                                                                    if (tut?.image) {
+                                                                        setFormData(prev => ({ ...prev, imageUrl: tut.image }));
+                                                                    }
+                                                                }}
+                                                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] rounded-lg cursor-pointer transition-all"
+                                                            >
+                                                                👤 Use Profile Photo
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* 5. CTA Text & Badge */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">CTA Button Text</label>
                                                 <input
                                                     type="text"
-                                                    value={formData[k] ?? ""}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
-                                                    placeholder={`Enter ${k}`}
-                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                                    value={formData.ctaText ?? "View Tutor Profile"}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, ctaText: e.target.value }))}
+                                                    placeholder="View Tutor Profile"
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
                                                 />
-                                            )}
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Badge Tag</label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.badge ?? "PAID AD"}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
+                                                    placeholder="PAID AD"
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                />
+                                            </div>
                                         </div>
-                                    );
-                                })}
+
+                                        {/* 6. Order & Active */}
+                                        <div className="grid grid-cols-2 gap-3 items-center pt-1">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Display Order</label>
+                                                <input
+                                                    type="number"
+                                                    value={formData.order ?? 0}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, order: Number(e.target.value) }))}
+                                                    className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-2 pt-4">
+                                                <input
+                                                    type="checkbox"
+                                                    id="tutorad_isactive"
+                                                    checked={Boolean(formData.isActive)}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+                                                    className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-200 cursor-pointer"
+                                                />
+                                                <label htmlFor="tutorad_isactive" className="text-xs font-bold text-dark cursor-pointer">
+                                                    Active in Hero
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Other standard input fields for remaining models */
+                                    Object.keys(formData).map((k) => {
+                                        if (k === "id" || k === "slug") return null;
+                                        if (k === "syllabusId" || k === "gradeId" || k === "subjectId" || k === "topicId") return null; // already rendered above
+                                        
+                                        const isBool = typeof formData[k] === "boolean";
+
+                                        if (k === "tutorId") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tutor *</label>
+                                                    <select
+                                                        value={formData[k] ?? ""}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        required
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                    >
+                                                        <option value="">Select Tutor...</option>
+                                                        {lookupTutors.map(tut => (
+                                                            <option key={tut.id} value={tut.id}>{tut.name} ({tut.email})</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <div key={k} className="space-y-1">
+                                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+                                                    {k}
+                                                </label>
+                                                {isBool ? (
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData[k]}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.checked }))}
+                                                        className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-200 cursor-pointer"
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={formData[k] ?? ""}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        placeholder={`Enter ${k}`}
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })
+                                )}
 
                                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-50">
                                     <button
