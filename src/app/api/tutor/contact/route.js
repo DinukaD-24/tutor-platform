@@ -26,18 +26,32 @@ export async function POST(request) {
       );
     }
 
-    // Save to DB
+    // Resolve tutor from DB
+    const targetTutor = await prisma.tutor.findFirst({
+      where: {
+        OR: [{ id: tutorId }, { slug: tutorId }]
+      }
+    });
+
+    if (!targetTutor) {
+      return NextResponse.json(
+        { error: "Tutor profile not found." },
+        { status: 404 }
+      );
+    }
+
+    // Save contact request to DB
     const saved = await prisma.tutorContactRequest.create({
       data: {
-        tutorId,
-        studentName,
-        studentEmail: studentEmail || null,
-        whatsapp,
-        phone: phone || null,
+        tutorId: targetTutor.id,
+        studentName: studentName.trim(),
+        studentEmail: studentEmail ? studentEmail.trim() : null,
+        whatsapp: whatsapp.trim(),
+        phone: phone ? phone.trim() : null,
         syllabusName: syllabusName || null,
         gradeName: gradeName || null,
         subjectName: subjectName || null,
-        message: message || null,
+        message: message ? message.trim() : null,
         isRead: false,
       },
     });
@@ -115,24 +129,28 @@ export async function POST(request) {
       </div>
     `;
 
-    // Send email to tutor
-    try {
-      await resend.emails.send({
-        from: "TutorHub.LK <onboarding@resend.dev>",
-        to: tutorEmail,
-        subject,
-        html: emailHtml,
-      });
-    } catch (emailError) {
-      console.error("Email send failed (request still saved):", emailError);
+    // Send email to tutor (or fallback email if present)
+    const recipientEmail = tutorEmail || targetTutor.email;
+    if (recipientEmail && resend) {
+      try {
+        await resend.emails.send({
+          from: "TutorHub.LK <onboarding@resend.dev>",
+          to: recipientEmail,
+          subject,
+          html: emailHtml,
+        });
+      } catch (emailError) {
+        console.error("Email send failed (request still saved):", emailError);
+      }
     }
 
     return NextResponse.json({ success: true, id: saved.id }, { status: 201 });
   } catch (error) {
     console.error("Tutor contact request error:", error);
     return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
+      { error: error?.message || "Something went wrong. Please try again." },
       { status: 500 }
     );
   }
 }
+
