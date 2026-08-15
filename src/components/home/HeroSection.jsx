@@ -11,23 +11,31 @@ export default async function HeroSection() {
         getPaidTutorAds().catch(() => [])
     ]);
 
-    
     return (
-        <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24">
+        <section className="relative overflow-hidden pt-8 pb-16 md:pt-12 md:pb-24">
             <div className="absolute inset-0 -z-10 pointer-events-none">
                 <div className="absolute top-10 right-20 h-80 w-80 rounded-full bg-emerald-100/50 blur-3xl"/>
                 <div className="absolute bottom-0 left-20 h-80 w-80 rounded-full bg-cyan-100/50 blur-3xl"/>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 space-y-12">
-                {/* Hero Header Banner */}
-                <HeroHeader />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    
+                    {/* Left Column (8 cols): Hero Header on top + 2 cards on bottom */}
+                    <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-between space-y-8">
+                        <HeroHeader />
 
-                {/* 3-Column Hero Feature Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                    <PopularVideosCard videos={popularVideos} />
-                    <NewlyJoinedTutorsCard tutors={newTutors} />
-                    <PaidTutorAdsCard ads={paidAds} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
+                            <PopularVideosCard videos={popularVideos} />
+                            <NewlyJoinedTutorsCard tutors={newTutors} />
+                        </div>
+                    </div>
+
+                    {/* Right Column (4 cols): Big Paid Tutor Ad Banner stretching top to bottom */}
+                    <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
+                        <PaidTutorAdsCard ads={paidAds} />
+                    </div>
+
                 </div>
             </div>
         </section>
