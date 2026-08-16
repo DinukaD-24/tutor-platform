@@ -52,7 +52,7 @@ function getModelIncludes(name) {
   return undefined;
 }
 
-function sanitizeData(data) {
+function sanitizeData(data, modelName) {
   const sanitized = { ...data };
   // Remove nested relation objects that might be present when editing
   const relationKeys = [
@@ -63,6 +63,20 @@ function sanitizeData(data) {
   relationKeys.forEach(k => {
     delete sanitized[k];
   });
+
+  // Convert array fields for Tutor model if passed as comma-separated strings
+  if (modelName && modelName.toLowerCase() === "tutor") {
+    const arrayFields = ["languages", "syllabuses", "qualifications", "specializations"];
+    arrayFields.forEach(field => {
+      if (typeof sanitized[field] === "string") {
+        sanitized[field] = sanitized[field]
+          .split(",")
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+    });
+  }
+
   return sanitized;
 }
 
@@ -112,7 +126,7 @@ export async function POST(request, { params }) {
     }
 
     const rawData = await request.json();
-    const data = sanitizeData(rawData);
+    const data = sanitizeData(rawData, modelName);
 
     const created = await model.create({ data });
     return NextResponse.json(created, { status: 201 });
@@ -140,7 +154,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "ID is required for update" }, { status: 400 });
     }
 
-    const data = sanitizeData(rest);
+    const data = sanitizeData(rest, modelName);
     const updated = await model.update({
       where: { id },
       data

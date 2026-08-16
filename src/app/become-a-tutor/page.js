@@ -66,13 +66,13 @@ export default function BecomeATutorPage() {
         onlineAvailable: true, physicalAvailable: false,
     });
 
-    const [subjectsList, setSubjectsList] = useState(["Combined Maths", "Physics"]);
+    const [subjectsList, setSubjectsList] = useState([]);
     const [subjectInput, setSubjectInput] = useState("");
 
-    const [syllabusesList, setSyllabusesList] = useState(["Local A/L"]);
+    const [syllabusesList, setSyllabusesList] = useState([]);
     const [syllabusInput, setSyllabusInput] = useState("");
 
-    const [mediumsList, setMediumsList] = useState(["English", "Sinhala"]);
+    const [mediumsList, setMediumsList] = useState([]);
     const [mediumInput, setMediumInput] = useState("");
 
     const handleChange = (e) => {
