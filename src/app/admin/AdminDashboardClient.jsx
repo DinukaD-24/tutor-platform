@@ -214,7 +214,9 @@ export default function AdminDashboardClient() {
         delete template.updatedAt;
         
         // Remove relation objects from template
-        ["syllabus", "grade", "subject", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"].forEach(k => delete template[k]);
+        const relationKeys = ["syllabus", "grade", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"];
+        if (selectedModel !== "tutor") relationKeys.push("subject");
+        relationKeys.forEach(k => delete template[k]);
 
         Object.keys(template).forEach(k => {
             if (Array.isArray(template[k])) {
@@ -306,7 +308,9 @@ export default function AdminDashboardClient() {
         delete data.createdAt;
         delete data.updatedAt;
         delete data.slug;
-        ["syllabus", "grade", "subject", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"].forEach(k => delete data[k]);
+        const relationKeysEdit = ["syllabus", "grade", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"];
+        if (selectedModel !== "tutor") relationKeysEdit.push("subject");
+        relationKeysEdit.forEach(k => delete data[k]);
 
         Object.keys(data).forEach(k => {
             if (Array.isArray(data[k])) {
@@ -376,7 +380,7 @@ export default function AdminDashboardClient() {
         if (selectedModel === "topic") return ["Name", "Slug", "Target Subject", "Target Grade", "Target Syllabus"];
         if (selectedModel === "video") return ["Title", "YouTube ID", "Topic", "Subject", "Grade", "Syllabus", "Tutor"];
         if (selectedModel === "material") return ["Title", "URL", "Topic", "Subject", "Grade", "Syllabus"];
-        if (selectedModel === "tutor") return ["Name", "Subject", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
+        if (selectedModel === "tutor") return ["Name", "Subject", "Specializations", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
         if (selectedModel === "tutorad") return ["Title", "Tagline", "Badge", "Order", "Active", "Tutor"];
         if (selectedModel === "tutorapplication") return ["Name", "Email", "Phone", "Category", "Subjects", "Syllabuses", "Mediums", "Location", "Online", "Physical", "Status"];
         if (records.length > 0) return Object.keys(records[0]).slice(0, 8);
@@ -402,6 +406,7 @@ export default function AdminDashboardClient() {
         if (lower === "physical") return rec.physicalAvailable ? "✅ Yes" : "No";
         if (lower === "rating") return rec.rating ? rec.rating.toFixed(1) : "5.0";
         if (lower === "mediums") return rec.mediums || rec.languages?.join(", ") || "-";
+        if (lower === "specializations") return Array.isArray(rec.specializations) ? rec.specializations.join(", ") : (rec.specializations || "-");
         if (lower === "subjects") return rec.subjects || rec.specializations?.join(", ") || "-";
         if (lower === "syllabuses") return rec.syllabuses || (Array.isArray(rec.syllabuses) ? rec.syllabuses.join(", ") : "-");
         if (lower === "status") {

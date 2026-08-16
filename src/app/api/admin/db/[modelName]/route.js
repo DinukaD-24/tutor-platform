@@ -75,6 +75,11 @@ function sanitizeData(data, modelName) {
           .filter(Boolean);
       }
     });
+
+    // Keep primary 'subject' in sync with the first item in specializations
+    if (Array.isArray(sanitized.specializations) && sanitized.specializations.length > 0) {
+      sanitized.subject = sanitized.specializations[0];
+    }
   }
 
   return sanitized;
