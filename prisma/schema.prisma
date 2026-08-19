@@ -180,6 +180,8 @@ model TutorApplication {
   physicalAvailable Boolean  @default(false)
   experience        String?
   bio               String
+  image             String?
+  teachingStyle     String?
   status            String   @default("pending") // pending | approved | rejected
   createdAt         DateTime @default(now())
 }

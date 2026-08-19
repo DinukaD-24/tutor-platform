@@ -76,13 +76,17 @@ export default function TutorsClient({ tutors }) {
 
             // 3. Syllabus filter
             if (selectedSyllabuses.length > 0) {
+                const tutorSyllabuses = (tutor.syllabuses || []).map(s => s.toLowerCase());
                 const qualificationsStr = (tutor.qualifications || []).join(" ").toLowerCase();
                 const matchesSyllabus = selectedSyllabuses.some((syl) => {
                     const sylLower = syl.toLowerCase();
-                    if (sylLower.includes("local") && (qualificationsStr.includes("local") || qualificationsStr.includes("a/l") || qualificationsStr.includes("o/l"))) return true;
-                    if (sylLower.includes("edexcel") && qualificationsStr.includes("edexcel")) return true;
-                    if (sylLower.includes("cambridge") && qualificationsStr.includes("cambridge")) return true;
-                    return (tutor.subject || "").toLowerCase().includes(sylLower);
+                    // Check direct match in tutor's syllabuses array
+                    if (tutorSyllabuses.some(ts => ts.includes(sylLower) || sylLower.includes(ts))) return true;
+                    // Loose matching fallback for local or other categories
+                    if (sylLower.includes("local a/l") && (qualificationsStr.includes("a/l") || tutorSyllabuses.includes("local a/l"))) return true;
+                    if (sylLower.includes("local o/l") && (qualificationsStr.includes("o/l") || tutorSyllabuses.includes("local o/l"))) return true;
+                    if (sylLower.includes("other") && (tutorSyllabuses.some(ts => ts.includes("other") || ts.includes("extra")) || qualificationsStr.includes("other"))) return true;
+                    return false;
                 });
                 if (!matchesSyllabus) return false;
             }
@@ -212,7 +216,7 @@ export default function TutorsClient({ tutors }) {
                             <div className="space-y-3">
                                 <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Syllabus</h4>
                                 <div className="space-y-2.5">
-                                    {["Local A/L", "Local O/L", "Edexcel", "Cambridge"].map((s) => (
+                                    {["Local A/L", "Local O/L", "Edexcel", "Cambridge", "Other / Extra Curricular"].map((s) => (
                                         <label key={s} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-dark">
                                             <input 
                                                 type="checkbox"
@@ -287,26 +291,7 @@ export default function TutorsClient({ tutors }) {
                                 </div>
                             </div>
 
-                            {/* Budget range */}
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center text-xs font-bold text-dark uppercase tracking-wider">
-                                    <span>Max Rate</span>
-                                    <span className="text-primary font-black">LKR {maxPrice}/hr</span>
-                                </div>
-                                <input 
-                                    type="range"
-                                    min="1000"
-                                    max="3000"
-                                    step="100"
-                                    value={maxPrice}
-                                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                                    className="w-full h-1 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                                />
-                                <div className="flex justify-between text-[10px] text-gray-400 font-semibold">
-                                    <span>LKR 1,000</span>
-                                    <span>LKR 3,000</span>
-                                </div>
-                            </div>
+                            {/* Format (Online / Physical) */}
 
                             {/* Minimum rating */}
                             <div className="space-y-3">

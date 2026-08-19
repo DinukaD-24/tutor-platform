@@ -31,6 +31,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
         teachingStyle: tutor.teachingStyle || "",
         subject: tutor.subject || "",
         syllabuses: tutor.syllabuses || [],
+        image: tutor.image || "",
     });
 
     const [specializationsList, setSpecializationsList] = useState(tutor.specializations || [tutor.subject]);
@@ -780,6 +781,78 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                                     </button>
                                                 </span>
                                             ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Profile Photo Uploader */}
+                                    <div className="space-y-1.5 p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block">
+                                            Profile Photo
+                                        </label>
+                                        <div className="flex items-center gap-4">
+                                            {profileForm.image ? (
+                                                <img
+                                                    src={profileForm.image}
+                                                    alt="Profile preview"
+                                                    className="w-14 h-14 rounded-2xl object-cover border-2 border-primary/30 shadow-sm"
+                                                />
+                                            ) : (
+                                                <div className="w-14 h-14 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 font-bold text-xs shrink-0">
+                                                    No Photo
+                                                </div>
+                                            )}
+                                            <div className="flex-1 space-y-1">
+                                                <label className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl cursor-pointer transition-all shadow-sm">
+                                                    📷 Upload New Photo
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+                                                            const reader = new FileReader();
+                                                            reader.onload = (event) => {
+                                                                const img = new Image();
+                                                                img.onload = () => {
+                                                                    const canvas = document.createElement("canvas");
+                                                                    const maxDim = 800;
+                                                                    let width = img.width;
+                                                                    let height = img.height;
+                                                                    if (width > height) {
+                                                                        if (width > maxDim) {
+                                                                            height = Math.round((height * maxDim) / width);
+                                                                            width = maxDim;
+                                                                        }
+                                                                    } else {
+                                                                        if (height > maxDim) {
+                                                                            width = Math.round((width * maxDim) / height);
+                                                                            height = maxDim;
+                                                                        }
+                                                                    }
+                                                                    canvas.width = width;
+                                                                    canvas.height = height;
+                                                                    const ctx = canvas.getContext("2d");
+                                                                    ctx.drawImage(img, 0, 0, width, height);
+                                                                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                                                                    setProfileForm(prev => ({ ...prev, image: compressedDataUrl }));
+                                                                };
+                                                                img.src = event.target.result;
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }}
+                                                    />
+                                                </label>
+                                                {profileForm.image && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setProfileForm(prev => ({ ...prev, image: "" }))}
+                                                        className="block text-[11px] text-red-500 font-semibold hover:underline cursor-pointer"
+                                                    >
+                                                        Remove photo
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 

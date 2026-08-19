@@ -5,7 +5,7 @@ import { resend } from "@/lib/resend";
 export async function POST(request) {
   try {
     const body = await request.json();
-    let { name, email, phone, university, tutorType, subjects, syllabuses, mediums, experience, bio, location, onlineAvailable, physicalAvailable } = body;
+    let { name, email, phone, university, tutorType, subjects, syllabuses, mediums, experience, bio, location, onlineAvailable, physicalAvailable, image, teachingStyle } = body;
 
     // Convert arrays to comma-separated strings if needed
     if (Array.isArray(subjects)) {
@@ -40,6 +40,8 @@ export async function POST(request) {
         physicalAvailable: Boolean(physicalAvailable),
         experience: experience ? experience.trim() : null,
         bio: bio.trim(),
+        image: image ? image.trim() : null,
+        teachingStyle: teachingStyle ? teachingStyle.trim() : null,
       },
     });
 

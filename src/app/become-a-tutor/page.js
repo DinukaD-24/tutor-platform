@@ -32,7 +32,7 @@ const stats = [
     { value: "4.9",    label: "Avg. Tutor Rating" },
 ];
 
-const presetSyllabuses = ["Local A/L", "Local O/L", "Edexcel", "Cambridge"];
+const presetSyllabuses = ["Local A/L", "Local O/L", "Edexcel", "Cambridge", "Other / Extra Curricular"];
 
 export default function BecomeATutorPage() {
     const [submitted, setSubmitted] = useState(false);
@@ -63,6 +63,7 @@ export default function BecomeATutorPage() {
         name: "", email: "", phone: "", university: "",
         tutorType: "Private Tutor",
         experience: "", bio: "", location: "",
+        teachingStyle: "", image: "",
         onlineAvailable: true, physicalAvailable: false,
     });
 
@@ -512,6 +513,93 @@ export default function BecomeATutorPage() {
                                             <option>3–5 years</option>
                                             <option>5+ years</option>
                                         </select>
+                                    </div>
+
+                                    {/* Profile Photo Uploader */}
+                                    <div className="space-y-1.5 p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/80">
+                                        <label className="block text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
+                                            Profile Photo (Optional)
+                                        </label>
+                                        <div className="flex items-center gap-4">
+                                            {form.image ? (
+                                                <img
+                                                    src={form.image}
+                                                    alt="Profile preview"
+                                                    className="w-14 h-14 rounded-2xl object-cover border-2 border-emerald-500 shadow-sm"
+                                                />
+                                            ) : (
+                                                <div className="w-14 h-14 rounded-2xl bg-emerald-100/70 border border-emerald-200 flex items-center justify-center text-emerald-600 font-bold text-xs shrink-0">
+                                                    Photo
+                                                </div>
+                                            )}
+                                            <div className="flex-1 space-y-1">
+                                                <label className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl cursor-pointer transition-all shadow-sm">
+                                                    📷 Upload Photo
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+                                                            const reader = new FileReader();
+                                                            reader.onload = (event) => {
+                                                                const img = new Image();
+                                                                img.onload = () => {
+                                                                    const canvas = document.createElement("canvas");
+                                                                    const maxDim = 800;
+                                                                    let width = img.width;
+                                                                    let height = img.height;
+                                                                    if (width > height) {
+                                                                        if (width > maxDim) {
+                                                                            height = Math.round((height * maxDim) / width);
+                                                                            width = maxDim;
+                                                                        }
+                                                                    } else {
+                                                                        if (height > maxDim) {
+                                                                            width = Math.round((width * maxDim) / height);
+                                                                            height = maxDim;
+                                                                        }
+                                                                    }
+                                                                    canvas.width = width;
+                                                                    canvas.height = height;
+                                                                    const ctx = canvas.getContext("2d");
+                                                                    ctx.drawImage(img, 0, 0, width, height);
+                                                                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                                                                    setForm(prev => ({ ...prev, image: compressedDataUrl }));
+                                                                };
+                                                                img.src = event.target.result;
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }}
+                                                    />
+                                                </label>
+                                                {form.image && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setForm(prev => ({ ...prev, image: "" }))}
+                                                        className="block text-[11px] text-red-500 font-semibold hover:underline cursor-pointer"
+                                                    >
+                                                        Remove photo
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Teaching Methodology / Style */}
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">
+                                            Teaching Methodology & Style (Optional)
+                                        </label>
+                                        <textarea
+                                            name="teachingStyle"
+                                            value={form.teachingStyle}
+                                            onChange={handleChange}
+                                            rows={3}
+                                            placeholder="Describe your teaching approach (e.g. Past paper discussion, concept visualization, interactive problem solving)..."
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-3 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none"
+                                        />
                                     </div>
 
                                     <div className="space-y-1.5">

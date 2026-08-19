@@ -108,6 +108,8 @@ export async function POST(request) {
             tutorType: application.tutorType || (application.experience?.toLowerCase().includes("school") ? "School Teacher" : "Private Tutor"),
             experience: application.experience || null,
             bio: application.bio,
+            image: application.image || null,
+            teachingStyle: application.teachingStyle || null,
             onlineAvailable: application.onlineAvailable ?? true,
             physicalAvailable: application.physicalAvailable ?? false,
             rating: 5.0,

@@ -59,8 +59,13 @@ export default function FollowButton({ tutorId }) {
         }
     };
 
-    // Don't show anything during loading or if not a student
-    if (loading || !canFollow) {
+    // Render a subtle skeleton loader while checking status to prevent layout jumps
+    if (loading) {
+        return <div className="w-full h-[46px] rounded-xl bg-gray-100/70 animate-pulse shrink-0" />;
+    }
+
+    // If not a student or not allowed to follow, hide button
+    if (!canFollow) {
         return null;
     }
 
