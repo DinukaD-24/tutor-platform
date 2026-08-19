@@ -803,7 +803,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                             )}
                                             <div className="flex-1 space-y-1">
                                                 <label className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl cursor-pointer transition-all shadow-sm">
-                                                    📷 Upload New Photo
+                                                    Upload New Photo
                                                     <input
                                                         type="file"
                                                         accept="image/*"

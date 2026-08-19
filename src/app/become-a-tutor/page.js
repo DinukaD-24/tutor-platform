@@ -534,7 +534,7 @@ export default function BecomeATutorPage() {
                                             )}
                                             <div className="flex-1 space-y-1">
                                                 <label className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl cursor-pointer transition-all shadow-sm">
-                                                    📷 Upload Photo
+                                                    Upload Photo
                                                     <input
                                                         type="file"
                                                         accept="image/*"

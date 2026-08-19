@@ -62,7 +62,9 @@ function StarRating({ rating }) {
 }
 
 export default function TestimonialsSection({ dbReviews }) {
-    const list = dbReviews && dbReviews.length > 0 ? dbReviews : defaultTestimonials;
+    if (!dbReviews || dbReviews.length === 0) {
+        return null; // Gracefully hide until real student reviews are posted
+    }
 
     return (
         <section className="py-24 bg-gray-50/50 border-t border-gray-100">
@@ -78,7 +80,7 @@ export default function TestimonialsSection({ dbReviews }) {
                 </FadeIn>
 
                 <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {list.map((t, idx) => {
+                    {dbReviews.map((t, idx) => {
                         const color = t.color || colorGradients[idx % colorGradients.length];
                         return (
                             <StaggerItem key={t.id}>
