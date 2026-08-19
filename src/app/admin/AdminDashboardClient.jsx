@@ -15,6 +15,7 @@ export default function AdminDashboardClient() {
     const [activeTab, setActiveTab] = useState("applications"); // "applications" | "database"
     const [applications, setApplications] = useState([]);
     const [loadingApps, setLoadingApps] = useState(true);
+    const [appStatusFilter, setAppStatusFilter] = useState("pending"); // "all" | "pending" | "approved" | "rejected"
     
     // DB Manager States
     const [selectedModel, setSelectedModel] = useState("syllabus");
@@ -503,6 +504,29 @@ export default function AdminDashboardClient() {
                             </button>
                         </div>
 
+                        {/* Status filter tabs */}
+                        <div className="flex gap-2 flex-wrap">
+                            {["all", "pending", "approved", "rejected"].map((status) => {
+                                const count = status === "all" ? applications.length : applications.filter(a => a.status === status).length;
+                                return (
+                                    <button
+                                        key={status}
+                                        onClick={() => setAppStatusFilter(status)}
+                                        className={`px-4 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer border ${
+                                            appStatusFilter === status
+                                                ? status === "approved" ? "bg-green-600 text-white border-green-600"
+                                                : status === "rejected" ? "bg-red-500 text-white border-red-500"
+                                                : status === "pending" ? "bg-amber-500 text-white border-amber-500"
+                                                : "bg-dark text-white border-dark"
+                                                : "bg-white text-gray-500 border-gray-100 hover:border-gray-200"
+                                        }`}
+                                    >
+                                        {status} <span className="opacity-70">({count})</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
                         {loadingApps ? (
                             <div className="text-center py-20 text-gray-400 text-sm">
                                 Loading applications...
@@ -511,9 +535,13 @@ export default function AdminDashboardClient() {
                             <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 text-gray-400 text-sm">
                                 No tutor applications submitted yet.
                             </div>
+                        ) : applications.filter(app => appStatusFilter === "all" || app.status === appStatusFilter).length === 0 ? (
+                            <div className="text-center py-12 bg-white rounded-3xl border border-gray-100 text-gray-400 text-sm">
+                                No <strong className="text-dark capitalize">{appStatusFilter}</strong> applications.
+                            </div>
                         ) : (
                             <div className="grid gap-6">
-                                {applications.map((app) => (
+                                {applications.filter(app => appStatusFilter === "all" || app.status === appStatusFilter).map((app) => (
                                     <div key={app.id} className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-4">
                                         <div className="flex flex-wrap items-start justify-between gap-4">
                                             <div>

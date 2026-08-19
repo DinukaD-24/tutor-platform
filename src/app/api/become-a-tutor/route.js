@@ -45,7 +45,7 @@ export async function POST(request) {
       },
     });
 
-    // Safely send emails without blocking application creation if Resend fails
+    // Send both emails — fire-and-forget but log each result so failures appear in Vercel logs
     Promise.allSettled([
       resend.emails.send({
         from: "TutorHub.LK <noreply@tutorhub.lk>",
@@ -79,8 +79,15 @@ export async function POST(request) {
           <p>— The TutorHub.LK Team</p>
         `,
       })
-    ]).catch(err => {
-      console.error("Non-blocking email send error:", err);
+    ]).then((results) => {
+      results.forEach((result, i) => {
+        const label = i === 0 ? "Admin notification" : "Applicant confirmation";
+        if (result.status === "rejected") {
+          console.error(`[Resend] ${label} email FAILED:`, result.reason);
+        } else {
+          console.log(`[Resend] ${label} email sent OK. id=`, result.value?.data?.id);
+        }
+      });
     });
 
     return NextResponse.json({ success: true, id: saved.id }, { status: 201 });
