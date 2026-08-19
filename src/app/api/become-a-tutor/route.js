@@ -45,8 +45,9 @@ export async function POST(request) {
       },
     });
 
-    // Send both emails — fire-and-forget but log each result so failures appear in Vercel logs
-    Promise.allSettled([
+    // IMPORTANT: Must await before returning — in Vercel serverless, the function is killed
+    // immediately after NextResponse.json() is returned, so fire-and-forget promises never complete.
+    const emailResults = await Promise.allSettled([
       resend.emails.send({
         from: "TutorHub.LK <noreply@tutorhub.lk>",
         to: "tutorhubadmin@gmail.com",
@@ -79,15 +80,15 @@ export async function POST(request) {
           <p>— The TutorHub.LK Team</p>
         `,
       })
-    ]).then((results) => {
-      results.forEach((result, i) => {
-        const label = i === 0 ? "Admin notification" : "Applicant confirmation";
-        if (result.status === "rejected") {
-          console.error(`[Resend] ${label} email FAILED:`, result.reason);
-        } else {
-          console.log(`[Resend] ${label} email sent OK. id=`, result.value?.data?.id);
-        }
-      });
+    ]);
+
+    emailResults.forEach((result, i) => {
+      const label = i === 0 ? "Admin notification" : "Applicant confirmation";
+      if (result.status === "rejected") {
+        console.error(`[Resend] ${label} email FAILED:`, result.reason);
+      } else {
+        console.log(`[Resend] ${label} email sent OK. id=`, result.value?.data?.id);
+      }
     });
 
     return NextResponse.json({ success: true, id: saved.id }, { status: 201 });
