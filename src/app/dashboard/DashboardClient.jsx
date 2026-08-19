@@ -556,6 +556,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                                 <option value="Private Tutor">Private Tutor</option>
                                                 <option value="School Teacher">School Teacher</option>
                                                 <option value="University Lecturer">University Lecturer</option>
+                                                <option value="University Student">University Student</option>
                                                 <option value="Institute Educator">Institute Educator</option>
                                                 <option value="Online Specialist">Online Specialist</option>
                                             </select>

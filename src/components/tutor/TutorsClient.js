@@ -198,7 +198,7 @@ export default function TutorsClient({ tutors }) {
                             <div className="space-y-3">
                                 <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Tutor Classification</h4>
                                 <div className="space-y-2.5">
-                                    {["University Student", "Private Tutor", "School Teacher"].map((type) => (
+                                    {["Private Tutor", "School Teacher", "University Lecturer", "University Student", "Institute Educator", "Online Specialist"].map((type) => (
                                         <label key={type} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-dark">
                                             <input 
                                                 type="checkbox"
