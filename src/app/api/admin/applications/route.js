@@ -140,8 +140,19 @@ export async function POST(request) {
           html: `
             <h2>Congratulations, ${application.name}!</h2>
             <p>Your tutor application has been approved. Your profile is now live on TutorHub.LK.</p>
-            <p>Log in to your dashboard at <a href="https://www.tutorhub.lk/login">tutorhub.lk/login</a> to complete your profile, add pricing/location, and start uploading video lessons.</p>
-            <p>If you have any questions or need assistance, please reply or email us directly at <a href="mailto:tutorhubadmin@gmail.com">tutorhubadmin@gmail.com</a>.</p>
+            <p>Log in to your dashboard at <a href="https://www.tutorhub.lk/login" style="color: #218396; font-weight: bold;">tutorhub.lk/login</a> to complete your profile, set pricing & location, and start uploading sample video lessons.</p>
+            
+            <div style="margin: 24px 0; padding: 20px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; font-family: sans-serif;">
+              <h3 style="margin-top: 0; color: #166534; font-size: 16px; font-weight: 800;">💬 Join Our Early Tutors Community</h3>
+              <p style="margin: 8px 0 16px 0; color: #15803d; font-size: 14px; line-height: 1.5;">
+                We are building TutorHub.LK together! Join our official WhatsApp group for early registered tutors to share your feedback, request features, and connect directly with the team.
+              </p>
+              <a href="https://chat.whatsapp.com/KMHSD9cqbUg7UqqCCcXBxD" style="display: inline-block; padding: 11px 22px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 800; border-radius: 10px; font-size: 14px; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
+                👉 Join Early Tutors WhatsApp Group
+              </a>
+            </div>
+
+            <p>If you have any questions or need assistance, please feel free to reply directly to this email or reach us at <a href="mailto:tutorhubadmin@gmail.com">tutorhubadmin@gmail.com</a>.</p>
             <br>
             <p>— The TutorHub.LK Team</p>
           `,
