@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, ArrowUpRight, PlayCircle, Clock, Phone } from "lucide-react";
 
 export default function PaidTutorAdsCard({ ads }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Fallback demo ads matching the wireframe design
   const displayAds = ads && ads.length > 0 ? ads : [
@@ -39,6 +40,14 @@ export default function PaidTutorAdsCard({ ads }) {
     }
   ];
 
+  useEffect(() => {
+    if (isHovered || displayAds.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % displayAds.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [isHovered, displayAds.length]);
+
   const currentAd = displayAds[currentIndex % displayAds.length];
 
   const handlePrev = () => {
@@ -50,7 +59,11 @@ export default function PaidTutorAdsCard({ ads }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 p-4 lg:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between h-full relative">
+    <div 
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 p-4 lg:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between h-full relative"
+    >
       <div className="flex flex-col h-full space-y-3">
         {/* Top Card Header */}
         <div className="flex items-center justify-between border-b border-gray-50 pb-2.5 shrink-0">
