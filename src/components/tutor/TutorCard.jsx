@@ -110,6 +110,20 @@ export default function TutorCard({ tutor }) {
                         <span className="font-bold">Subject:</span>
                         <span className="truncate">{tutor.subject}</span>
                     </div>
+                    {((tutor.syllabuses && tutor.syllabuses.length > 0) || (tutor.grades && tutor.grades.length > 0)) && (
+                        <div className="flex flex-wrap gap-1 pt-1">
+                            {tutor.syllabuses?.map((syl) => (
+                                <span key={syl} className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                    {syl}
+                                </span>
+                            ))}
+                            {tutor.grades?.map((grd) => (
+                                <span key={grd} className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                    {grd}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Micro Stats Grid */}

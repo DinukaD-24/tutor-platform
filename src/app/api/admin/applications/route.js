@@ -85,7 +85,11 @@ export async function POST(request) {
         slug = `${baseSlug}-${count}`;
       }
 
-      // Parse mediums and syllabuses arrays from application
+      // Parse subjects, mediums, syllabuses, and grades arrays from application
+      const parsedSubjects = application.subjects
+        ? application.subjects.split(",").map(s => s.trim()).filter(Boolean)
+        : [];
+
       const parsedMediums = application.mediums
         ? application.mediums.split(",").map(m => m.trim()).filter(Boolean)
         : ["English", "Sinhala"];
@@ -108,7 +112,7 @@ export async function POST(request) {
             phone: application.phone || null,
             location: application.location || null,
             university: application.university || null,
-            subject: application.subjects.split(",")[0]?.trim() || "General",
+            subject: parsedSubjects[0] || "General",
             tutorType: application.tutorType || (application.experience?.toLowerCase().includes("school") ? "School Teacher" : "Private Tutor"),
             experience: application.experience || null,
             bio: application.bio,
@@ -125,7 +129,7 @@ export async function POST(request) {
             grades: parsedGrades,
             price: null,
             qualifications: [application.experience].filter(Boolean),
-            specializations: application.subjects.split(",").map(s => s.trim()).filter(Boolean),
+            specializations: parsedSubjects.length > 0 ? parsedSubjects : ["General"],
           }
         });
 
