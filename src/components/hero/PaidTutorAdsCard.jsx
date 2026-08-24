@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, ArrowUpRight, PlayCircle, Clock, Phone } from "lucide-react";
+import { Megaphone, ChevronLeft, ChevronRight, GraduationCap, MapPin, Star, ArrowUpRight, PlayCircle, Clock, Phone, BookOpen } from "lucide-react";
 
 export default function PaidTutorAdsCard({ ads }) {
   const [currentIndex, setCurrentIndex] = useState(0);
