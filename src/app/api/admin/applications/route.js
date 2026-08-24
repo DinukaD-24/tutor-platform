@@ -152,23 +152,23 @@ export async function POST(request) {
             <p>Log in to your dashboard at <a href="https://www.tutorhub.lk/login" style="color: #218396; font-weight: bold;">tutorhub.lk/login</a> to complete your profile, set pricing & location, and start uploading sample video lessons.</p>
             
             <div style="margin: 24px 0; padding: 20px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; font-family: sans-serif;">
-              <h3 style="margin-top: 0; color: #166534; font-size: 16px; font-weight: 800;">💬 Join Our Early Tutors Community</h3>
+              <h3 style="margin-top: 0; color: #166534; font-size: 16px; font-weight: 800;">Join Our Early Tutors Community</h3>
               <p style="margin: 8px 0 16px 0; color: #15803d; font-size: 14px; line-height: 1.5;">
                 We are building TutorHub.LK together! Join our official WhatsApp group for early registered tutors to share your feedback, request features, and connect directly with the team.
               </p>
               <a href="https://chat.whatsapp.com/KMHSD9cqbUg7UqqCCcXBxD" style="display: inline-block; padding: 11px 22px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 800; border-radius: 10px; font-size: 14px; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
-                👉 Join Early Tutors WhatsApp Group
+                Join Early Tutors WhatsApp Group
               </a>
             </div>
 
             <div style="margin: 24px 0; padding: 20px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 14px; font-family: sans-serif;">
-              <h3 style="margin-top: 0; color: #0369a1; font-size: 16px; font-weight: 800;">🎬 Watch Tutor Platform Guides</h3>
+              <h3 style="margin-top: 0; color: #0369a1; font-size: 16px; font-weight: 800;">Watch Tutor Platform Guides</h3>
               <p style="margin: 8px 0 12px 0; color: #0284c7; font-size: 14px; line-height: 1.5;">
                 Watch our step-by-step video guides to learn how to set up your profile, manage student inquiries, and upload video lessons:
               </p>
               <ul style="margin: 0; padding-left: 20px; color: #0369a1; font-size: 14px; line-height: 1.8;">
-                <li>🇸🇮 <strong>Sinhala Guide:</strong> <a href="https://youtu.be/2mzGAIM3Mjk" style="color: #0284c7; font-weight: bold;">https://youtu.be/2mzGAIM3Mjk</a></li>
-                <li>🇬🇧 <strong>English Guide:</strong> <a href="https://youtu.be/fK-Q4CVDD4Y" style="color: #0284c7; font-weight: bold;">https://youtu.be/fK-Q4CVDD4Y</a></li>
+                <li><strong>Sinhala Guide:</strong> <a href="https://youtu.be/2mzGAIM3Mjk" style="color: #0284c7; font-weight: bold;">https://youtu.be/2mzGAIM3Mjk</a></li>
+                <li><strong>English Guide:</strong> <a href="https://youtu.be/fK-Q4CVDD4Y" style="color: #0284c7; font-weight: bold;">https://youtu.be/fK-Q4CVDD4Y</a></li>
               </ul>
             </div>
 
