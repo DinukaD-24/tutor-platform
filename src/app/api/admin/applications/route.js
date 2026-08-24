@@ -94,6 +94,10 @@ export async function POST(request) {
         ? application.syllabuses.split(",").map(s => s.trim()).filter(Boolean)
         : [];
 
+      const parsedGrades = application.grades
+        ? application.grades.split(",").map(g => g.trim()).filter(Boolean)
+        : [];
+
       await prisma.$transaction(async (tx) => {
         // Create tutor record using actual application data
         await tx.tutor.create({
@@ -118,6 +122,7 @@ export async function POST(request) {
             studentsCount: 0,
             languages: parsedMediums.length > 0 ? parsedMediums : ["English", "Sinhala"],
             syllabuses: parsedSyllabuses,
+            grades: parsedGrades,
             price: null,
             qualifications: [application.experience].filter(Boolean),
             specializations: application.subjects.split(",").map(s => s.trim()).filter(Boolean),
@@ -150,6 +155,17 @@ export async function POST(request) {
               <a href="https://chat.whatsapp.com/KMHSD9cqbUg7UqqCCcXBxD" style="display: inline-block; padding: 11px 22px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 800; border-radius: 10px; font-size: 14px; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
                 👉 Join Early Tutors WhatsApp Group
               </a>
+            </div>
+
+            <div style="margin: 24px 0; padding: 20px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 14px; font-family: sans-serif;">
+              <h3 style="margin-top: 0; color: #0369a1; font-size: 16px; font-weight: 800;">🎬 Watch Tutor Platform Guides</h3>
+              <p style="margin: 8px 0 12px 0; color: #0284c7; font-size: 14px; line-height: 1.5;">
+                Watch our step-by-step video guides to learn how to set up your profile, manage student inquiries, and upload video lessons:
+              </p>
+              <ul style="margin: 0; padding-left: 20px; color: #0369a1; font-size: 14px; line-height: 1.8;">
+                <li>🇸🇮 <strong>Sinhala Guide:</strong> <a href="https://youtu.be/2mzGAIM3Mjk" style="color: #0284c7; font-weight: bold;">https://youtu.be/2mzGAIM3Mjk</a></li>
+                <li>🇬🇧 <strong>English Guide:</strong> <a href="https://youtu.be/fK-Q4CVDD4Y" style="color: #0284c7; font-weight: bold;">https://youtu.be/fK-Q4CVDD4Y</a></li>
+              </ul>
             </div>
 
             <p>If you have any questions or need assistance, please feel free to reply directly to this email or reach us at <a href="mailto:tutorhubadmin@gmail.com">tutorhubadmin@gmail.com</a>.</p>

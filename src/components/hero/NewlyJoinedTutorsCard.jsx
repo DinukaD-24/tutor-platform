@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Users, ChevronLeft, ChevronRight, MapPin, GraduationCap, Star, Languages } from "lucide-react";
+import { Users, ChevronLeft, ChevronRight, MapPin, GraduationCap, Star, Languages, BookOpen } from "lucide-react";
 
 export default function NewlyJoinedTutorsCard({ tutors }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -107,6 +107,17 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
                   <GraduationCap size={11} className="text-emerald-600 shrink-0" />
                   <span className="truncate">{currentTutor.university || "Qualified Educator"}</span>
                 </div>
+                {(currentTutor.syllabuses || currentTutor.grades) && (
+                  <div className="flex items-center gap-1 truncate font-bold text-emerald-950">
+                    <BookOpen size={11} className="text-emerald-600 shrink-0" />
+                    <span className="truncate">
+                      {[
+                        Array.isArray(currentTutor.syllabuses) ? currentTutor.syllabuses.join(", ") : currentTutor.syllabuses,
+                        Array.isArray(currentTutor.grades) ? currentTutor.grades.join(", ") : currentTutor.grades
+                      ].filter(Boolean).join(" • ")}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1 truncate">
                   <MapPin size={11} className="text-emerald-600 shrink-0" />
                   <span className="truncate">{currentTutor.location || "Online & Physical"}</span>

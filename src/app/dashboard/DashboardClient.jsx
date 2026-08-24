@@ -39,6 +39,9 @@ export default function DashboardClient({ tutor: initialTutor }) {
 
     const [syllabusInput, setSyllabusInput] = useState("");
 
+    const [gradesList, setGradesList] = useState(tutor.grades || []);
+    const [gradeInput, setGradeInput] = useState("");
+
     const [qualificationsList, setQualificationsList] = useState(tutor.qualifications || []);
     const [qualInput, setQualInput] = useState("");
 
@@ -149,6 +152,7 @@ export default function DashboardClient({ tutor: initialTutor }) {
                     specializations: specializationsList,
                     qualifications: qualificationsList,
                     syllabuses: profileForm.syllabuses,
+                    grades: gradesList,
                 })
             });
             const data = await res.json();
@@ -392,6 +396,86 @@ export default function DashboardClient({ tutor: initialTutor }) {
 
                         {activeTab === "Overview" && (
                             <>
+                                {/* Welcome & Platform Guide Banner */}
+                                <div className="bg-gradient-to-br from-teal-900 via-primary-dark to-teal-950 text-white rounded-3xl p-6 md:p-8 shadow-lg space-y-5 border border-teal-800/50 relative overflow-hidden">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                                        <div>
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-teal-200 bg-white/10 mb-2 border border-white/10">
+                                                <HelpCircle size={12} /> Educator Guide & Video Tutorials
+                                            </span>
+                                            <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">Getting Started on TutorHub.LK</h2>
+                                            <p className="text-xs text-teal-100/80 mt-1 max-w-xl">
+                                                Watch our official step-by-step video guides in English and Sinhala to learn how to set up your profile, manage student requests, and upload sample lessons.
+                                            </p>
+                                        </div>
+                                        <a
+                                            href="https://chat.whatsapp.com/KMHSD9cqbUg7UqqCCcXBxD"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-black rounded-xl transition-all shadow-md shrink-0"
+                                        >
+                                            💬 Join Tutors WhatsApp
+                                        </a>
+                                    </div>
+
+                                    {/* Video Guide Cards */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                                        {/* Sinhala Guide */}
+                                        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15 hover:border-white/30 transition-all flex flex-col justify-between space-y-3">
+                                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black/40 group">
+                                                <iframe
+                                                    src="https://www.youtube.com/embed/2mzGAIM3Mjk"
+                                                    title="TutorHub.LK Sinhala Guide"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                    className="w-full h-full border-0"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between gap-2 px-1">
+                                                <div>
+                                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-300">🇸🇮 Sinhala Guide</span>
+                                                    <h3 className="font-bold text-xs text-white">Platform Intro & Tutor Tutorial (Sinhala)</h3>
+                                                </div>
+                                                <a
+                                                    href="https://youtu.be/2mzGAIM3Mjk"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="px-2.5 py-1 text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-dark rounded-lg transition-all shrink-0"
+                                                >
+                                                    Open Video ↗
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        {/* English Guide */}
+                                        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15 hover:border-white/30 transition-all flex flex-col justify-between space-y-3">
+                                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black/40 group">
+                                                <iframe
+                                                    src="https://www.youtube.com/embed/fK-Q4CVDD4Y"
+                                                    title="TutorHub.LK English Guide"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                    className="w-full h-full border-0"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between gap-2 px-1">
+                                                <div>
+                                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-300">🇬🇧 English Guide</span>
+                                                    <h3 className="font-bold text-xs text-white">Platform Intro & Tutor Tutorial (English)</h3>
+                                                </div>
+                                                <a
+                                                    href="https://youtu.be/fK-Q4CVDD4Y"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="px-2.5 py-1 text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-dark rounded-lg transition-all shrink-0"
+                                                >
+                                                    Open Video ↗
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Stats Grid */}
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
                                     {stats.map((stat) => (
@@ -635,6 +719,58 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                             ))}
                                         </div>
                                         <p className="text-[10px] text-gray-400">Add one syllabus per tag, e.g. Local A/L, Edexcel, Cambridge.</p>
+                                    </div>
+
+                                    {/* Target Grades & Levels Tag Manager */}
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-dark uppercase tracking-wider block">Target Grades & Levels</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={gradeInput}
+                                                onChange={(e) => setGradeInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        const trimmed = gradeInput.trim();
+                                                        if (trimmed && !gradesList.includes(trimmed)) {
+                                                            setGradesList([...gradesList, trimmed]);
+                                                            setGradeInput("");
+                                                        }
+                                                    }
+                                                }}
+                                                placeholder="Add a grade level (e.g. Grade 10-11, A/L) & press Enter"
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-emerald-500 outline-none"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const trimmed = gradeInput.trim();
+                                                    if (trimmed && !gradesList.includes(trimmed)) {
+                                                        setGradesList([...gradesList, trimmed]);
+                                                        setGradeInput("");
+                                                    }
+                                                }}
+                                                className="px-4 py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {gradesList.map((grd) => (
+                                                <span key={grd} className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold">
+                                                    {grd}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setGradesList(gradesList.filter((item) => item !== grd))}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-gray-400">Add target grades/levels you teach, e.g. Grade 6 - 9, O/L, A/L, University.</p>
                                     </div>
 
                                     {/* Teaching Specializations Tag Manager */}

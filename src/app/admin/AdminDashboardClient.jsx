@@ -581,8 +581,8 @@ export default function AdminDashboardClient() {
                                                 </span>
                                             </div>
                                             <div>
-                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Subjects & Syllabuses</span>
-                                                <span className="block text-dark mt-0.5 font-semibold">{app.subjects} ({app.syllabuses})</span>
+                                                <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Subjects, Syllabuses & Grades</span>
+                                                <span className="block text-dark mt-0.5 font-semibold">{app.subjects} ({app.syllabuses}{app.grades ? ` • ${app.grades}` : ""})</span>
                                             </div>
                                             <div>
                                                 <span className="block font-bold text-gray-400 uppercase tracking-wider text-[9px]">Mediums & University</span>

@@ -69,6 +69,7 @@ export async function PUT(request) {
       location,
       languages,
       syllabuses,
+      grades,
       specializations,
       qualifications,
       image
@@ -91,6 +92,7 @@ export async function PUT(request) {
         ...(location !== undefined && { location }),
         ...(languages !== undefined && { languages }),
         ...(syllabuses !== undefined && { syllabuses }),
+        ...(grades !== undefined && { grades }),
         ...(specializations !== undefined && { specializations }),
         ...(qualifications !== undefined && { qualifications }),
         ...(image !== undefined && { image }),

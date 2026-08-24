@@ -33,6 +33,7 @@ const stats = [
 ];
 
 const presetSyllabuses = ["Local A/L", "Local O/L", "Edexcel", "Cambridge", "Other / Extra Curricular"];
+const presetGrades = ["Grade 1 - 5", "Grade 6 - 9", "Local O/L (Grade 10-11)", "Local A/L (Grade 12-13)", "AS / A2 Level", "University Level", "Other / All Ages"];
 
 export default function BecomeATutorPage() {
     const [submitted, setSubmitted] = useState(false);
@@ -73,6 +74,9 @@ export default function BecomeATutorPage() {
     const [syllabusesList, setSyllabusesList] = useState([]);
     const [syllabusInput, setSyllabusInput] = useState("");
 
+    const [gradesList, setGradesList] = useState([]);
+    const [gradeInput, setGradeInput] = useState("");
+
     const [mediumsList, setMediumsList] = useState([]);
     const [mediumInput, setMediumInput] = useState("");
 
@@ -105,6 +109,19 @@ export default function BecomeATutorPage() {
 
     const handleRemoveSyllabus = (sylToRemove) => {
         setSyllabusesList(syllabusesList.filter((s) => s !== sylToRemove));
+    };
+
+    // Grade handlers
+    const handleAddGrade = (val) => {
+        const trimmed = (val || gradeInput).trim();
+        if (trimmed && !gradesList.includes(trimmed)) {
+            setGradesList([...gradesList, trimmed]);
+            setGradeInput("");
+        }
+    };
+
+    const handleRemoveGrade = (gradeToRemove) => {
+        setGradesList(gradesList.filter((g) => g !== gradeToRemove));
     };
 
     // Medium handlers
@@ -149,9 +166,10 @@ export default function BecomeATutorPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...form,
-                    subjects: subjectsList,
-                    syllabuses: syllabusesList,
-                    mediums: mediumsList,
+                    subjects: subjectsList.join(", "),
+                    syllabuses: syllabusesList.join(", "),
+                    grades: gradesList.join(", "),
+                    mediums: mediumsList.join(", "),
                 }),
             });
             if (!res.ok) {
@@ -434,6 +452,63 @@ export default function BecomeATutorPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveSyllabus(syl)}
+                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Target Grades / Levels Tag Input */}
+                                    <div className="space-y-2">
+                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Target Grades & Levels (Optional)</label>
+                                        
+                                        {/* Quick Preset Buttons */}
+                                        <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {presetGrades.map((preset) => (
+                                                <button
+                                                    key={preset}
+                                                    type="button"
+                                                    onClick={() => handleAddGrade(preset)}
+                                                    className="px-2.5 py-1 text-[11px] font-semibold bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition-colors cursor-pointer"
+                                                >
+                                                    + {preset}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={gradeInput}
+                                                onChange={(e) => setGradeInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        handleAddGrade();
+                                                    }
+                                                }}
+                                                placeholder="Type grade level or click presets above..."
+                                                className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddGrade()}
+                                                className="px-4 py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition-all cursor-pointer shrink-0"
+                                            >
+                                                + Add
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {gradesList.map((grade) => (
+                                                <span key={grade} className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold">
+                                                    {grade}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveGrade(grade)}
                                                         className="hover:text-red-500 font-bold ml-1 cursor-pointer"
                                                     >
                                                         ×

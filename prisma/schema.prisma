@@ -95,6 +95,7 @@ model Tutor {
   university        String?
   languages         String[]
   syllabuses        String[] @default([])
+  grades            String[] @default([])
   price             String?
   onlineAvailable   Boolean  @default(false)
   physicalAvailable Boolean  @default(false)
@@ -174,6 +175,7 @@ model TutorApplication {
   tutorType         String?  @default("Private Tutor")
   subjects          String
   syllabuses        String
+  grades            String?  @default("")
   mediums           String   @default("English, Sinhala")
   location          String?
   onlineAvailable   Boolean  @default(true)

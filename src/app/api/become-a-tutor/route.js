@@ -5,7 +5,7 @@ import { resend } from "@/lib/resend";
 export async function POST(request) {
   try {
     const body = await request.json();
-    let { name, email, phone, university, tutorType, subjects, syllabuses, mediums, experience, bio, location, onlineAvailable, physicalAvailable, image, teachingStyle } = body;
+    let { name, email, phone, university, tutorType, subjects, syllabuses, grades, mediums, experience, bio, location, onlineAvailable, physicalAvailable, image, teachingStyle } = body;
 
     // Convert arrays to comma-separated strings if needed
     if (Array.isArray(subjects)) {
@@ -13,6 +13,9 @@ export async function POST(request) {
     }
     if (Array.isArray(syllabuses)) {
       syllabuses = syllabuses.join(", ");
+    }
+    if (Array.isArray(grades)) {
+      grades = grades.join(", ");
     }
     if (Array.isArray(mediums)) {
       mediums = mediums.join(", ");
@@ -34,6 +37,7 @@ export async function POST(request) {
         tutorType: tutorType ? tutorType.trim() : "Private Tutor",
         subjects: subjects.trim(),
         syllabuses: syllabuses.trim(),
+        grades: grades ? grades.trim() : "",
         mediums: mediums ? mediums.trim() : "English, Sinhala",
         location: location ? location.trim() : null,
         onlineAvailable: Boolean(onlineAvailable),
@@ -63,6 +67,7 @@ export async function POST(request) {
           <p><strong>University:</strong> ${saved.university || "Not provided"}</p>
           <p><strong>Subjects:</strong> ${saved.subjects}</p>
           <p><strong>Syllabuses:</strong> ${saved.syllabuses}</p>
+          <p><strong>Grades / Levels:</strong> ${saved.grades || "Not specified"}</p>
           <p><strong>Mediums:</strong> ${saved.mediums}</p>
           <p><strong>Experience:</strong> ${saved.experience || "Not provided"}</p>
           <p><strong>Bio:</strong></p>
