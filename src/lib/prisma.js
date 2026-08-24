@@ -4,7 +4,11 @@ import { Pool } from "pg";
 
 const globalForPrisma = globalThis;
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL;
+
+if (!connectionString) {
+  console.error("CRITICAL: DATABASE_URL is not set in environment variables!");
+}
 
 const pool =
   globalForPrisma.pgPool ??
