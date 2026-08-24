@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { StaggerContainer, StaggerItem, FadeIn } from "@/components/ui";
 
 export default async function FeaturedTutors() {
-    const tutors = await getAllTutors();
+    const tutors = await getAllTutors().catch(() => []);
     
     return (
         <section className="bg-gray-50/50 py-24 border-b border-gray-100">

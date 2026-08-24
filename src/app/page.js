@@ -9,8 +9,8 @@ import { getSiteStats, getTopReviews } from "@/utils/getData";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-    const stats = await getSiteStats();
-    const reviews = await getTopReviews(6);
+    const stats = await getSiteStats().catch(() => null);
+    const reviews = await getTopReviews(6).catch(() => []);
 
     return (
         <main className="min-h-screen bg-background text-dark">

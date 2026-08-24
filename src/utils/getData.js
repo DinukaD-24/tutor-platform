@@ -188,8 +188,13 @@ export async function getTopicsBySlugs(slugs) {
 }
 
 export async function getAllTutors() {
-  const tutors = await prisma.tutor.findMany({ include: { reviews: true } });
-  return tutors.map(serializeTutor);
+  try {
+    const tutors = await prisma.tutor.findMany({ include: { reviews: true } });
+    return tutors.map(serializeTutor);
+  } catch (error) {
+    console.error("Error fetching all tutors:", error);
+    return [];
+  }
 }
 
 export async function getTutorById(idOrSlug) {
