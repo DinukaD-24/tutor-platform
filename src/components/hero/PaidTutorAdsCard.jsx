@@ -157,17 +157,18 @@ export default function PaidTutorAdsCard({ ads }) {
                   <span className="truncate">{currentAd.university}</span>
                 </div>
               )}
-              {(currentAd.syllabuses || currentAd.grades) && (
-                <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
-                  <BookOpen size={12} className="text-teal-800 shrink-0" />
-                  <span className="truncate font-bold text-teal-950">
-                    {[
-                      Array.isArray(currentAd.syllabuses) ? currentAd.syllabuses.join(", ") : currentAd.syllabuses,
-                      Array.isArray(currentAd.grades) ? currentAd.grades.join(", ") : currentAd.grades
-                    ].filter(Boolean).join(" • ")}
-                  </span>
-                </div>
-              )}
+              {(() => {
+                const sylStr = Array.isArray(currentAd.syllabuses) ? currentAd.syllabuses.filter(Boolean).join(", ") : (currentAd.syllabuses || "");
+                const grdStr = Array.isArray(currentAd.grades) ? currentAd.grades.filter(Boolean).join(", ") : (currentAd.grades || "");
+                const combined = [sylStr, grdStr].filter(Boolean).join(" • ");
+                if (!combined) return null;
+                return (
+                  <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                    <BookOpen size={12} className="text-teal-800 shrink-0" />
+                    <span className="truncate font-bold text-teal-950">{combined}</span>
+                  </div>
+                );
+              })()}
               {currentAd.location && (
                 <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
                   <MapPin size={12} className="text-teal-800 shrink-0" />

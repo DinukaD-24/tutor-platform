@@ -107,17 +107,18 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
                   <GraduationCap size={11} className="text-emerald-600 shrink-0" />
                   <span className="truncate">{currentTutor.university || "Qualified Educator"}</span>
                 </div>
-                {(currentTutor.syllabuses || currentTutor.grades) && (
-                  <div className="flex items-center gap-1 truncate font-bold text-emerald-950">
-                    <BookOpen size={11} className="text-emerald-600 shrink-0" />
-                    <span className="truncate">
-                      {[
-                        Array.isArray(currentTutor.syllabuses) ? currentTutor.syllabuses.join(", ") : currentTutor.syllabuses,
-                        Array.isArray(currentTutor.grades) ? currentTutor.grades.join(", ") : currentTutor.grades
-                      ].filter(Boolean).join(" • ")}
-                    </span>
-                  </div>
-                )}
+                {(() => {
+                  const sylStr = Array.isArray(currentTutor.syllabuses) ? currentTutor.syllabuses.filter(Boolean).join(", ") : (currentTutor.syllabuses || "");
+                  const grdStr = Array.isArray(currentTutor.grades) ? currentTutor.grades.filter(Boolean).join(", ") : (currentTutor.grades || "");
+                  const combined = [sylStr, grdStr].filter(Boolean).join(" • ");
+                  if (!combined) return null;
+                  return (
+                    <div className="flex items-center gap-1 truncate font-bold text-emerald-950">
+                      <BookOpen size={11} className="text-emerald-600 shrink-0" />
+                      <span className="truncate">{combined}</span>
+                    </div>
+                  );
+                })()}
                 <div className="flex items-center gap-1 truncate">
                   <MapPin size={11} className="text-emerald-600 shrink-0" />
                   <span className="truncate">{currentTutor.location || "Online & Physical"}</span>
