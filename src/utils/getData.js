@@ -105,15 +105,20 @@ function serializeGrade(g) {
 }
 
 export async function getAllSyllabuses() {
-  const syllabuses = await prisma.syllabus.findMany({
-    include: { grades: { orderBy: { order: "asc" }, include: gradeInclude } },
-  });
-  return syllabuses.map((s) => ({
-    id: s.id,
-    slug: s.slug,
-    name: s.name,
-    grades: s.grades.map(serializeGrade),
-  }));
+  try {
+    const syllabuses = await prisma.syllabus.findMany({
+      include: { grades: { orderBy: { order: "asc" }, include: gradeInclude } },
+    });
+    return syllabuses.map((s) => ({
+      id: s.id,
+      slug: s.slug,
+      name: s.name,
+      grades: s.grades.map(serializeGrade),
+    }));
+  } catch (error) {
+    console.error("Error fetching syllabuses:", error);
+    return [];
+  }
 }
 
 export async function getSyllabus(syllabusSlug) {

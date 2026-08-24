@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { StaggerContainer, StaggerItem, FadeIn } from "@/components/ui";
 
 export default async function FeaturedSubjects() {
-    const subjects = await getFeaturedSubjects();
+    const subjects = await getFeaturedSubjects().catch(() => []);
 
     return (
         <section className="bg-white py-24 border-y border-gray-50">
