@@ -95,12 +95,12 @@ export default function PopularVideosCard({ videos }) {
           </Link>
         </div>
 
-        {/* Scroll Viewport */}
-        <div className="relative flex-1 overflow-hidden">
+        {/* Scroll Viewport — fixed height so card doesn't stretch */}
+        <div className="relative overflow-hidden" style={{ height: "230px" }}>
           {/* Top fade mask */}
-          <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
           {/* Bottom fade mask */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
           <div className="flex flex-col gap-2 py-2 transition-all duration-500">
             {slots.map(({ video, position }, i) => {

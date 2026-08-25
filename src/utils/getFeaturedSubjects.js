@@ -1,3 +1,5 @@
+import { getAllSyllabuses } from "@/utils/getData";
+
 export async function getFeaturedSubjects() {
   try {
     const syllabuses = await getAllSyllabuses();
