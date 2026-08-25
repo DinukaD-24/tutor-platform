@@ -58,32 +58,35 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
     <div 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 p-4 lg:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between h-full relative"
+      className="bg-white rounded-3xl border border-gray-100/90 p-4.5 lg:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_16px_40px_rgba(33,131,150,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full relative"
     >
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-50 pb-2.5 mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-              <Users size={14} />
+        <div className="flex items-center justify-between border-b border-gray-100/80 pb-3 mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/15 shadow-2xs">
+              <Users size={15} />
             </div>
-            <h3 className="font-extrabold text-sm text-dark">Newly Joined Tutors</h3>
+            <div>
+              <h3 className="font-extrabold text-sm text-dark tracking-tight">Newly Joined Tutors</h3>
+              <p className="text-[10px] text-gray-400 font-semibold">Latest verified educators</p>
+            </div>
           </div>
-          <Link href="/tutors" className="text-[11px] font-bold text-primary hover:underline">
+          <Link href="/tutors" className="text-[11px] font-extrabold text-primary hover:text-primary-dark hover:underline">
             View all
           </Link>
         </div>
 
         {/* Card Carousel Box */}
-        <div className="relative rounded-xl bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-emerald-100/40 p-3.5 overflow-hidden border border-emerald-100/80 min-h-[195px] flex flex-col justify-between">
-          <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="relative rounded-2xl bg-gradient-to-br from-emerald-50/90 via-teal-50/60 to-emerald-100/50 p-4 overflow-hidden border border-emerald-100/90 min-h-[200px] flex flex-col justify-between shadow-inner">
+          <div className="flex items-center justify-between gap-2 mb-2">
             {/* Free Ad Badge */}
-            <span className="inline-block px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-2xs">
-              FREE AD
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-2xs">
+              SPOTLIGHT
             </span>
 
             {/* Rating pill */}
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/80 backdrop-blur-xs rounded-full text-[10px] font-bold text-dark border border-emerald-100">
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-extrabold text-dark border border-emerald-100/80 shadow-2xs">
               <Star size={11} className="fill-amber-400 text-amber-400" />
               <span>{currentTutor.rating || 5.0}</span>
             </div>
@@ -131,10 +134,10 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
                 </div>
               </div>
 
-              <div className="pt-1">
+              <div className="pt-1.5">
                 <Link
                   href={`/tutors/${currentTutor.slug || currentTutor.id}`}
-                  className="inline-block px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg shadow-2xs transition-all"
+                  className="inline-block px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] rounded-full shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all"
                 >
                   View Profile
                 </Link>
@@ -143,7 +146,7 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
 
             {/* Tutor Image */}
             <div className="col-span-5 flex justify-end">
-              <div className="w-20 h-24 rounded-xl overflow-hidden shadow-sm border-2 border-white bg-white shrink-0">
+              <div className="w-20 h-24 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-white ring-2 ring-emerald-500/20 shrink-0">
                 {currentTutor.image ? (
                   <img
                     src={currentTutor.image}
@@ -162,17 +165,17 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between pt-2.5 border-t border-gray-50 mt-2.5">
+      <div className="flex items-center justify-between pt-3 border-t border-gray-100/80 mt-3">
         <button
           onClick={handlePrev}
-          className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer"
+          className="w-7 h-7 rounded-full border border-gray-200/80 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer shadow-2xs"
           aria-label="Previous Tutor"
         >
           <ChevronLeft size={14} />
         </button>
 
         {/* Carousel Dots */}
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {displayTutors.slice(0, 5).map((_, idx) => (
             <button
               key={idx}
@@ -187,7 +190,7 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
 
         <button
           onClick={handleNext}
-          className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer"
+          className="w-7 h-7 rounded-full border border-gray-200/80 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer shadow-2xs"
           aria-label="Next Tutor"
         >
           <ChevronRight size={14} />

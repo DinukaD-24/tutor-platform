@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard, Sparkles, UserCheck } from "lucide-react";
 import { NAV_LINKS } from "@/constants/navigation";
 import { createClient } from "@/utils/supabase/client";
 
@@ -53,33 +53,39 @@ export default function Navbar() {
     return (
         <nav className="
             sticky
-            top-2
+            top-3
             z-50
             mx-auto
-            w-[95%]
-            rounded-2xl
+            w-[92%]
+            max-w-7xl
+            rounded-full
             border
-            border-white/20
-            bg-white/70
-            backdrop-blur-xl
-            shadow-lg
+            border-white/80
+            bg-white/80
+            backdrop-blur-2xl
+            shadow-[0_8px_32px_rgba(15,37,55,0.06),0_1px_2px_rgba(255,255,255,0.8)_inset]
+            transition-all
+            duration-300
         ">
-            <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+            <div className="flex justify-between items-center px-4 sm:px-6 py-2.5 sm:py-3">
 
                 {/* Logo */}
-                <Link href="/" onClick={closeMenu}>
-                    <Image 
-                        src="/logo.svg"
-                        alt="TutorHub Logo"
-                        width={130}
-                        height={46}
-                        priority
-                    />
+                <Link href="/" onClick={closeMenu} className="flex items-center gap-2 group">
+                    <div className="relative overflow-hidden transition-transform duration-300 group-hover:scale-105">
+                        <Image 
+                            src="/logo.svg"
+                            alt="TutorHub Logo"
+                            width={128}
+                            height={42}
+                            priority
+                            className="h-9 sm:h-10 w-auto object-contain"
+                        />
+                    </div>
                 </Link>
                 
-                {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-6">
-                    <div className="flex items-center gap-8 mr-4">
+                {/* Desktop Navigation Link Pills */}
+                <div className="hidden md:flex items-center gap-2">
+                    <div className="flex items-center bg-gray-100/60 p-1.5 rounded-full border border-gray-200/50 shadow-inner">
                         {NAV_LINKS.map((link) => {
                             const active = isActive(link.href);
                             return (
@@ -87,10 +93,17 @@ export default function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     className={`
-                                        font-medium
-                                        transition-colors
+                                        relative
+                                        px-4
+                                        py-1.5
+                                        rounded-full
+                                        text-xs
+                                        font-extrabold
+                                        transition-all
                                         duration-200
-                                        ${active ? 'text-primary' : 'text-dark hover:text-primary'}
+                                        ${active 
+                                            ? 'bg-white text-primary shadow-xs ring-1 ring-black/5' 
+                                            : 'text-dark/70 hover:text-primary hover:bg-white/50'}
                                     `}
                                 >
                                     {link.label}
@@ -98,7 +111,10 @@ export default function Navbar() {
                             );
                         })}
                     </div>
+                </div>
 
+                {/* Desktop User Action Buttons */}
+                <div className="hidden md:flex items-center gap-2.5">
                     {!loading && (
                         user ? (
                             <>
@@ -106,25 +122,25 @@ export default function Navbar() {
                                 <Link
                                     href="/dashboard"
                                     className="
-                                        rounded-2xl
-                                        border-2
-                                        border-gray-100
-                                        hover:border-primary/20
-                                        px-5
+                                        px-4.5
                                         py-2
-                                        text-sm
+                                        text-xs
+                                        font-extrabold
                                         text-dark
                                         hover:text-primary
-                                        font-semibold
+                                        bg-gray-100/70
+                                        hover:bg-primary/10
+                                        rounded-full
+                                        border
+                                        border-gray-200/60
                                         transition-all
                                         duration-200
-                                        hover:scale-102
                                         flex
                                         items-center
                                         gap-1.5
                                     "
                                 >
-                                    <LayoutDashboard size={14} />
+                                    <LayoutDashboard size={14} className="text-primary" />
                                     Dashboard
                                 </Link>
                                 
@@ -132,18 +148,20 @@ export default function Navbar() {
                                 <button
                                     onClick={handleSignOut}
                                     className="
-                                        rounded-2xl
-                                        bg-primary
-                                        px-5
+                                        px-4.5
                                         py-2.5
+                                        text-xs
+                                        font-black
                                         text-white
-                                        font-semibold
-                                        text-sm
+                                        bg-primary
+                                        hover:bg-primary-dark
+                                        rounded-full
+                                        shadow-[0_4px_14px_rgba(33,131,150,0.35)]
+                                        hover:shadow-[0_6px_20px_rgba(33,131,150,0.45)]
+                                        hover:scale-[1.03]
+                                        active:scale-[0.98]
                                         transition-all
                                         duration-200
-                                        hover:bg-primary-dark
-                                        hover:scale-105
-                                        shadow-glow-primary
                                         flex
                                         items-center
                                         gap-1.5
@@ -156,46 +174,49 @@ export default function Navbar() {
                             </>
                         ) : (
                             <>
-                                {/* primary Outline Log In Button */}
+                                {/* Log In Button */}
                                 <Link
                                     href="/login"
                                     className="
-                                        rounded-2xl
-                                        border-2
-                                        border-gray-100
-                                        hover:border-primary/20
-                                        px-5
+                                        px-4.5
                                         py-2
-                                        text-sm
+                                        text-xs
+                                        font-extrabold
                                         text-dark
                                         hover:text-primary
-                                        font-semibold
+                                        rounded-full
+                                        hover:bg-gray-100/80
                                         transition-all
                                         duration-200
-                                        hover:scale-102
                                     "
                                 >
                                     Log In
                                 </Link>
                                 
-                                {/* Primary Become a Tutor Button */}
+                                {/* Become a Tutor Button */}
                                 <Link
                                     href="/become-a-tutor"
                                     className="
-                                        rounded-2xl
-                                        bg-primary
                                         px-5
                                         py-2.5
+                                        text-xs
+                                        font-black
                                         text-white
-                                        font-semibold
-                                        text-sm
+                                        bg-primary
+                                        hover:bg-primary-dark
+                                        rounded-full
+                                        shadow-[0_4px_14px_rgba(33,131,150,0.35)]
+                                        hover:shadow-[0_6px_20px_rgba(33,131,150,0.45)]
+                                        hover:scale-[1.03]
+                                        active:scale-[0.98]
                                         transition-all
                                         duration-200
-                                        hover:bg-primary-dark
-                                        hover:scale-105
-                                        shadow-glow-primary
+                                        flex
+                                        items-center
+                                        gap-1.5
                                     "
                                 >
+                                    <Sparkles size={13} className="text-white/80" />
                                     Become a Tutor
                                 </Link>
                             </>
@@ -205,153 +226,176 @@ export default function Navbar() {
 
                 {/* Mobile Hamburger */}
                 <button 
-                    className="md:hidden"
+                    className="md:hidden p-2 text-dark hover:text-primary hover:bg-gray-100/60 rounded-full transition-all cursor-pointer"
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Toggle menu"
                     aria-expanded={isOpen}
                 >
-                    {isOpen ? <X size={28} /> : <Menu size={28} />}
+                    {isOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
 
             </div>
 
-            {/* Mobile Dropdown */}
+            {/* Mobile Dropdown Drawer */}
             {isOpen && (
                 <div 
                     className="
                         md:hidden
                         flex
                         flex-col
-                        gap-4
+                        gap-3
                         px-6
                         pb-6
+                        pt-3
                         border-t
-                        border-white/20
-                        pt-4
+                        border-gray-100/80
+                        bg-white/95
+                        backdrop-blur-2xl
+                        rounded-b-3xl
+                        shadow-2xl
+                        animate-slideDown
                     "
                 >
-                    {NAV_LINKS.map((link) => {
-                        const active = isActive(link.href);
-                        return (
-                            <Link 
-                                key={link.href}
-                                href={link.href}
-                                onClick={closeMenu}
-                                className={`
-                                    font-medium
-                                    transition-colors
-                                    duration-200
-                                    py-1
-                                    ${active ? 'text-primary' : 'text-dark hover:text-primary'}
-                                `}
-                            >
-                                {link.label}
-                            </Link>
-                        );
-                    })}
-
-                    {!loading && (
-                        user ? (
-                            <>
-                                {/* Mobile Dashboard Button */}
-                                <Link
-                                    href="/dashboard"
+                    <div className="flex flex-col gap-1.5">
+                        {NAV_LINKS.map((link) => {
+                            const active = isActive(link.href);
+                            return (
+                                <Link 
+                                    key={link.href}
+                                    href={link.href}
                                     onClick={closeMenu}
-                                    className="
-                                        rounded-2xl
-                                        border-2
-                                        border-gray-100
-                                        hover:border-primary/20
+                                    className={`
+                                        px-4
                                         py-2.5
-                                        text-center
-                                        text-dark
-                                        hover:text-primary
-                                        font-semibold
+                                        rounded-2xl
+                                        text-sm
+                                        font-extrabold
                                         transition-all
                                         duration-200
-                                        mt-2
-                                        flex
-                                        items-center
-                                        justify-center
-                                        gap-1.5
-                                    "
+                                        ${active 
+                                            ? 'bg-primary/10 text-primary' 
+                                            : 'text-dark/80 hover:bg-gray-50 hover:text-primary'}
+                                    `}
                                 >
-                                    <LayoutDashboard size={14} />
-                                    Dashboard
+                                    {link.label}
                                 </Link>
+                            );
+                        })}
+                    </div>
 
-                                {/* Mobile Sign Out Button */}
-                                <button
-                                    onClick={handleSignOut}
-                                    className="
-                                        rounded-2xl
-                                        bg-primary
-                                        px-5
-                                        py-2.5
-                                        text-center
-                                        text-white
-                                        font-semibold
-                                        transition-all
-                                        duration-200
-                                        hover:bg-primary-dark
-                                        flex
-                                        items-center
-                                        justify-center
-                                        gap-1.5
-                                        cursor-pointer
-                                        w-full
-                                    "
-                                >
-                                    <LogOut size={14} />
-                                    Sign Out
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                {/* Mobile Log In Button */}
-                                <Link
-                                    href="/login"
-                                    onClick={closeMenu}
-                                    className="
-                                        rounded-2xl
-                                        border-2
-                                        border-gray-100
-                                        hover:border-primary/20
-                                        py-2.5
-                                        text-center
-                                        text-dark
-                                        hover:text-primary
-                                        font-semibold
-                                        transition-all
-                                        duration-200
-                                        mt-2
-                                    "
-                                >
-                                    Log In
-                                </Link>
+                    <div className="border-t border-gray-100 pt-3">
+                        {!loading && (
+                            user ? (
+                                <div className="flex flex-col gap-2">
+                                    <Link
+                                        href="/dashboard"
+                                        onClick={closeMenu}
+                                        className="
+                                            w-full
+                                            py-2.5
+                                            px-4
+                                            rounded-2xl
+                                            bg-gray-100/80
+                                            hover:bg-primary/10
+                                            text-center
+                                            text-dark
+                                            hover:text-primary
+                                            text-xs
+                                            font-extrabold
+                                            transition-all
+                                            duration-200
+                                            flex
+                                            items-center
+                                            justify-center
+                                            gap-1.5
+                                        "
+                                    >
+                                        <LayoutDashboard size={14} className="text-primary" />
+                                        Dashboard
+                                    </Link>
 
-                                {/* Mobile Become a Tutor Button */}
-                                <Link
-                                    href="/become-a-tutor"
-                                    onClick={closeMenu}
-                                    className="
-                                        rounded-2xl
-                                        bg-primary
-                                        px-5
-                                        py-2.5
-                                        text-center
-                                        text-white
-                                        font-semibold
-                                        transition-all
-                                        duration-200
-                                        hover:bg-primary-dark
-                                    "
-                                >
-                                    Become a Tutor
-                                </Link>
-                            </>
-                        )
-                    )}
+                                    <button
+                                        onClick={handleSignOut}
+                                        className="
+                                            w-full
+                                            py-2.5
+                                            px-4
+                                            rounded-2xl
+                                            bg-primary
+                                            text-center
+                                            text-white
+                                            text-xs
+                                            font-black
+                                            transition-all
+                                            duration-200
+                                            hover:bg-primary-dark
+                                            shadow-md
+                                            flex
+                                            items-center
+                                            justify-center
+                                            gap-1.5
+                                            cursor-pointer
+                                        "
+                                    >
+                                        <LogOut size={14} />
+                                        Sign Out
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-2">
+                                    <Link
+                                        href="/login"
+                                        onClick={closeMenu}
+                                        className="
+                                            w-full
+                                            py-2.5
+                                            px-4
+                                            rounded-2xl
+                                            border
+                                            border-gray-200
+                                            hover:border-primary/40
+                                            text-center
+                                            text-dark
+                                            hover:text-primary
+                                            text-xs
+                                            font-extrabold
+                                            transition-all
+                                            duration-200
+                                        "
+                                    >
+                                        Log In
+                                    </Link>
+
+                                    <Link
+                                        href="/become-a-tutor"
+                                        onClick={closeMenu}
+                                        className="
+                                            w-full
+                                            py-2.5
+                                            px-4
+                                            rounded-2xl
+                                            bg-primary
+                                            text-center
+                                            text-white
+                                            text-xs
+                                            font-black
+                                            transition-all
+                                            duration-200
+                                            hover:bg-primary-dark
+                                            shadow-md
+                                            flex
+                                            items-center
+                                            justify-center
+                                            gap-1.5
+                                        "
+                                    >
+                                        <Sparkles size={13} />
+                                        Become a Tutor
+                                    </Link>
+                                </div>
+                            )
+                        )}
+                    </div>
                 </div>
             )}
         </nav>

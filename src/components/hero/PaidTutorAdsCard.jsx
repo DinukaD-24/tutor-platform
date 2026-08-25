@@ -62,16 +62,19 @@ export default function PaidTutorAdsCard({ ads }) {
     <div 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-white rounded-2xl lg:rounded-3xl border border-gray-100 p-4 lg:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between h-full relative"
+      className="bg-white rounded-3xl border border-gray-100/90 p-4.5 lg:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_16px_40px_rgba(33,131,150,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full relative"
     >
       <div className="flex flex-col h-full space-y-3">
         {/* Top Card Header */}
-        <div className="flex items-center justify-between border-b border-gray-50 pb-2.5 shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-teal-500/10 text-teal-600 flex items-center justify-center">
-              <Megaphone size={14} />
+        <div className="flex items-center justify-between border-b border-gray-100/80 pb-3 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center border border-teal-500/15 shadow-2xs">
+              <Megaphone size={15} />
             </div>
-            <h3 className="font-extrabold text-sm text-dark">Featured Tutor Ads</h3>
+            <div>
+              <h3 className="font-extrabold text-sm text-dark tracking-tight">Featured Tutor Ads</h3>
+              <p className="text-[10px] text-gray-400 font-semibold">Promoted educator spotlight</p>
+            </div>
           </div>
           <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-teal-700 text-white shadow-2xs">
             {currentAd.badge || "PAID AD"}
@@ -83,9 +86,9 @@ export default function PaidTutorAdsCard({ ads }) {
           
           <div className="space-y-3">
             {/* Tutor Profile Header Bar */}
-            <div className="flex items-center justify-between gap-2 bg-white/80 backdrop-blur-md p-2 rounded-xl border border-white/90 shadow-2xs">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-8 h-8 rounded-lg overflow-hidden border border-teal-200 bg-teal-100 shrink-0">
+            <div className="flex items-center justify-between gap-2 bg-white/85 backdrop-blur-md p-2.5 rounded-xl border border-white/90 shadow-2xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8.5 h-8.5 rounded-xl overflow-hidden border border-teal-200 bg-teal-100 shrink-0 shadow-2xs">
                   {currentAd.tutorImage ? (
                     <img src={currentAd.tutorImage} alt={currentAd.tutorName} className="w-full h-full object-cover" />
                   ) : (
@@ -99,7 +102,7 @@ export default function PaidTutorAdsCard({ ads }) {
                   <p className="text-[10px] font-semibold text-teal-700 truncate">{currentAd.tutorSubject || "Verified Tutor"}</p>
                 </div>
               </div>
-              <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 rounded-md text-[10px] font-extrabold text-amber-700 border border-amber-200/60 shrink-0">
+              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-amber-50 rounded-full text-[10px] font-extrabold text-amber-700 border border-amber-200/60 shrink-0 shadow-2xs">
                 <Star size={11} className="fill-amber-400 text-amber-400" />
                 <span>{currentAd.rating || 5.0}</span>
               </div>
@@ -133,7 +136,7 @@ export default function PaidTutorAdsCard({ ads }) {
 
               {/* Tutor Photo Card */}
               <div className="col-span-5 flex justify-end">
-                <div className="w-24 h-28 lg:w-28 lg:h-32 rounded-xl overflow-hidden border-2 border-white shadow-md bg-teal-900/10 shrink-0">
+                <div className="w-24 h-28 lg:w-28 lg:h-32 rounded-2xl overflow-hidden border-2 border-white shadow-md bg-teal-900/10 shrink-0">
                   {currentAd.tutorImage ? (
                     <img
                       src={currentAd.tutorImage}
@@ -152,7 +155,7 @@ export default function PaidTutorAdsCard({ ads }) {
             {/* Metadata Badges */}
             <div className="grid grid-cols-1 gap-1 text-[10px] text-teal-950 font-medium pt-1">
               {currentAd.university && (
-                <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                <div className="flex items-center gap-1.5 truncate bg-white/60 backdrop-blur-2xs px-2.5 py-1 rounded-xl border border-teal-200/60">
                   <GraduationCap size={12} className="text-teal-800 shrink-0" />
                   <span className="truncate">{currentAd.university}</span>
                 </div>
@@ -163,20 +166,20 @@ export default function PaidTutorAdsCard({ ads }) {
                 const combined = [sylStr, grdStr].filter(Boolean).join(" • ");
                 if (!combined) return null;
                 return (
-                  <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                  <div className="flex items-center gap-1.5 truncate bg-white/60 backdrop-blur-2xs px-2.5 py-1 rounded-xl border border-teal-200/60">
                     <BookOpen size={12} className="text-teal-800 shrink-0" />
                     <span className="truncate font-bold text-teal-950">{combined}</span>
                   </div>
                 );
               })()}
               {currentAd.location && (
-                <div className="flex items-center gap-1.5 truncate bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                <div className="flex items-center gap-1.5 truncate bg-white/60 backdrop-blur-2xs px-2.5 py-1 rounded-xl border border-teal-200/60">
                   <MapPin size={12} className="text-teal-800 shrink-0" />
                   <span className="truncate">{currentAd.location}</span>
                 </div>
               )}
               {currentAd.phone && (
-                <div className="flex items-center gap-1.5 bg-white/50 backdrop-blur-2xs px-2.5 py-1 rounded-lg border border-teal-200/60">
+                <div className="flex items-center gap-1.5 bg-white/60 backdrop-blur-2xs px-2.5 py-1 rounded-xl border border-teal-200/60">
                   <Phone size={12} className="text-teal-800 shrink-0" />
                   <span className="font-semibold">{currentAd.phone}</span>
                 </div>
@@ -184,7 +187,7 @@ export default function PaidTutorAdsCard({ ads }) {
             </div>
           </div>
 
-          {/* Sample Lessons Strip (Fixed height for 2 slots to prevent layout shift during auto-scroll) */}
+          {/* Sample Lessons Strip */}
           <div className="mt-3 space-y-1.5 min-h-[125px] flex flex-col justify-end">
             <p className="text-[9px] font-black uppercase tracking-widest text-teal-800/70 flex items-center gap-1">
               <PlayCircle size={10} />
@@ -195,9 +198,9 @@ export default function PaidTutorAdsCard({ ads }) {
               {currentAd.videos && currentAd.videos[0] ? (
                 <Link
                   href={`/watch/${currentAd.videos[0].id}`}
-                  className="flex items-center gap-2 bg-white/70 hover:bg-white border border-white/80 hover:border-teal-200 rounded-lg px-2 py-1.5 transition-all duration-150 group h-[46px]"
+                  className="flex items-center gap-2 bg-white/70 hover:bg-white border border-white/80 hover:border-teal-200 rounded-xl px-2 py-1.5 transition-all duration-150 group h-[46px]"
                 >
-                  <div className="relative w-14 h-9 rounded-md overflow-hidden shrink-0 bg-teal-900/10">
+                  <div className="relative w-14 h-9 rounded-lg overflow-hidden shrink-0 bg-teal-900/10">
                     <img
                       src={`https://img.youtube.com/vi/${currentAd.videos[0].youtubeId}/mqdefault.jpg`}
                       alt={currentAd.videos[0].title}
@@ -226,8 +229,8 @@ export default function PaidTutorAdsCard({ ads }) {
                   </div>
                 </Link>
               ) : (
-                <div className="flex items-center gap-2 bg-white/40 border border-dashed border-teal-200/70 rounded-lg px-2 py-1.5 h-[46px]">
-                  <div className="w-14 h-9 rounded-md bg-teal-900/5 flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2 bg-white/40 border border-dashed border-teal-200/70 rounded-xl px-2 py-1.5 h-[46px]">
+                  <div className="w-14 h-9 rounded-lg bg-teal-900/5 flex items-center justify-center shrink-0">
                     <PlayCircle size={14} className="text-teal-800/40" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -243,9 +246,9 @@ export default function PaidTutorAdsCard({ ads }) {
               {currentAd.videos && currentAd.videos[1] ? (
                 <Link
                   href={`/watch/${currentAd.videos[1].id}`}
-                  className="flex items-center gap-2 bg-white/70 hover:bg-white border border-white/80 hover:border-teal-200 rounded-lg px-2 py-1.5 transition-all duration-150 group h-[46px]"
+                  className="flex items-center gap-2 bg-white/70 hover:bg-white border border-white/80 hover:border-teal-200 rounded-xl px-2 py-1.5 transition-all duration-150 group h-[46px]"
                 >
-                  <div className="relative w-14 h-9 rounded-md overflow-hidden shrink-0 bg-teal-900/10">
+                  <div className="relative w-14 h-9 rounded-lg overflow-hidden shrink-0 bg-teal-900/10">
                     <img
                       src={`https://img.youtube.com/vi/${currentAd.videos[1].youtubeId}/mqdefault.jpg`}
                       alt={currentAd.videos[1].title}
@@ -274,8 +277,8 @@ export default function PaidTutorAdsCard({ ads }) {
                   </div>
                 </Link>
               ) : (
-                <div className="flex items-center gap-2 bg-white/40 border border-dashed border-teal-200/70 rounded-lg px-2 py-1.5 h-[46px]">
-                  <div className="w-14 h-9 rounded-md bg-teal-900/5 flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2 bg-white/40 border border-dashed border-teal-200/70 rounded-xl px-2 py-1.5 h-[46px]">
+                  <div className="w-14 h-9 rounded-lg bg-teal-900/5 flex items-center justify-center shrink-0">
                     <PlayCircle size={14} className="text-teal-800/40" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -293,7 +296,7 @@ export default function PaidTutorAdsCard({ ads }) {
           <div className="pt-3">
             <Link
               href={`/tutors/${currentAd.tutorSlug || currentAd.tutorId}`}
-              className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 bg-[#0d8a6e] hover:bg-[#096d57] text-white font-bold text-xs rounded-xl shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-teal-700 to-primary hover:from-teal-800 hover:to-primary-dark text-white font-black text-xs rounded-full shadow-[0_4px_14px_rgba(13,138,110,0.3)] hover:-translate-y-0.5 transition-all duration-200"
             >
               {currentAd.ctaText || "View Tutor Profile"}
               <ArrowUpRight size={14} />
@@ -303,17 +306,17 @@ export default function PaidTutorAdsCard({ ads }) {
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between pt-2.5 border-t border-gray-50 mt-2.5 shrink-0">
+      <div className="flex items-center justify-between pt-3 border-t border-gray-100/80 mt-3 shrink-0">
         <button
           onClick={handlePrev}
-          className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer shadow-2xs"
+          className="w-7 h-7 rounded-full border border-gray-200/80 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer shadow-2xs"
           aria-label="Previous Ad"
         >
           <ChevronLeft size={14} />
         </button>
 
         {/* Carousel Dots */}
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {displayAds.slice(0, 5).map((_, idx) => (
             <button
               key={idx}
@@ -328,7 +331,7 @@ export default function PaidTutorAdsCard({ ads }) {
 
         <button
           onClick={handleNext}
-          className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer shadow-2xs"
+          className="w-7 h-7 rounded-full border border-gray-200/80 bg-white flex items-center justify-center text-gray-500 hover:text-dark hover:border-gray-300 transition-all cursor-pointer shadow-2xs"
           aria-label="Next Ad"
         >
           <ChevronRight size={14} />

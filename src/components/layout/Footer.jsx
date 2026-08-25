@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, MapPin, ArrowRight } from "lucide-react";
+import { Mail, MapPin, ArrowRight, Sparkles } from "lucide-react";
 
 const footerLinks = {
     Explore: [
@@ -22,21 +22,22 @@ const footerLinks = {
 
 export default function Footer() {
     return (
-        <footer className="mt-auto border-t border-gray-100 bg-gray-50/50 pt-16 pb-8">
+        <footer className="mt-auto border-t border-gray-100/90 bg-white/80 backdrop-blur-2xl pt-16 pb-8">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 pb-12 border-b border-gray-100">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 pb-12 border-b border-gray-100/90">
 
                     {/* Brand Column */}
                     <div className="space-y-4 md:col-span-1">
-                        <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+                        <Link href="/" className="inline-block hover:scale-105 transition-transform duration-200">
                             <Image
                                 src="/logo.svg"
                                 alt="TutorHub Logo"
-                                width={130}
-                                height={46}
+                                width={135}
+                                height={48}
+                                className="h-10 w-auto object-contain"
                             />
                         </Link>
-                        <p className="text-gray-500 text-sm leading-relaxed">
+                        <p className="text-gray-600 text-xs leading-relaxed font-medium">
                             Connecting Sri Lankan students with qualified, verified tutors across local and international syllabuses.
                         </p>
                         
@@ -46,7 +47,7 @@ export default function Footer() {
                                 { label: "Facebook", path: "M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z" },
                                 { label: "Instagram", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
                             ].map((social) => (
-                                <a key={social.label} href="#" aria-label={social.label} className="w-8 h-8 rounded-lg bg-white border border-gray-100 text-gray-400 hover:text-primary hover:border-primary/20 flex items-center justify-center transition-colors">
+                                <a key={social.label} href="#" aria-label={social.label} className="w-8 h-8 rounded-full bg-gray-100/80 border border-gray-200/60 text-gray-500 hover:text-primary hover:bg-primary/10 hover:border-primary/30 flex items-center justify-center transition-all duration-200 shadow-2xs">
                                     <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                                         <path d={social.path} />
                                     </svg>
@@ -58,13 +59,13 @@ export default function Footer() {
                     {/* Link Columns */}
                     {Object.entries(footerLinks).map(([group, links]) => (
                         <div key={group} className="space-y-4">
-                            <h4 className="text-xs font-extrabold text-dark uppercase tracking-wider">{group}</h4>
+                            <h4 className="text-xs font-black text-dark uppercase tracking-wider">{group}</h4>
                             <ul className="space-y-2.5">
                                 {links.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="text-sm text-gray-500 hover:text-primary transition-colors font-medium"
+                                            className="text-xs text-gray-600 hover:text-primary font-bold transition-colors"
                                         >
                                             {link.label}
                                         </Link>
@@ -76,24 +77,25 @@ export default function Footer() {
 
                     {/* Contact Column */}
                     <div className="space-y-4">
-                        <h4 className="text-xs font-extrabold text-dark uppercase tracking-wider">Contact</h4>
-                        <ul className="space-y-3">
+                        <h4 className="text-xs font-black text-dark uppercase tracking-wider">Contact</h4>
+                        <ul className="space-y-3 text-xs">
                             <li className="flex items-start gap-2.5">
                                 <Mail size={14} className="text-primary shrink-0 mt-0.5" />
-                                <a href="mailto:tutorhubadmin@gmail.com" className="text-sm text-gray-500 hover:text-primary transition-colors break-all">
+                                <a href="mailto:tutorhubadmin@gmail.com" className="text-gray-600 hover:text-primary font-bold transition-colors break-all">
                                     tutorhubadmin@gmail.com
                                 </a>
                             </li>
                             <li className="flex items-start gap-2.5">
                                 <MapPin size={14} className="text-primary shrink-0 mt-0.5" />
-                                <span className="text-sm text-gray-500">Colombo, Sri Lanka</span>
+                                <span className="text-gray-600 font-semibold">Colombo, Sri Lanka</span>
                             </li>
                         </ul>
                         <div className="pt-2">
                             <Link
                                 href="/become-a-tutor"
-                                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary-dark transition-colors"
+                                className="inline-flex items-center gap-1.5 text-xs font-black text-primary hover:text-primary-dark transition-colors"
                             >
+                                <Sparkles size={12} />
                                 Become a Tutor <ArrowRight size={12} />
                             </Link>
                         </div>
@@ -102,9 +104,9 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-8 text-xs text-gray-400">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-8 text-xs text-gray-400 font-medium">
                     <span>&copy; {new Date().getFullYear()} TutorHub.LK. All rights reserved.</span>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
                         <Link href="/about"   className="hover:text-primary transition-colors">About</Link>
                         <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
                         <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
