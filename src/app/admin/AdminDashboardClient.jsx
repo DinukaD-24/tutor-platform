@@ -381,7 +381,7 @@ export default function AdminDashboardClient() {
         if (selectedModel === "topic") return ["Name", "Slug", "Target Subject", "Target Grade", "Target Syllabus"];
         if (selectedModel === "video") return ["Title", "YouTube ID", "Topic", "Subject", "Grade", "Syllabus", "Tutor"];
         if (selectedModel === "material") return ["Title", "URL", "Topic", "Subject", "Grade", "Syllabus"];
-        if (selectedModel === "tutor") return ["Name", "Subject", "Specializations", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
+        if (selectedModel === "tutor") return ["Photo", "Name", "Subject", "Specializations", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
         if (selectedModel === "tutorad") return ["Title", "Tagline", "Badge", "Order", "Active", "Tutor"];
         if (selectedModel === "tutorapplication") return ["Name", "Email", "Phone", "Category", "Subjects", "Syllabuses", "Mediums", "Location", "Online", "Physical", "Status"];
         if (records.length > 0) return Object.keys(records[0]).slice(0, 8);
@@ -390,6 +390,19 @@ export default function AdminDashboardClient() {
 
     const renderTableCell = (rec, colName) => {
         const lower = colName.toLowerCase();
+        if (lower === "photo") {
+            return (
+                <div className="w-8 h-10 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0 flex items-center justify-center shadow-2xs">
+                    {rec.image ? (
+                        <img src={rec.image} alt={rec.name} className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full bg-[#0d8a6e] text-white font-extrabold flex items-center justify-center text-xs">
+                            {rec.name?.charAt(0) || "T"}
+                        </div>
+                    )}
+                </div>
+            );
+        }
         if (lower === "name") return rec.name;
         if (lower === "slug") return rec.slug;
         if (lower === "order") return rec.order ?? 0;
@@ -1116,6 +1129,93 @@ export default function AdminDashboardClient() {
                                                             <option key={tut.id} value={tut.id}>{tut.name} ({tut.email})</option>
                                                         ))}
                                                     </select>
+                                                </div>
+                                            );
+                                        }
+
+                                        if (k === "image" || k === "imageUrl") {
+                                            return (
+                                                <div key={k} className="space-y-2 bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-100/80">
+                                                    <label className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
+                                                        Profile Photo / Picture ({k})
+                                                    </label>
+                                                    <div className="flex gap-3 items-center">
+                                                        {/* Thumbnail Preview */}
+                                                        <div className="w-16 h-20 rounded-xl bg-white border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs">
+                                                            {formData[k] ? (
+                                                                <img src={formData[k]} alt="Profile Preview" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full bg-[#0d8a6e] text-white font-extrabold flex items-center justify-center text-base">
+                                                                    {formData.name?.charAt(0) || "No Pic"}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex-1 space-y-2">
+                                                            <input
+                                                                type="text"
+                                                                value={formData[k] ?? ""}
+                                                                onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                                placeholder="Image URL or upload from PC below..."
+                                                                className="w-full border border-gray-200 bg-white rounded-xl px-3.5 py-2 text-xs text-dark focus:border-primary outline-none"
+                                                            />
+
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {/* File upload from PC */}
+                                                                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0d8a6e] hover:bg-[#096d57] text-white font-extrabold text-[11px] rounded-lg cursor-pointer transition-all shadow-xs">
+                                                                    📁 Upload from PC
+                                                                    <input
+                                                                        type="file"
+                                                                        accept="image/*"
+                                                                        className="hidden"
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (!file) return;
+                                                                            const reader = new FileReader();
+                                                                            reader.onload = (event) => {
+                                                                                const img = new Image();
+                                                                                img.onload = () => {
+                                                                                    const canvas = document.createElement("canvas");
+                                                                                    const maxDim = 800;
+                                                                                    let width = img.width;
+                                                                                    let height = img.height;
+                                                                                    if (width > height) {
+                                                                                        if (width > maxDim) {
+                                                                                            height = Math.round((height * maxDim) / width);
+                                                                                            width = maxDim;
+                                                                                        }
+                                                                                    } else {
+                                                                                        if (height > maxDim) {
+                                                                                            width = Math.round((width * maxDim) / height);
+                                                                                            height = maxDim;
+                                                                                        }
+                                                                                    }
+                                                                                    canvas.width = width;
+                                                                                    canvas.height = height;
+                                                                                    const ctx = canvas.getContext("2d");
+                                                                                    ctx.drawImage(img, 0, 0, width, height);
+                                                                                    const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                                                                                    setFormData(prev => ({ ...prev, [k]: compressedDataUrl }));
+                                                                                };
+                                                                                img.src = event.target.result;
+                                                                            };
+                                                                            reader.readAsDataURL(file);
+                                                                        }}
+                                                                    />
+                                                                </label>
+
+                                                                {formData[k] && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setFormData(prev => ({ ...prev, [k]: "" }))}
+                                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[11px] rounded-lg transition-all cursor-pointer"
+                                                                    >
+                                                                        🗑️ Clear Photo
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             );
                                         }
