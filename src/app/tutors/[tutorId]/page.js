@@ -371,11 +371,9 @@ export default async function TutorProfilePage({ params }) {
                         
                         {/* ── VIDEO LESSON HIGHLIGHT ── */}
                         {(() => {
-                            const featuredVideo = (tutor.videos && tutor.videos.length > 0) ? tutor.videos[0] : {
-                                id: "sample",
-                                youtubeId: "dQw4w9WgXcQ",
-                                title: `${tutor.subject || "Lesson"} Highlight`
-                            };
+                            const hasVideo = tutor.videos && tutor.videos.length > 0;
+                            const featuredVideo = hasVideo ? tutor.videos[0] : null;
+                            
                             return (
                                 <div className="bg-white rounded-3xl border border-gray-100 p-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] space-y-2.5">
                                     <div className="flex items-center justify-between">
@@ -383,33 +381,47 @@ export default async function TutorProfilePage({ params }) {
                                             <span className="text-[#0d8a6e]">{tutor.subject || "Video"}</span> Lesson Highlight
                                         </h4>
                                         <span className="px-2 py-0.5 bg-[#e6f7f2] text-[#0d8a6e] text-[9px] font-black rounded-full border border-[#c2edd9] uppercase tracking-wider">
-                                            FEATURED
+                                            {hasVideo ? "FEATURED" : "LESSONS"}
                                         </span>
                                     </div>
                                     
-                                    <div className="p-1 bg-[#f4f9f8] rounded-2xl border-2 border-[#b2e8d4] shadow-xs overflow-hidden">
-                                        <div className="aspect-video w-full rounded-xl overflow-hidden bg-black relative">
-                                            <iframe
-                                                src={`https://www.youtube.com/embed/${featuredVideo.youtubeId}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0`}
-                                                title={featuredVideo.title || "Lesson Highlight"}
-                                                className="w-full h-full border-0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                allowFullScreen
-                                            />
+                                    {hasVideo ? (
+                                        <>
+                                            <div className="p-1 bg-[#f4f9f8] rounded-2xl border-2 border-[#b2e8d4] shadow-xs overflow-hidden">
+                                                <div className="aspect-video w-full rounded-xl overflow-hidden bg-black relative">
+                                                    <iframe
+                                                        src={`https://www.youtube.com/embed/${featuredVideo.youtubeId}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0`}
+                                                        title={featuredVideo.title || "Lesson Highlight"}
+                                                        className="w-full h-full border-0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="pt-1 flex items-center justify-between">
+                                                <p className="font-extrabold text-xs text-dark truncate flex-1 pr-2">{featuredVideo.title}</p>
+                                                <Link
+                                                    href={`/watch/${featuredVideo.id}`}
+                                                    className="text-[10px] font-extrabold text-[#0d8a6e] hover:underline shrink-0"
+                                                >
+                                                    Watch Full →
+                                                </Link>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="p-4 bg-[#f4f9f8] rounded-2xl border border-dashed border-[#b2e8d4] text-center space-y-2 my-1">
+                                            <div className="w-10 h-10 rounded-full bg-[#e6f7f2] text-[#0d8a6e] flex items-center justify-center mx-auto border border-[#c2edd9]">
+                                                <Play size={18} className="fill-[#0d8a6e] ml-0.5 text-[#0d8a6e]" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="font-extrabold text-xs text-dark">No Sample Lessons Uploaded Yet</p>
+                                                <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
+                                                    This tutor hasn&apos;t uploaded video lessons yet. You can contact them directly or follow their profile for updates!
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div className="pt-1 flex items-center justify-between">
-                                        <p className="font-extrabold text-xs text-dark truncate flex-1 pr-2">{featuredVideo.title}</p>
-                                        {featuredVideo.id !== "sample" && (
-                                            <Link
-                                                href={`/watch/${featuredVideo.id}`}
-                                                className="text-[10px] font-extrabold text-[#0d8a6e] hover:underline shrink-0"
-                                            >
-                                                Watch Full →
-                                            </Link>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             );
                         })()}
