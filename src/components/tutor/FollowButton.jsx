@@ -61,7 +61,7 @@ export default function FollowButton({ tutorId }) {
 
     // Render a subtle skeleton loader while checking status to prevent layout jumps
     if (loading) {
-        return <div className="w-full h-[46px] rounded-xl bg-gray-100/70 animate-pulse shrink-0" />;
+        return <div className="w-full h-[46px] rounded-full bg-gray-100/70 animate-pulse shrink-0" />;
     }
 
     // If not a student or not allowed to follow, hide button
@@ -73,21 +73,12 @@ export default function FollowButton({ tutorId }) {
         <button
             onClick={handleFollow}
             className={`
-                w-full
-                flex
-                items-center
-                justify-center
-                gap-2
-                py-3.5
-                font-bold
-                text-sm
-                rounded-xl
-                transition-all
-                duration-200
-                cursor-pointer
+                w-full flex items-center justify-center gap-2
+                py-3 font-extrabold text-sm rounded-full
+                transition-all duration-200 cursor-pointer
                 ${isFollowing
-                    ? "bg-white border-2 border-primary/20 text-primary hover:bg-primary/5"
-                    : "bg-primary text-white hover:bg-primary-dark shadow-glow-primary hover:-translate-y-0.5"
+                    ? "bg-white border-2 border-[#0d8a6e]/25 text-[#0d8a6e] hover:bg-[#f0fdf9]"
+                    : "bg-[#0d8a6e] text-white hover:bg-[#096d57] shadow-[0_4px_20px_rgba(13,138,110,0.35)] hover:-translate-y-0.5"
                 }
             `}
         >
