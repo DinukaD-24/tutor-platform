@@ -368,6 +368,52 @@ export default async function TutorProfilePage({ params }) {
                         RIGHT SIDEBAR
                     ══════════════════════════════════════════ */}
                     <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+                        
+                        {/* ── VIDEO LESSON HIGHLIGHT ── */}
+                        {(() => {
+                            const featuredVideo = (tutor.videos && tutor.videos.length > 0) ? tutor.videos[0] : {
+                                id: "sample",
+                                youtubeId: "dQw4w9WgXcQ",
+                                title: `${tutor.subject || "Lesson"} Highlight`
+                            };
+                            return (
+                                <div className="bg-white rounded-3xl border border-gray-100 p-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-black text-sm text-dark tracking-tight flex items-center gap-1.5">
+                                            <span className="text-[#0d8a6e]">{tutor.subject || "Video"}</span> Lesson Highlight
+                                        </h4>
+                                        <span className="px-2 py-0.5 bg-[#e6f7f2] text-[#0d8a6e] text-[9px] font-black rounded-full border border-[#c2edd9] uppercase tracking-wider">
+                                            FEATURED
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="p-1 bg-[#f4f9f8] rounded-2xl border-2 border-[#b2e8d4] shadow-xs overflow-hidden">
+                                        <div className="aspect-video w-full rounded-xl overflow-hidden bg-black relative">
+                                            <iframe
+                                                src={`https://www.youtube.com/embed/${featuredVideo.youtubeId}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0`}
+                                                title={featuredVideo.title || "Lesson Highlight"}
+                                                className="w-full h-full border-0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="pt-1 flex items-center justify-between">
+                                        <p className="font-extrabold text-xs text-dark truncate flex-1 pr-2">{featuredVideo.title}</p>
+                                        {featuredVideo.id !== "sample" && (
+                                            <Link
+                                                href={`/watch/${featuredVideo.id}`}
+                                                className="text-[10px] font-extrabold text-[#0d8a6e] hover:underline shrink-0"
+                                            >
+                                                Watch Full →
+                                            </Link>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
                         <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
 
                             {/* Class Format */}
