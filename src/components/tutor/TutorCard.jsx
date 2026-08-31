@@ -139,11 +139,11 @@ export default function TutorCard({ tutor }) {
                 <div className="grid grid-cols-2 gap-2 mt-3.5">
                     <div className="bg-gray-50/80 rounded-2xl p-2.5 text-center border border-gray-100">
                         <span className="block text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Lessons</span>
-                        <strong className="block text-xs sm:text-sm font-black text-dark mt-0.5">{tutor.lessonsCount || "10+"}</strong>
+                        <strong className="block text-xs sm:text-sm font-black text-dark mt-0.5">{tutor.lessonsCount ?? 0}</strong>
                     </div>
                     <div className="bg-gray-50/80 rounded-2xl p-2.5 text-center border border-gray-100">
                         <span className="block text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Students</span>
-                        <strong className="block text-xs sm:text-sm font-black text-dark mt-0.5">{tutor.studentsCount || "5+"}</strong>
+                        <strong className="block text-xs sm:text-sm font-black text-dark mt-0.5">{tutor.studentsCount ?? 0}</strong>
                     </div>
                 </div>
             </div>

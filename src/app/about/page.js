@@ -8,18 +8,19 @@ import { getSiteStats } from "@/utils/getData";
 export const dynamic = "force-dynamic";
 
 const timeline = [
-    { year: "2023", title: "The Idea", desc: "TutorHub was conceived by a group of undergraduate students who struggled to find structured, syllabus-aligned resources during their A/L preparation." },
-    { year: "2024", title: "Building the Foundation", desc: "We built a structured data model for the Sri Lankan, Edexcel, and Cambridge syllabuses and launched the first version of the platform with a small group of tutors." },
-    { year: "2025", title: "Growing the Network", desc: "The tutor network expanded to 50+ verified educators. Students began discovering tutors directly through subject and topic pages." },
-    { year: "Now",  title: "Phase 3 — Student Experience", desc: "We are building rich tutor profiles, live search and filters, student progress tracking, and preparing for full backend integration." },
+    { year: "April 2026", title: "The Concept & Vision", desc: "TutorHub.LK was conceived by engineering undergraduates to solve Sri Lanka's fragmented tutor discovery process with a clean, structured directory." },
+    { year: "May 2026", title: "Platform Architecture", desc: "Built a structured database model for Local A/L, O/L, Edexcel, and Cambridge syllabuses, onboarding our first cohort of verified educators." },
+    { year: "July 2026", title: "Media & Verified Profiles", desc: "Expanded tutor profiles with sample video tutorial highlights, verified credentials, and direct email communication channels." },
+    { year: "August 2026", title: "Tuition Request Board & Beyond", desc: "Launched student tuition request posts, live search filters, and an interactive community wall connecting students and tutors island-wide." },
 ];
 
 const faqs = [
-    { q: "Is TutorHub free for students?",      a: "Yes. Browsing tutors, subjects, topics, and study materials on TutorHub is completely free for students. Individual tutor session fees are set by the tutors themselves." },
-    { q: "How do I become a tutor on TutorHub?", a: "Click the 'Become a Tutor' button in the navigation bar or visit the dedicated registration page to submit your educator profile for review." },
-    { q: "What syllabuses does TutorHub support?", a: "We currently support Local A/L, Local O/L, Edexcel, and Cambridge syllabuses. More curricula are planned for the next phase." },
-    { q: "Can I contact a tutor directly?",     a: "Yes. Each tutor profile displays their email, phone, and location so students can reach out directly to arrange lessons." },
-    { q: "How are tutors verified?",            a: "Tutors submit their qualifications and academic credentials during registration. Our team manually reviews each application before awarding Verified status." },
+    { q: "Is TutorHub free for students?", a: "Yes! Browsing verified tutors, exploring syllabuses, watching sample video lessons, and posting tuition requests on TutorHub is 100% free for students." },
+    { q: "How do I become a tutor on TutorHub?", a: "Click 'Become a Tutor' in the navigation bar, submit your academic qualifications and teaching details, and our admin team will review your application for verification." },
+    { q: "How do Student Tuition Requests work?", a: "Students can post custom tuition requests (specifying grade/age, syllabus, subjects, theory/revision, sports or music skills). Approved tutors can browse the request wall and contact students directly via email!" },
+    { q: "What syllabuses and subjects does TutorHub support?", a: "We support Local A/L, Local O/L, Edexcel, Cambridge, and custom extra-curricular subjects (sports, music, language skills, and non-standard courses)." },
+    { q: "How can tutors and students contact each other?", a: "Students can send direct email messages to tutors from their profile page. Tutors can also contact students who post tuition requests through our verified email dispatch system." },
+    { q: "How are tutors verified?", a: "Tutors submit their university affiliation, academic credentials, and teaching experience during registration. Each profile is manually reviewed before receiving the Verified Profile badge." },
 ];
 
 export default async function AboutPage() {

@@ -195,3 +195,31 @@ model Student {
   followedTutors Tutor[]  @relation("StudentFollowedTutors")
   visitedVideos  Video[]  @relation("StudentVisitedVideos")
 }
+
+model TuitionRequest {
+  id           String                  @id @default(cuid())
+  studentId    String?
+  studentName  String
+  studentEmail String                  // Private email - used for dispatching contact messages
+  syllabus     String                  // Local A/L, Local O/L, Edexcel, Cambridge, Other / Custom
+  gradeOrAge   String                  // e.g. Grade 11, Age 15, Adult Learner
+  subject      String                  // e.g. Physics, Combined Maths, Guitar, Spoken English
+  classType    String                  @default("Revision & Theory") // Theory, Revision, Paper Class, General, Skill
+  mode         String                  @default("Online & Physical") // Online, Physical, Online & Physical
+  location     String?                 // District / City if physical
+  message      String                  // Detailed description / custom message
+  status       String                  @default("active") // active | closed
+  createdAt    DateTime                @default(now())
+  contacts     TuitionRequestContact[]
+}
+
+model TuitionRequestContact {
+  id               String         @id @default(cuid())
+  requestId        String
+  request          TuitionRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  tutorId          String
+  tutorName        String
+  tutorEmail       String
+  message          String
+  createdAt        DateTime       @default(now())
+}

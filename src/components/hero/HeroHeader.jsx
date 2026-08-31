@@ -97,6 +97,37 @@ export default function HeroHeader() {
           <Search size={14} className="text-primary" />
           Find a Tutor
         </Link>
+
+        <Link
+          href="/explore"
+          className="
+            inline-flex
+            items-center
+            gap-2
+            px-5
+            py-3
+            bg-gradient-to-r
+            from-emerald-600
+            to-[#0d8a6e]
+            hover:from-emerald-700
+            hover:to-[#096d57]
+            text-white
+            font-black
+            rounded-full
+            shadow-[0_4px_16px_rgba(13,138,110,0.3)]
+            hover:-translate-y-0.5
+            active:translate-y-0
+            transition-all
+            duration-200
+            text-xs
+            sm:text-sm
+            border
+            border-emerald-300/30
+          "
+        >
+          <Sparkles size={14} className="text-emerald-200" />
+          Tuition Requests ✦
+        </Link>
       </div>
     </div>
   );
