@@ -70,7 +70,7 @@ export default function PopularVideosCard({ videos }) {
               <p className="text-[10px] text-gray-400 font-semibold">Top video tutorials</p>
             </div>
           </div>
-          <Link href="/syllabus" className="text-xs font-bold text-[#0d8a6e] hover:text-[#065443] flex items-center gap-0.5 hover:underline">
+          <Link href="/videos" className="text-xs font-bold text-[#0d8a6e] hover:text-[#065443] flex items-center gap-0.5 hover:underline">
             View all <ChevronRight size={14} />
           </Link>
         </div>
@@ -79,7 +79,7 @@ export default function PopularVideosCard({ videos }) {
         <div className="shrink-0">
           <Link
             key={animKey}
-            href={currentVideo.id.startsWith("demo") ? "/syllabus" : `/watch/${currentVideo.id}`}
+            href={currentVideo.id.startsWith("demo") ? "/videos" : `/watch/${currentVideo.id}`}
             className="video-card-enter flex items-start gap-3 p-3 rounded-3xl border border-gray-100 hover:border-[#0d8a6e]/30 hover:shadow-md transition-colors duration-200 group block"
           >
             {/* Thumbnail */}
@@ -163,7 +163,7 @@ export default function PopularVideosCard({ videos }) {
         {/* ── CTA Button ── */}
         <div className="shrink-0 mt-auto">
           <Link
-            href="/syllabus"
+            href="/videos"
             className="w-full py-3 px-4 bg-gradient-to-r from-[#0d8a6e] via-[#096d57] to-[#065443] hover:from-[#096d57] hover:to-[#044033] text-white font-extrabold text-xs sm:text-sm rounded-full shadow-md flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border border-emerald-400/20"
           >
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-[radial-gradient(circle,rgba(255,255,255,0.25)_1px,transparent_1px)] [background-size:6px_6px] opacity-40 pointer-events-none" />

@@ -351,6 +351,47 @@ export async function getPopularVideos(limit = 3) {
   }
 }
 
+export async function getAllVideos() {
+  try {
+    const videos = await prisma.video.findMany({
+      include: {
+        tutor: true,
+        topic: {
+          include: {
+            subject: {
+              include: {
+                grade: true
+              }
+            }
+          }
+        },
+        visitors: { select: { id: true } }
+      },
+      orderBy: { id: "desc" }
+    });
+
+    return videos.map(v => ({
+      id: v.id,
+      youtubeId: v.youtubeId,
+      title: v.title,
+      description: v.description || "",
+      duration: v.duration || "10:00",
+      tutorName: v.tutor?.name || "Verified Tutor",
+      tutorSlug: v.tutor?.slug || v.tutorId,
+      tutorImage: v.tutor?.image || null,
+      tutorType: v.tutor?.tutorType || "",
+      subjectName: v.topic?.subject?.name || "General",
+      gradeName: v.topic?.subject?.grade?.name || "All Grades",
+      topicName: v.topic?.name || "",
+      viewsCount: v.visitors?.length || 0
+    }));
+  } catch (error) {
+    console.error("Error fetching all videos:", error);
+    return [];
+  }
+}
+
+
 export async function getNewlyJoinedTutors(limit = 6) {
   try {
     const tutors = await prisma.tutor.findMany({

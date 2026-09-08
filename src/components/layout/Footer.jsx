@@ -5,6 +5,7 @@ import { Mail, MapPin, ArrowRight, Sparkles } from "lucide-react";
 const footerLinks = {
     Explore: [
         { label: "Browse Subjects",   href: "/syllabus"         },
+        { label: "Video Lessons",     href: "/videos"           },
         { label: "Find a Tutor",      href: "/tutors"           },
         { label: "Local A/L",         href: "/syllabus/local-al"},
         { label: "Edexcel",           href: "/syllabus/edexcel" },
