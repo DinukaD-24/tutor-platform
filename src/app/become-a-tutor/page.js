@@ -32,7 +32,19 @@ const stats = [
     { value: "4.9",    label: "Avg. Tutor Rating" },
 ];
 
-const presetSyllabuses = ["Local A/L", "Local O/L", "Edexcel", "Cambridge", "Other / Extra Curricular"];
+const presetSyllabuses = [
+    "Local A/L",
+    "Local O/L",
+    "Junior Secondary (Grade 6-9)",
+    "Primary & Early Years (Grade 1-5)",
+    "Edexcel / Pearson",
+    "Cambridge (CAIE)",
+    "English Language & Fluency",
+    "National Languages",
+    "Foreign Languages",
+    "IT, Software & Engineering",
+    "Arts, Music & Creative"
+];
 const presetGrades = ["Grade 1 - 5", "Grade 6 - 9", "Local O/L (Grade 10-11)", "Local A/L (Grade 12-13)", "AS / A2 Level", "University Level", "Other / All Ages"];
 
 export default function BecomeATutorPage() {

@@ -214,9 +214,9 @@ export default function TutorsClient({ tutors }) {
 
                             {/* Syllabus */}
                             <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Syllabus</h4>
+                                <h4 className="text-xs font-bold text-dark uppercase tracking-wider">Syllabus & Category</h4>
                                 <div className="space-y-2.5">
-                                    {["Local A/L", "Local O/L", "Edexcel", "Cambridge", "Other / Extra Curricular"].map((s) => (
+                                    {["Local A/L", "Local O/L", "Junior Secondary (Grade 6-9)", "Primary & Early Years (Grade 1-5)", "Edexcel / Pearson", "Cambridge (CAIE)", "Languages & Communication", "Extra-Curricular & Tech Skills"].map((s) => (
                                         <label key={s} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-dark">
                                             <input 
                                                 type="checkbox"

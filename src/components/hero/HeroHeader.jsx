@@ -23,7 +23,7 @@ export default function HeroHeader() {
 
         {/* Description */}
         <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl font-medium">
-          Sri Lanka&apos;s #1 tutor discovery platform connecting students with top verified educators for Local A/L, O/L, Edexcel &amp; Cambridge syllabuses.
+          Sri Lanka&apos;s #1 tutor discovery platform connecting students with top verified educators across National Curriculums, International Boards, Languages &amp; Skills.
         </p>
       </div>
 

@@ -104,15 +104,57 @@ function serializeGrade(g) {
   };
 }
 
+export async function getAllCategories() {
+  try {
+    const categories = await prisma.category.findMany({
+      orderBy: { order: "asc" },
+      include: {
+        syllabuses: {
+          orderBy: { order: "asc" },
+          include: {
+            grades: {
+              orderBy: { order: "asc" },
+              include: gradeInclude
+            }
+          }
+        }
+      }
+    });
+
+    return categories.map((c) => ({
+      id: c.id,
+      slug: c.slug,
+      name: c.name,
+      description: c.description || "",
+      icon: c.icon || "GraduationCap",
+      syllabuses: c.syllabuses.map((s) => ({
+        id: s.id,
+        slug: s.slug,
+        name: s.name,
+        grades: s.grades.map(serializeGrade)
+      }))
+    }));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
+
 export async function getAllSyllabuses() {
   try {
     const syllabuses = await prisma.syllabus.findMany({
-      include: { grades: { orderBy: { order: "asc" }, include: gradeInclude } },
+      orderBy: { order: "asc" },
+      include: {
+        category: true,
+        grades: { orderBy: { order: "asc" }, include: gradeInclude }
+      },
     });
     return syllabuses.map((s) => ({
       id: s.id,
       slug: s.slug,
       name: s.name,
+      categoryName: s.category?.name || "General",
+      categorySlug: s.category?.slug || "general",
       grades: s.grades.map(serializeGrade),
     }));
   } catch (error) {
