@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
+import { requireStudent } from "@/lib/auth";
 
 export async function POST(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    // Require any authenticated user — prevents anonymous spam reviews
+    const auth = await requireStudent();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    const user = auth.user;
 
     const body = await request.json();
     const { tutorId, studentName, rating, comment } = body;
@@ -31,26 +35,24 @@ export async function POST(request) {
       return NextResponse.json({ error: "Tutor not found." }, { status: 404 });
     }
 
-    // Role Guard: Prevent tutors from reviewing themselves or other tutors
-    if (user) {
-      if (user.email.toLowerCase() === tutor.email.toLowerCase()) {
-        return NextResponse.json(
-          { error: "You cannot write a review for your own profile." },
-          { status: 403 }
-        );
-      }
+    // Prevent tutors from reviewing themselves or other tutors
+    if (user.email.toLowerCase() === tutor.email.toLowerCase()) {
+      return NextResponse.json(
+        { error: "You cannot write a review for your own profile." },
+        { status: 403 }
+      );
+    }
 
-      // Check if the reviewer is any registered tutor
-      const isReviewerATutor = await prisma.tutor.findUnique({
-        where: { email: user.email },
-      });
+    const isReviewerATutor = await prisma.tutor.findUnique({
+      where: { email: user.email.toLowerCase() },
+      select: { id: true },
+    });
 
-      if (isReviewerATutor) {
-        return NextResponse.json(
-          { error: "Tutors cannot write reviews for other tutors." },
-          { status: 403 }
-        );
-      }
+    if (isReviewerATutor) {
+      return NextResponse.json(
+        { error: "Tutors cannot write reviews for other tutors." },
+        { status: 403 }
+      );
     }
 
     // Create the review

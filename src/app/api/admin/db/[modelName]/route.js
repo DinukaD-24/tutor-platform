@@ -136,7 +136,12 @@ export async function POST(request, { params }) {
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     console.error("Admin DB POST error:", error);
-    return NextResponse.json({ error: error.message || "An error occurred while creating the record." }, { status: 500 });
+    // Don't expose raw Prisma error messages (may contain schema internals)
+    const isKnownError = error?.code?.startsWith("P"); // Prisma error code
+    const safeMessage = isKnownError
+      ? "Database constraint error. Check for duplicate entries or missing required fields."
+      : "An error occurred while creating the record.";
+    return NextResponse.json({ error: safeMessage }, { status: 500 });
   }
 }
 
@@ -166,7 +171,12 @@ export async function PUT(request, { params }) {
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Admin DB PUT error:", error);
-    return NextResponse.json({ error: error.message || "An error occurred while updating the record." }, { status: 500 });
+    // Don't expose raw Prisma error messages (may contain schema internals)
+    const isKnownError = error?.code?.startsWith("P");
+    const safeMessage = isKnownError
+      ? "Database constraint error. Check for duplicate entries or invalid field values."
+      : "An error occurred while updating the record.";
+    return NextResponse.json({ error: safeMessage }, { status: 500 });
   }
 }
 
