@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, X, Send, CheckCircle } from "lucide-react";
+import { Star, X, Send, CheckCircle, LogIn } from "lucide-react";
+import Link from "next/link";
 
 export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }) {
     const [open, setOpen] = useState(false);
-    const [canReview, setCanReview] = useState(false); // hide for tutors
+
+    // Three distinct states: "loading" | "guest" | "tutor" | "student"
+    const [authState, setAuthState] = useState("loading");
+
     const [rating, setRating] = useState(0);
     const [hovered, setHovered] = useState(0);
     const [studentName, setStudentName] = useState("");
@@ -15,18 +19,21 @@ export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        // Only show review button for non-tutor users
         fetch(`/api/student/follow?tutorId=${tutorId}`)
             .then(res => res.json())
             .then(data => {
-                // if isTutor === true, the user is a tutor — hide the review button
-                setCanReview(!data.isTutor);
+                if (data.isTutor) {
+                    setAuthState("tutor");      // logged in as tutor → hide completely
+                } else if (data.isAuthenticated === false) {
+                    setAuthState("guest");      // not logged in → show login prompt
+                } else {
+                    setAuthState("student");    // logged in, not a tutor → show review button
+                }
             })
-            .catch(() => setCanReview(false));
+            .catch(() => setAuthState("guest")); // safe default: treat as guest
     }, [tutorId]);
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
         if (rating === 0) {
             setError("Please select a star rating.");
@@ -43,6 +50,13 @@ export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }
             });
 
             const data = await res.json();
+
+            if (res.status === 401) {
+                // Session expired mid-session — redirect to login
+                setError("Your session has expired. Please log in again.");
+                return;
+            }
+
             if (!res.ok) {
                 setError(data.error || "Failed to submit review.");
                 return;
@@ -74,22 +88,37 @@ export default function AddReviewModal({ tutorId, tutorName, onReviewSubmitted }
         setComment("");
     };
 
+    // Tutors never see any review button
+    if (authState === "loading" || authState === "tutor") return null;
+
     return (
         <>
-            {/* Trigger Button — only for non-tutor users */}
-            {canReview && <button
-                onClick={() => setOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 hover:border-amber-300 font-bold text-xs rounded-xl transition-all duration-200 cursor-pointer"
-            >
-                <Star size={14} className="fill-amber-400 text-amber-400" />
-                Write a Review
-            </button>}
+            {/* ── Trigger Button ── */}
+            {authState === "student" ? (
+                // Logged-in student → opens the review modal
+                <button
+                    onClick={() => setOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 hover:border-amber-300 font-bold text-xs rounded-xl transition-all duration-200 cursor-pointer"
+                >
+                    <Star size={14} className="fill-amber-400 text-amber-400" />
+                    Write a Review
+                </button>
+            ) : (
+                // Guest → login prompt link
+                <Link
+                    href={`/login?next=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "")}`}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-500 border border-gray-200 hover:border-gray-300 font-bold text-xs rounded-xl transition-all duration-200"
+                >
+                    <LogIn size={14} />
+                    Login to Review
+                </Link>
+            )}
 
-            {/* Modal Overlay */}
+            {/* ── Modal Overlay ── */}
             {open && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-6 z-50 animate-fadeIn">
                     <div className="bg-white rounded-3xl border border-gray-100 max-w-md w-full p-6 md:p-8 shadow-2xl space-y-6">
-                        
+
                         {/* Header */}
                         <div className="flex justify-between items-center border-b border-gray-50 pb-4">
                             <div>
