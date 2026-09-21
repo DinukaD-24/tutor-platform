@@ -244,6 +244,23 @@ export async function getAllTutors() {
   }
 }
 
+export async function getFeaturedTutors(limit = 8) {
+  try {
+    const tutors = await prisma.tutor.findMany({
+      take: limit,
+      orderBy: [
+        { rating: "desc" },
+        { reviewsCount: "desc" },
+      ],
+      include: { reviews: true },
+    });
+    return tutors.map(serializeTutor);
+  } catch (error) {
+    console.error("Error fetching featured tutors:", error);
+    return [];
+  }
+}
+
 export async function getTutorById(idOrSlug) {
   const t = await prisma.tutor.findFirst({
     where: {
