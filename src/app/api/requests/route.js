@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
+import { tuitionRequestSchema } from "@/lib/validations";
+
 
 export async function GET(request) {
     try {
@@ -67,7 +69,19 @@ export async function POST(request) {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        const body = await request.json();
+        const rawBody = await request.json();
+        const payloadToValidate = {
+            ...rawBody,
+            studentEmail: user?.email || rawBody.studentEmail,
+            studentName: rawBody.studentName || user?.user_metadata?.full_name || user?.user_metadata?.name || "Student",
+        };
+
+        const validation = tuitionRequestSchema.safeParse(payloadToValidate);
+        if (!validation.success) {
+            const errorMessage = validation.error.issues.map(i => i.message).join(". ");
+            return NextResponse.json({ error: errorMessage }, { status: 400 });
+        }
+
         const {
             studentName,
             studentEmail,
@@ -78,18 +92,8 @@ export async function POST(request) {
             mode,
             location,
             message,
-        } = body;
+        } = validation.data;
 
-        // Ensure student name & email are provided (from auth user or form)
-        const email = user?.email || studentEmail;
-        const name = studentName || user?.user_metadata?.full_name || user?.user_metadata?.name || "Student";
-
-        if (!email || !subject || !message) {
-            return NextResponse.json(
-                { error: "Subject, message description, and student email are required." },
-                { status: 400 }
-            );
-        }
 
         const newRequest = await prisma.tuitionRequest.create({
             data: {

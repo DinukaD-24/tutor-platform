@@ -1,32 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
+import { tutorApplicationSchema } from "@/lib/validations";
 
 export async function POST(request) {
   try {
-    const body = await request.json();
-    let { name, email, phone, university, tutorType, subjects, syllabuses, grades, mediums, experience, bio, location, onlineAvailable, physicalAvailable, image, teachingStyle } = body;
+    const rawBody = await request.json();
+    
+    // Normalize array inputs if present
+    const normalizedBody = {
+      ...rawBody,
+      subjects: Array.isArray(rawBody.subjects) ? rawBody.subjects.join(", ") : rawBody.subjects,
+      syllabuses: Array.isArray(rawBody.syllabuses) ? rawBody.syllabuses.join(", ") : rawBody.syllabuses,
+      grades: Array.isArray(rawBody.grades) ? rawBody.grades.join(", ") : rawBody.grades,
+      mediums: Array.isArray(rawBody.mediums) ? rawBody.mediums.join(", ") : rawBody.mediums,
+    };
 
-    // Convert arrays to comma-separated strings if needed
-    if (Array.isArray(subjects)) {
-      subjects = subjects.join(", ");
-    }
-    if (Array.isArray(syllabuses)) {
-      syllabuses = syllabuses.join(", ");
-    }
-    if (Array.isArray(grades)) {
-      grades = grades.join(", ");
-    }
-    if (Array.isArray(mediums)) {
-      mediums = mediums.join(", ");
+    const validation = tutorApplicationSchema.safeParse(normalizedBody);
+    if (!validation.success) {
+      const errorMessage = validation.error.issues.map(i => i.message).join(". ");
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    if (!name || !email || !subjects || !syllabuses || !bio) {
-      return NextResponse.json(
-        { error: "Please fill in all required fields (Name, Email, Subjects, Syllabuses, Bio)." },
-        { status: 400 }
-      );
-    }
+    const { name, email, phone, university, tutorType, subjects, syllabuses, grades, mediums, experience, bio, location, onlineAvailable, physicalAvailable, image, teachingStyle } = validation.data;
+
 
     const saved = await prisma.tutorApplication.create({
       data: {
