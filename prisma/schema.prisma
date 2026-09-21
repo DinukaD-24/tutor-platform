@@ -36,6 +36,8 @@ model Grade {
   subjects   Subject[]
 
   @@unique([syllabusId, slug])
+  @@index([syllabusId])
+  @@index([slug])
 }
 
 model Subject {
@@ -47,6 +49,8 @@ model Subject {
   topics  Topic[]
 
   @@unique([gradeId, slug])
+  @@index([gradeId])
+  @@index([slug])
 }
 
 model Topic {
@@ -69,6 +73,8 @@ model Topic {
 
   relatedTo Topic[] @relation("RelatedTopics")
   relatedBy Topic[] @relation("RelatedTopics")
+
+  @@index([subjectId])
 }
 
 model Material {
@@ -77,6 +83,8 @@ model Material {
   url     String
   topicId String
   topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId])
 }
 
 model Video {
@@ -90,6 +98,10 @@ model Video {
   tutorId     String
   tutor       Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   visitors    Student[] @relation("StudentVisitedVideos")
+
+  @@index([tutorId])
+  @@index([topicId])
+  @@index([youtubeId])
 }
 
 model Tutor {
@@ -126,6 +138,8 @@ model Tutor {
   followers       Student[]            @relation("StudentFollowedTutors")
   ads             TutorAd[]
   contactRequests TutorContactRequest[]
+
+  @@index([email])
 }
 
 model TutorAd {
@@ -140,8 +154,9 @@ model TutorAd {
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-}
 
+  @@index([tutorId, isActive])
+}
 
 model TutorContactRequest {
   id           String   @id @default(cuid())
@@ -157,6 +172,8 @@ model TutorContactRequest {
   message      String?
   isRead       Boolean  @default(false)
   createdAt    DateTime @default(now())
+
+  @@index([tutorId, isRead])
 }
 
 model Review {
@@ -167,6 +184,8 @@ model Review {
   date    DateTime
   tutorId String
   tutor   Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+
+  @@index([tutorId])
 }
 
 model ContactMessage {
@@ -198,6 +217,9 @@ model TutorApplication {
   teachingStyle     String?
   status            String   @default("pending") // pending | approved | rejected
   createdAt         DateTime @default(now())
+
+  @@index([email])
+  @@index([status])
 }
 
 model Student {
@@ -224,6 +246,8 @@ model TuitionRequest {
   status       String                  @default("active") // active | closed
   createdAt    DateTime                @default(now())
   contacts     TuitionRequestContact[]
+
+  @@index([status, createdAt(sort: Desc)])
 }
 
 model TuitionRequestContact {
@@ -235,6 +259,9 @@ model TuitionRequestContact {
   tutorEmail       String
   message          String
   createdAt        DateTime       @default(now())
+
+  @@index([requestId])
+  @@index([tutorId])
 }
 
 enum Role {
@@ -250,4 +277,8 @@ model UserRole {
   role      Role     @default(STUDENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
+
+  @@index([email])
+  @@index([userId])
+}
+
