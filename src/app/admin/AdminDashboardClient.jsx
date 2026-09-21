@@ -33,6 +33,7 @@ export default function AdminDashboardClient() {
     const [formTopicId, setFormTopicId] = useState("");
 
     // Foreign Key Lookup Tables
+    const [lookupCategories, setLookupCategories] = useState([]);
     const [lookupSyllabuses, setLookupSyllabuses] = useState([]);
     const [lookupGrades, setLookupGrades] = useState([]);
     const [lookupSubjects, setLookupSubjects] = useState([]);
@@ -44,6 +45,7 @@ export default function AdminDashboardClient() {
     const [rejectionMessage, setRejectionMessage] = useState("");
 
     const modelsList = [
+        { id: "category", name: "Categories" },
         { id: "syllabus", name: "Syllabuses" },
         { id: "grade", name: "Grades" },
         { id: "subject", name: "Subjects" },
@@ -55,7 +57,11 @@ export default function AdminDashboardClient() {
         { id: "student", name: "Students" },
         { id: "tutorad", name: "Tutor Ads (Paid)" },
         { id: "tutorapplication", name: "Applications" },
-        { id: "contactmessage", name: "Contact Messages" }
+        { id: "contactmessage", name: "Contact Messages" },
+        { id: "tutorcontactrequest", name: "Tutor Inquiries" },
+        { id: "tuitionrequest", name: "Tuition Requests" },
+        { id: "tuitionrequestcontact", name: "Tuition Contacts" },
+        { id: "userrole", name: "User Roles (RBAC)" },
     ];
 
     const fetchApplications = async () => {
@@ -75,13 +81,15 @@ export default function AdminDashboardClient() {
 
     const fetchLookups = async () => {
         try {
-            const [sylRes, grdRes, subRes, topRes, tutRes] = await Promise.all([
+            const [catRes, sylRes, grdRes, subRes, topRes, tutRes] = await Promise.all([
+                fetch("/api/admin/db/category"),
                 fetch("/api/admin/db/syllabus"),
                 fetch("/api/admin/db/grade"),
                 fetch("/api/admin/db/subject"),
                 fetch("/api/admin/db/topic"),
                 fetch("/api/admin/db/tutor"),
             ]);
+            if (catRes.ok) setLookupCategories(await catRes.json());
             if (sylRes.ok) setLookupSyllabuses(await sylRes.json());
             if (grdRes.ok) setLookupGrades(await grdRes.json());
             if (subRes.ok) setLookupSubjects(await subRes.json());
@@ -201,6 +209,26 @@ export default function AdminDashboardClient() {
         }
     };
 
+const MODEL_DEFAULT_TEMPLATES = {
+    category: { name: "", slug: "", description: "", icon: "", order: 0 },
+    syllabus: { name: "", slug: "", order: 0, categoryId: "" },
+    grade: { name: "", slug: "", order: 0, syllabusId: "" },
+    subject: { name: "", slug: "", gradeId: "" },
+    topic: { name: "", slug: "", description: "", order: 0, difficulty: "Medium", estimatedHours: 2, prerequisites: "", learningOutcomes: "", subjectId: "" },
+    video: { title: "", youtubeId: "", description: "", duration: "", topicId: "", tutorId: "" },
+    material: { title: "", url: "", topicId: "" },
+    tutor: { name: "", slug: "", subject: "", tutorType: "Private Tutor", image: "", experience: "", university: "", languages: "English, Sinhala", syllabuses: "National Curriculum", grades: "", price: "", email: "", phone: "", location: "", qualifications: "", specializations: "", bio: "", teachingStyle: "", onlineAvailable: true, physicalAvailable: false },
+    review: { student: "", rating: 5, comment: "", tutorId: "" },
+    student: { name: "", email: "" },
+    tutorad: { tutorId: "", title: "", tagline: "", imageUrl: "", ctaText: "View Tutor Profile", badge: "PAID AD", order: 0, isActive: true },
+    tutorapplication: { name: "", email: "", phone: "", university: "", tutorType: "Private Tutor", subjects: "", syllabuses: "", grades: "", mediums: "English, Sinhala", location: "", onlineAvailable: true, physicalAvailable: false, experience: "", bio: "", image: "", status: "pending" },
+    contactmessage: { name: "", email: "", subject: "", message: "" },
+    tutorcontactrequest: { tutorId: "", studentName: "", studentEmail: "", whatsapp: "", phone: "", syllabusName: "", gradeName: "", subjectName: "", message: "", isRead: false },
+    tuitionrequest: { studentName: "", studentEmail: "", syllabus: "Local A/L", gradeOrAge: "Grade 12", subject: "", classType: "Revision & Theory", mode: "Online & Physical", location: "", message: "", status: "active" },
+    tuitionrequestcontact: { requestId: "", tutorId: "", tutorName: "", tutorEmail: "", message: "" },
+    userrole: { email: "", userId: "", role: "STUDENT" },
+};
+
     const openCreateModal = () => {
         setEditingRecord(null);
         setFormSyllabusId("");
@@ -208,14 +236,18 @@ export default function AdminDashboardClient() {
         setFormSubjectId("");
         setFormTopicId("");
 
-        let template = records[0] ? { ...records[0] } : {};
+        let template = records[0] ? { ...records[0] } : (MODEL_DEFAULT_TEMPLATES[selectedModel] ? { ...MODEL_DEFAULT_TEMPLATES[selectedModel] } : {});
         delete template.id;
         delete template.slug; // Hide slug field from manual entry
         delete template.createdAt;
         delete template.updatedAt;
         
         // Remove relation objects from template
-        const relationKeys = ["syllabus", "grade", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"];
+        const relationKeys = [
+            "category", "syllabus", "grade", "topic", "tutor",
+            "materials", "videos", "grades", "subjects", "topics",
+            "reviews", "request", "contacts", "contactRequests", "ads", "followers", "visitors"
+        ];
         if (selectedModel !== "tutor") relationKeys.push("subject");
         relationKeys.forEach(k => delete template[k]);
 
@@ -224,12 +256,15 @@ export default function AdminDashboardClient() {
                 template[k] = "";
             } else if (typeof template[k] === "boolean") {
                 template[k] = false;
-            } else {
+            } else if (template[k] === undefined || template[k] === null) {
                 template[k] = "";
             }
         });
 
         // Set default foreign keys if lookups exist
+        if (selectedModel === "syllabus" && lookupCategories.length > 0) {
+            template.categoryId = lookupCategories[0].id;
+        }
         if (selectedModel === "grade" && lookupSyllabuses.length > 0) {
             const sylId = lookupSyllabuses[0].id;
             setFormSyllabusId(sylId);
@@ -277,6 +312,9 @@ export default function AdminDashboardClient() {
                 isActive: true
             };
         }
+        if (selectedModel === "tutorcontactrequest" && lookupTutors.length > 0) {
+            template.tutorId = lookupTutors[0].id;
+        }
 
         setFormData(template);
         setShowFormModal(true);
@@ -285,6 +323,9 @@ export default function AdminDashboardClient() {
     const openEditModal = (record) => {
         if (selectedModel === "student" && record.email === "tutorhubadmin@gmail.com") {
             if (!confirm("⚠️ NOTICE: You are editing the Administrator student account record (tutorhubadmin@gmail.com). Proceed with caution.")) return;
+        }
+        if (selectedModel === "userrole" && record.email === "tutorhubadmin@gmail.com") {
+            if (!confirm("⚠️ NOTICE: You are editing the Primary Administrator Role record. The role must remain ADMIN.")) return;
         }
         setEditingRecord(record);
         
@@ -309,7 +350,11 @@ export default function AdminDashboardClient() {
         delete data.createdAt;
         delete data.updatedAt;
         delete data.slug;
-        const relationKeysEdit = ["syllabus", "grade", "topic", "tutor", "materials", "videos", "grades", "subjects", "topics", "reviews"];
+        const relationKeysEdit = [
+            "category", "syllabus", "grade", "topic", "tutor",
+            "materials", "videos", "grades", "subjects", "topics",
+            "reviews", "request", "contacts", "contactRequests", "ads", "followers", "visitors"
+        ];
         if (selectedModel !== "tutor") relationKeysEdit.push("subject");
         relationKeysEdit.forEach(k => delete data[k]);
 
@@ -375,7 +420,8 @@ export default function AdminDashboardClient() {
 
     // Dynamic table columns for clean relational rendering
     const renderTableHeaders = () => {
-        if (selectedModel === "syllabus") return ["Name", "Slug"];
+        if (selectedModel === "category") return ["Name", "Slug", "Description", "Order"];
+        if (selectedModel === "syllabus") return ["Name", "Slug", "Order", "Category"];
         if (selectedModel === "grade") return ["Name", "Slug", "Order", "Target Syllabus"];
         if (selectedModel === "subject") return ["Name", "Slug", "Target Grade", "Target Syllabus"];
         if (selectedModel === "topic") return ["Name", "Slug", "Target Subject", "Target Grade", "Target Syllabus"];
@@ -384,6 +430,10 @@ export default function AdminDashboardClient() {
         if (selectedModel === "tutor") return ["Photo", "Name", "Subject", "Specializations", "Type", "Email", "Phone", "Location", "Online", "Physical", "Rating"];
         if (selectedModel === "tutorad") return ["Title", "Tagline", "Badge", "Order", "Active", "Tutor"];
         if (selectedModel === "tutorapplication") return ["Name", "Email", "Phone", "Category", "Subjects", "Syllabuses", "Mediums", "Location", "Online", "Physical", "Status"];
+        if (selectedModel === "tutorcontactrequest") return ["Student Name", "Student Email", "Phone", "WhatsApp", "Syllabus", "Subject", "Read", "Tutor"];
+        if (selectedModel === "tuitionrequest") return ["Student Name", "Student Email", "Syllabus", "Grade/Age", "Subject", "Class Type", "Mode", "Status"];
+        if (selectedModel === "tuitionrequestcontact") return ["Tutor Name", "Tutor Email", "Request ID", "Message"];
+        if (selectedModel === "userrole") return ["Email", "Role", "User ID"];
         if (records.length > 0) return Object.keys(records[0]).slice(0, 8);
         return [];
     };
@@ -410,11 +460,21 @@ export default function AdminDashboardClient() {
         if (lower === "youtube id") return rec.youtubeId;
         if (lower === "url") return <a href={rec.url} target="_blank" rel="noreferrer" className="text-primary underline">{rec.url}</a>;
         if (lower === "subject") return rec.subject || rec.topic?.subject?.name || "-";
-        if (lower === "type" || lower === "category") return rec.tutorType || "-";
+        if (lower === "type") return rec.tutorType || "-";
+        if (lower === "category") return rec.category?.name || rec.tutorType || "-";
         if (lower === "active") return rec.isActive ? "✅ Yes" : "❌ No";
         if (lower === "badge") return <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg text-purple-700 bg-purple-50">{rec.badge || "PAID AD"}</span>;
-        if (lower === "email") return rec.email;
+        if (lower === "email" || lower === "student email" || lower === "tutor email") return rec.email || rec.studentEmail || rec.tutorEmail || "-";
+        if (lower === "student name") return rec.studentName || "-";
+        if (lower === "tutor name") return rec.tutorName || "-";
         if (lower === "phone") return rec.phone || "-";
+        if (lower === "whatsapp") return rec.whatsapp || "-";
+        if (lower === "grade/age") return rec.gradeOrAge || "-";
+        if (lower === "class type") return rec.classType || "-";
+        if (lower === "mode") return rec.mode || "-";
+        if (lower === "request id") return rec.requestId || "-";
+        if (lower === "user id") return rec.userId || "-";
+        if (lower === "read") return rec.isRead ? "✅ Read" : "📩 Unread";
         if (lower === "location") return rec.location || "-";
         if (lower === "online") return rec.onlineAvailable ? "✅ Yes" : "No";
         if (lower === "physical") return rec.physicalAvailable ? "✅ Yes" : "No";
@@ -423,27 +483,42 @@ export default function AdminDashboardClient() {
         if (lower === "specializations") return Array.isArray(rec.specializations) ? rec.specializations.join(", ") : (rec.specializations || "-");
         if (lower === "subjects") return rec.subjects || rec.specializations?.join(", ") || "-";
         if (lower === "syllabuses") return rec.syllabuses || (Array.isArray(rec.syllabuses) ? rec.syllabuses.join(", ") : "-");
+        if (lower === "role") {
+            const r = rec.role || "STUDENT";
+            const roleColors = {
+                ADMIN: "text-purple-700 bg-purple-50 border-purple-200",
+                TUTOR: "text-blue-700 bg-blue-50 border-blue-200",
+                STUDENT: "text-emerald-700 bg-emerald-50 border-emerald-200"
+            };
+            return <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg border ${roleColors[r] || "text-gray-700 bg-gray-50"}`}>{r}</span>;
+        }
         if (lower === "status") {
             const s = rec.status || "pending";
-            const colors = { approved: "text-green-700 bg-green-50", rejected: "text-red-700 bg-red-50", pending: "text-amber-700 bg-amber-50" };
+            const colors = {
+                approved: "text-green-700 bg-green-50",
+                active: "text-emerald-700 bg-emerald-50",
+                rejected: "text-red-700 bg-red-50",
+                closed: "text-gray-700 bg-gray-100",
+                pending: "text-amber-700 bg-amber-50"
+            };
             return <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg ${colors[s] || ""}`}>{s}</span>;
         }
 
         // Relational Parent Columns
         if (lower.includes("syllabus")) {
-            return rec.syllabus?.name || rec.grade?.syllabus?.name || rec.subject?.grade?.syllabus?.name || rec.topic?.subject?.grade?.syllabus?.name || "-";
+            return rec.syllabus?.name || rec.syllabusName || rec.grade?.syllabus?.name || rec.subject?.grade?.syllabus?.name || rec.topic?.subject?.grade?.syllabus?.name || rec.syllabus || "-";
         }
         if (lower.includes("grade")) {
-            return rec.grade?.name || rec.subject?.grade?.name || rec.topic?.subject?.grade?.name || "-";
+            return rec.grade?.name || rec.gradeName || rec.subject?.grade?.name || rec.topic?.subject?.grade?.name || "-";
         }
         if (lower.includes("subject")) {
-            return rec.subject?.name || rec.topic?.subject?.name || rec.subject || "-";
+            return rec.subject?.name || rec.subjectName || rec.topic?.subject?.name || rec.subject || "-";
         }
         if (lower.includes("topic")) {
             return rec.topic?.name || "-";
         }
         if (lower.includes("tutor")) {
-            return rec.tutor?.name || "-";
+            return rec.tutor?.name || rec.tutorName || "-";
         }
 
         const key = Object.keys(rec).find(k => k.toLowerCase() === lower);
@@ -664,6 +739,8 @@ export default function AdminDashboardClient() {
                                     <span>Database Entity Relationships Map</span>
                                 </div>
                                 <div className="text-[11px] text-gray-300 flex flex-wrap items-center gap-2 font-mono pt-1">
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Category</span>
+                                    <ArrowRight size={12} className="text-primary" />
                                     <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Syllabus</span>
                                     <ArrowRight size={12} className="text-primary" />
                                     <span className="bg-white/10 px-2 py-0.5 rounded text-white font-bold">Grade</span>
@@ -763,7 +840,7 @@ export default function AdminDashboardClient() {
                         <div className="bg-white rounded-3xl border border-gray-100 max-w-xl w-full p-6 md:p-8 shadow-2xl space-y-6 max-h-[85vh] overflow-y-auto">
                             <div className="flex justify-between items-center border-b border-gray-50 pb-4">
                                 <h3 className="text-lg font-black text-dark">
-                                    {editingRecord ? "Edit Record" : "Create Record"} in {selectedModel}
+                                    {editingRecord ? "Edit Record" : "Create Record"} in {modelsList.find(m => m.id === selectedModel)?.name || selectedModel}
                                 </h3>
                                 <button
                                     onClick={() => setShowFormModal(false)}
@@ -781,6 +858,23 @@ export default function AdminDashboardClient() {
                             )}
 
                             <form onSubmit={handleFormSubmit} className="space-y-4">
+
+                                {/* 0. Category Selector for Syllabus */}
+                                {selectedModel === "syllabus" && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Curriculum Category</label>
+                                        <select
+                                            value={formData.categoryId ?? ""}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value || null }))}
+                                            className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                        >
+                                            <option value="">None / General</option>
+                                            {lookupCategories.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name} ({c.slug})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
 
                                 {/* 1. Cascading Syllabus Selector for Grade, Subject, Topic, Video, Material */}
                                 {(selectedModel === "grade" || selectedModel === "subject" || selectedModel === "topic" || selectedModel === "video" || selectedModel === "material") && (
@@ -1111,8 +1205,99 @@ export default function AdminDashboardClient() {
                                     Object.keys(formData).map((k) => {
                                         if (k === "id" || k === "slug") return null;
                                         if (k === "syllabusId" || k === "gradeId" || k === "subjectId" || k === "topicId") return null; // already rendered above
+                                        if (k === "categoryId" && selectedModel === "syllabus") return null; // already rendered above
                                         
                                         const isBool = typeof formData[k] === "boolean";
+
+                                        if (k === "role" && selectedModel === "userrole") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">System Role *</label>
+                                                    <select
+                                                        value={formData[k] ?? "STUDENT"}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        required
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark font-bold focus:bg-white focus:border-primary outline-none"
+                                                    >
+                                                        <option value="STUDENT">STUDENT</option>
+                                                        <option value="TUTOR">TUTOR</option>
+                                                        <option value="ADMIN">ADMIN</option>
+                                                    </select>
+                                                </div>
+                                            );
+                                        }
+
+                                        if (k === "status" && selectedModel === "tuitionrequest") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Request Status *</label>
+                                                    <select
+                                                        value={formData[k] ?? "active"}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        required
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark font-bold focus:bg-white focus:border-primary outline-none"
+                                                    >
+                                                        <option value="active">active</option>
+                                                        <option value="closed">closed</option>
+                                                    </select>
+                                                </div>
+                                            );
+                                        }
+
+                                        if (k === "status" && selectedModel === "tutorapplication") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Application Status *</label>
+                                                    <select
+                                                        value={formData[k] ?? "pending"}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        required
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark font-bold focus:bg-white focus:border-primary outline-none"
+                                                    >
+                                                        <option value="pending">pending</option>
+                                                        <option value="approved">approved</option>
+                                                        <option value="rejected">rejected</option>
+                                                    </select>
+                                                </div>
+                                            );
+                                        }
+
+                                        if (k === "mode" && selectedModel === "tuitionrequest") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tuition Mode</label>
+                                                    <select
+                                                        value={formData[k] ?? "Online & Physical"}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                    >
+                                                        <option value="Online & Physical">Online & Physical</option>
+                                                        <option value="Online">Online</option>
+                                                        <option value="Physical">Physical</option>
+                                                    </select>
+                                                </div>
+                                            );
+                                        }
+
+                                        if (k === "classType" && selectedModel === "tuitionrequest") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Class Type</label>
+                                                    <select
+                                                        value={formData[k] ?? "Revision & Theory"}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark focus:bg-white focus:border-primary outline-none"
+                                                    >
+                                                        <option value="Revision & Theory">Revision & Theory</option>
+                                                        <option value="Theory">Theory</option>
+                                                        <option value="Revision">Revision</option>
+                                                        <option value="Paper Class">Paper Class</option>
+                                                        <option value="General">General</option>
+                                                        <option value="Skill">Skill</option>
+                                                    </select>
+                                                </div>
+                                            );
+                                        }
 
                                         if (k === "tutorId") {
                                             return (
@@ -1220,6 +1405,23 @@ export default function AdminDashboardClient() {
                                             );
                                         }
 
+                                        if (k === "message" || k === "bio" || k === "description" || k === "teachingStyle") {
+                                            return (
+                                                <div key={k} className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+                                                        {k}
+                                                    </label>
+                                                    <textarea
+                                                        rows={3}
+                                                        value={formData[k] ?? ""}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.value }))}
+                                                        placeholder={`Enter ${k}`}
+                                                        className="w-full border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-xs text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                                    />
+                                                </div>
+                                            );
+                                        }
+
                                         return (
                                             <div key={k} className="space-y-1">
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
@@ -1228,7 +1430,7 @@ export default function AdminDashboardClient() {
                                                 {isBool ? (
                                                     <input
                                                         type="checkbox"
-                                                        checked={formData[k]}
+                                                        checked={Boolean(formData[k])}
                                                         onChange={(e) => setFormData(prev => ({ ...prev, [k]: e.target.checked }))}
                                                         className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-200 cursor-pointer"
                                                     />

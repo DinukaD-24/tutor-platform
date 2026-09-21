@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 function getModel(name) {
   const mapping = {
+    category: prisma.category,
     syllabus: prisma.syllabus,
     grade: prisma.grade,
     subject: prisma.subject,
@@ -16,16 +17,22 @@ function getModel(name) {
     tutorapplication: prisma.tutorApplication,
     contactmessage: prisma.contactMessage,
     tutorad: prisma.tutorAd,
+    tutorcontactrequest: prisma.tutorContactRequest,
+    tuitionrequest: prisma.tuitionRequest,
+    tuitionrequestcontact: prisma.tuitionRequestContact,
+    userrole: prisma.userRole,
   };
   return mapping[name.toLowerCase()];
 }
 
 function getModelIncludes(name) {
   const modelKey = name.toLowerCase();
+  if (modelKey === "syllabus") {
+    return { category: true };
+  }
   if (modelKey === "tutorad") {
     return { tutor: true };
   }
-
   if (modelKey === "grade") {
     return { syllabus: true };
   }
@@ -49,6 +56,12 @@ function getModelIncludes(name) {
   if (modelKey === "review") {
     return { tutor: true };
   }
+  if (modelKey === "tutorcontactrequest") {
+    return { tutor: true };
+  }
+  if (modelKey === "tuitionrequestcontact") {
+    return { request: true };
+  }
   return undefined;
 }
 
@@ -56,9 +69,10 @@ function sanitizeData(data, modelName) {
   const sanitized = { ...data };
   // Remove nested relation objects that might be present when editing
   const relationKeys = [
-    "syllabus", "grade", "subject", "topic", "tutor",
+    "category", "syllabus", "grade", "subject", "topic", "tutor",
     "materials", "videos", "grades", "subjects", "topics",
-    "reviews", "followers", "visitors", "relatedTo", "relatedBy"
+    "reviews", "followers", "visitors", "relatedTo", "relatedBy",
+    "request", "contacts", "contactRequests", "ads"
   ];
   relationKeys.forEach(k => {
     delete sanitized[k];
@@ -164,6 +178,14 @@ export async function PUT(request, { params }) {
     }
 
     const data = sanitizeData(rest, modelName);
+
+    if (modelName.toLowerCase() === "userrole") {
+      const existing = await model.findUnique({ where: { id } });
+      if (existing?.email === "tutorhubadmin@gmail.com" && data.role && data.role !== "ADMIN") {
+        return NextResponse.json({ error: "Cannot demote the primary administrator account." }, { status: 400 });
+      }
+    }
+
     const updated = await model.update({
       where: { id },
       data
@@ -196,6 +218,13 @@ export async function DELETE(request, { params }) {
     const id = searchParams.get("id");
     if (!id) {
       return NextResponse.json({ error: "ID is required for delete" }, { status: 400 });
+    }
+
+    if (modelName.toLowerCase() === "userrole") {
+      const existing = await model.findUnique({ where: { id } });
+      if (existing?.email === "tutorhubadmin@gmail.com") {
+        return NextResponse.json({ error: "Cannot delete the primary administrator account role." }, { status: 400 });
+      }
     }
 
     await model.delete({
