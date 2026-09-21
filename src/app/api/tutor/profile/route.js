@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
+import { requireTutor } from "@/lib/auth";
 
 export async function GET(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const tutor = await prisma.tutor.findUnique({
-      where: { email: user.email },
+      where: { email: auth.user.email },
       include: {
         videos: {
           include: {
@@ -38,20 +36,19 @@ export async function GET(request) {
 
 export async function PUT(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const tutor = await prisma.tutor.findUnique({
-      where: { email: user.email }
+      where: { email: auth.user.email }
     });
 
     if (!tutor) {
       return NextResponse.json({ error: "Tutor profile not found" }, { status: 404 });
     }
+
 
     const body = await request.json();
     const {

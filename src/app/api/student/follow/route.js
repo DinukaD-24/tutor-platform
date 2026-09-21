@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
+import { requireStudent } from "@/lib/auth";
 
 export async function POST(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireStudent();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
+    const user = auth.user;
 
     const { tutorId } = await request.json();
     if (!tutorId) {
@@ -28,14 +27,18 @@ export async function POST(request) {
       );
     }
 
-    // Find the student
-    const student = await prisma.student.findUnique({
+    // Find or create the student
+    let student = await prisma.student.findUnique({
       where: { email: user.email },
     });
 
     if (!student) {
-      return NextResponse.json({ error: "Student profile not found" }, { status: 404 });
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+      student = await prisma.student.create({
+        data: { email: user.email, name },
+      });
     }
+
 
     // Check if currently following
     const followingRecord = await prisma.student.findFirst({
