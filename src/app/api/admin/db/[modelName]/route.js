@@ -85,14 +85,13 @@ function sanitizeData(data, modelName) {
   return sanitized;
 }
 
+import { requireAdmin } from "@/lib/auth";
+
 async function verifyAdmin() {
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user || user.email !== "tutorhubadmin@gmail.com") {
-    return false;
-  }
-  return true;
+  const auth = await requireAdmin();
+  return auth.authorized;
 }
+
 
 export async function GET(request, { params }) {
   try {

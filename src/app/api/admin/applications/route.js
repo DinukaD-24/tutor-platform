@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { resend } from "@/lib/resend";
 import { tutorHubEmailTemplate } from "@/lib/emailTemplate";
 
 
 export async function GET(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user || user.email !== "tutorhubadmin@gmail.com") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const applications = await prisma.tutorApplication.findMany({
@@ -49,12 +47,11 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user || user.email !== "tutorhubadmin@gmail.com") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
+
 
     const body = await request.json();
     const { id, action, rejectionMessage } = body; // action is 'approve' or 'reject'
