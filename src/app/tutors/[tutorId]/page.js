@@ -12,8 +12,42 @@ import {
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }) {
+    const { tutorId } = await params;
+    const tutor = await getTutorById(tutorId);
+
+    if (!tutor) {
+        return {
+            title: "Tutor Profile Not Found | TutorHub.LK",
+            description: "The requested tutor profile could not be found on TutorHub.LK.",
+        };
+    }
+
+    const title = `${tutor.name} (${tutor.subject}) — Tutor Profile | TutorHub.LK`;
+    const description = tutor.bio || `Connect with ${tutor.name}, verified ${tutor.subject} tutor on TutorHub.LK. Explore qualifications, teaching experience, and video lessons.`;
+    const imageUrl = tutor.image || "https://www.tutorhub.lk/logo.png";
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: [{ url: imageUrl, alt: tutor.name }],
+            type: "profile",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: [imageUrl],
+        },
+    };
+}
+
 export default async function TutorProfilePage({ params }) {
     const { tutorId } = await params;
+
     const tutor = await getTutorById(tutorId);
 
     if (!tutor) {
