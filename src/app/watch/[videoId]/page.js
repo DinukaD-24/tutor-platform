@@ -7,8 +7,45 @@ import { ChevronRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }) {
+  const { videoId } = await params;
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    include: {
+      tutor: true,
+      topic: true,
+    },
+  });
+
+  if (!video) {
+    return {
+      title: "Video Lesson Not Found | TutorHub.LK",
+      description: "The requested video lesson could not be found on TutorHub.LK.",
+    };
+  }
+
+  const title = `${video.title} — ${video.tutor?.name || "Tutor"} | TutorHub.LK`;
+  const description = video.description || `Watch free lesson "${video.title}" by ${video.tutor?.name || "verified tutor"} on TutorHub.LK.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "video.other",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
+
 export default async function WatchPage({ params }) {
   const { videoId } = await params;
+
 
   const video = await prisma.video.findUnique({
     where: { id: videoId },

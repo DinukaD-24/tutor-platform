@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
+import { requireTutor } from "@/lib/auth";
 
 // GET: Fetch all contact requests for the logged-in tutor
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const tutor = await prisma.tutor.findUnique({
-      where: { email: user.email },
+      where: { email: auth.user.email },
       select: { id: true },
     });
 
@@ -38,11 +36,9 @@ export async function GET() {
 // PATCH: Mark a specific request as read
 export async function PATCH(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const { id } = await request.json();
@@ -51,13 +47,14 @@ export async function PATCH(request) {
     }
 
     const tutor = await prisma.tutor.findUnique({
-      where: { email: user.email },
+      where: { email: auth.user.email },
       select: { id: true },
     });
 
     if (!tutor) {
       return NextResponse.json({ error: "Tutor not found" }, { status: 404 });
     }
+
 
     // Ensure the request belongs to this tutor
     const contactReq = await prisma.tutorContactRequest.findFirst({

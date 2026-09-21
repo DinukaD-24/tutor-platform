@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
+import { contactMessageSchema } from "@/lib/validations";
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, email, subject, message } = body;
+    const validation = contactMessageSchema.safeParse(body);
 
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json(
-        { error: "All fields are required." },
-        { status: 400 }
-      );
+    if (!validation.success) {
+      const errorMessage = validation.error.issues.map(i => i.message).join(". ");
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
+
+    const { name, email, subject, message } = validation.data;
+
 
     const saved = await prisma.contactMessage.create({
       data: { name, email, subject, message },

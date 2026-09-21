@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
+import { requireTutor } from "@/lib/auth";
 import { extractYoutubeId } from "@/utils/youtube";
 
 
@@ -41,16 +41,11 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    // 1. Authenticate the request
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized. Please log in." },
-        { status: 401 }
-      );
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
+    const user = auth.user;
 
     // 2. Parse request body
     const body = await request.json();
@@ -71,7 +66,7 @@ export async function POST(request) {
 
     // Verify ownership
     const tutorRecord = await prisma.tutor.findUnique({ where: { id: tutorId } });
-    if (!tutorRecord || tutorRecord.email !== user.email) {
+    if (!tutorRecord || tutorRecord.email.toLowerCase() !== user.email.toLowerCase()) {
       return NextResponse.json(
         { error: "Forbidden. You can only upload lessons to your own profile." },
         { status: 403 }
@@ -185,12 +180,11 @@ export async function POST(request) {
 
 export async function PUT(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
+    const user = auth.user;
 
     const body = await request.json();
     const { id, title, youtubeId, description } = body;
@@ -204,7 +198,7 @@ export async function PUT(request) {
       include: { tutor: true }
     });
 
-    if (!video || video.tutor.email !== user.email) {
+    if (!video || video.tutor.email.toLowerCase() !== user.email.toLowerCase()) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -212,7 +206,7 @@ export async function PUT(request) {
       where: { id },
       data: {
         ...(title && { title }),
-        ...(youtubeId && { youtubeId }),
+        ...(youtubeId && { youtubeId: extractYoutubeId(youtubeId) || youtubeId }),
         ...(description !== undefined && { description })
       }
     });
@@ -226,12 +220,11 @@ export async function PUT(request) {
 
 export async function DELETE(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireTutor();
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
+    const user = auth.user;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -245,7 +238,7 @@ export async function DELETE(request) {
       include: { tutor: true }
     });
 
-    if (!video || video.tutor.email !== user.email) {
+    if (!video || video.tutor.email.toLowerCase() !== user.email.toLowerCase()) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -257,3 +250,4 @@ export async function DELETE(request) {
     return NextResponse.json({ error: "Failed to delete lesson" }, { status: 500 });
   }
 }
+

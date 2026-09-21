@@ -1,9 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request) {
   try {
+    // Rate-limit: max 5 contact requests per IP per minute
+    const { limited, resetMs } = rateLimit(request, { limit: 5, windowMs: 60_000 });
+    if (limited) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait before sending another enquiry." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil(resetMs / 1000)) },
+        }
+      );
+    }
+
     const body = await request.json();
     const {
       tutorId,

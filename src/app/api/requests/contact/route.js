@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
-import { createClient } from "@/utils/supabase/server";
+import { requireTutor } from "@/lib/auth";
 
 export async function POST(request) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
+        const auth = await requireTutor();
+        if (!auth.authorized) {
             return NextResponse.json(
-                { error: "You must be logged in as a registered tutor to contact students." },
-                { status: 401 }
+                { error: "Only verified & registered tutors on TutorHub.LK can contact students who post tuition requests." },
+                { status: auth.status }
             );
         }
+        const user = auth.user;
 
         // Verify the logged in user is an approved tutor
         const tutor = await prisma.tutor.findFirst({
@@ -26,6 +25,7 @@ export async function POST(request) {
                 { status: 403 }
             );
         }
+
 
         const body = await request.json();
         const { requestId, message } = body;

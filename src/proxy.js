@@ -32,10 +32,36 @@ export async function proxy(request) {
   )
 
   // Refresh session if expired
-  await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const url = request.nextUrl.clone()
+  const pathname = url.pathname
+
+  // Edge route protection
+  if (pathname.startsWith('/admin')) {
+    if (!user) {
+      url.pathname = '/login'
+      url.searchParams.set('next', pathname)
+      return NextResponse.redirect(url)
+    }
+  }
+
+  if (pathname.startsWith('/api/admin')) {
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+  }
+
+  if (pathname.startsWith('/dashboard')) {
+    if (!user) {
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
+  }
 
   return supabaseResponse
 }
+
 
 export const config = {
   matcher: [
