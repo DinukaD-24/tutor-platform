@@ -15,15 +15,17 @@ function LoginForm() {
     const [role, setRole] = useState(errorParam === "no_tutor_app" ? "tutor" : "student"); // "student" | "tutor"
     const [error, setError] = useState(errorParam || "");
     const [loading, setLoading] = useState(false);
+    const redirectParam = searchParams.get("redirect") || "/dashboard";
 
     const handleGoogleLogin = async (selectedRole) => {
         setError("");
         setLoading(true);
         const targetRole = selectedRole || role;
+        const nextUrl = encodeURIComponent(redirectParam);
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/dashboard&role=${targetRole}`,
+                redirectTo: `${window.location.origin}/auth/callback?next=${nextUrl}&role=${targetRole}`,
             },
         });
         if (error) {

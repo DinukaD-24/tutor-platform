@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Mail, User, Phone, MessageSquare, BookOpen, ChevronDown, CheckCircle, Loader2, Send } from "lucide-react";
 
-export default function ContactTutorModal({ tutor, onClose }) {
+export default function ContactTutorModal({ tutor, currentUser, onClose }) {
   // Form state
   const [form, setForm] = useState({
-    studentName: "",
-    studentEmail: "",
+    studentName: currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || "",
+    studentEmail: currentUser?.email || "",
     whatsapp: "",
     phone: "",
     syllabusName: "",
