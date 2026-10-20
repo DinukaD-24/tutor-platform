@@ -221,10 +221,13 @@ export default function PaidTutorAdsCard({ ads }) {
                   )}
 
                   {currentAd.phone && (
-                    <div className="bg-[#06423c]/80 hover:bg-[#07534b] border border-teal-400/30 px-2.5 py-1 rounded-full flex items-center gap-1.5 truncate transition-all">
+                    <Link
+                      href={`/tutors/${currentAd.tutorSlug || currentAd.tutorId}`}
+                      className="bg-[#06423c]/80 hover:bg-[#07534b] border border-teal-400/30 px-2.5 py-1 rounded-full flex items-center gap-1.5 truncate transition-all text-[#35e8c6] hover:text-white"
+                    >
                       <Phone size={12} className="text-[#35e8c6] shrink-0" />
-                      <span className="truncate">{currentAd.phone}</span>
-                    </div>
+                      <span className="truncate">Contact Tutor</span>
+                    </Link>
                   )}
                 </div>
 

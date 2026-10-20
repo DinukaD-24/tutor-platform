@@ -2,9 +2,21 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 import { rateLimit } from "@/lib/rateLimit";
+import { createClient } from "@/utils/supabase/server";
 
 export async function POST(request) {
   try {
+    // Authenticate user
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required. Please sign in to contact tutors." },
+        { status: 401 }
+      );
+    }
+
     // Rate-limit: max 5 contact requests per IP per minute
     const { limited, resetMs } = rateLimit(request, { limit: 5, windowMs: 60_000 });
     if (limited) {

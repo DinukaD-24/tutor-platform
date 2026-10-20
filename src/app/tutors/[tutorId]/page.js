@@ -3,11 +3,12 @@ import Link from "next/link";
 import FollowButton from "@/components/tutor/FollowButton";
 import AddReviewModal from "@/components/tutor/AddReviewModal";
 import ContactTutorButton from "@/components/tutor/ContactTutorButton";
+import { createClient } from "@/utils/supabase/server";
 import {
     ChevronRight, BookOpen, Star, Users, GraduationCap,
     CheckCircle, Mail, Phone, MapPin, Globe, Clock,
     ShieldCheck, Play, BarChart2, Languages, Target,
-    MessageSquare, X, User
+    MessageSquare, X, User, Lock, LogIn
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +48,9 @@ export async function generateMetadata({ params }) {
 
 export default async function TutorProfilePage({ params }) {
     const { tutorId } = await params;
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const isAuthenticated = Boolean(user);
 
     const tutor = await getTutorById(tutorId);
 
@@ -489,29 +493,58 @@ export default async function TutorProfilePage({ params }) {
 
                             {/* Contact Channels */}
                             <div className="p-5 border-b border-gray-50 space-y-3">
-                                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Contact Channels</p>
-                                {tutor.email && (
-                                    <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                                        <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
-                                            <Mail size={13} className="text-[#0d8a6e]" />
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Contact Channels</p>
+                                    {!isAuthenticated && (
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                            <Lock size={10} />
+                                            Login Required
+                                        </span>
+                                    )}
+                                </div>
+                                {isAuthenticated ? (
+                                    <>
+                                        {tutor.email && (
+                                            <div className="flex items-center gap-2.5 text-sm text-gray-600">
+                                                <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
+                                                    <Mail size={13} className="text-[#0d8a6e]" />
+                                                </div>
+                                                <span className="truncate text-xs font-medium">{tutor.email}</span>
+                                            </div>
+                                        )}
+                                        {tutor.phone && (
+                                            <div className="flex items-center gap-2.5 text-sm text-gray-600">
+                                                <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
+                                                    <Phone size={13} className="text-[#0d8a6e]" />
+                                                </div>
+                                                <span className="text-xs font-medium">{tutor.phone}</span>
+                                            </div>
+                                        )}
+                                        {tutor.location && (
+                                            <div className="flex items-center gap-2.5 text-sm text-gray-600">
+                                                <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
+                                                    <MapPin size={13} className="text-[#0d8a6e]" />
+                                                </div>
+                                                <span className="text-xs font-medium">{tutor.location}</span>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="bg-[#f0fdf9] border border-[#0d8a6e]/20 rounded-2xl p-4 text-center space-y-2">
+                                        <div className="w-9 h-9 rounded-full bg-white shadow-sm border border-[#0d8a6e]/20 flex items-center justify-center mx-auto text-[#0d8a6e]">
+                                            <Lock size={16} />
                                         </div>
-                                        <span className="truncate text-xs font-medium">{tutor.email}</span>
-                                    </div>
-                                )}
-                                {tutor.phone && (
-                                    <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                                        <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
-                                            <Phone size={13} className="text-[#0d8a6e]" />
+                                        <div>
+                                            <p className="text-xs font-bold text-dark">Contact Details Protected</p>
+                                            <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">Sign in with Google to view this tutor's email and phone number.</p>
                                         </div>
-                                        <span className="text-xs font-medium">{tutor.phone}</span>
-                                    </div>
-                                )}
-                                {tutor.location && (
-                                    <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                                        <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
-                                            <MapPin size={13} className="text-[#0d8a6e]" />
-                                        </div>
-                                        <span className="text-xs font-medium">{tutor.location}</span>
+                                        <Link
+                                            href={`/login?redirect=${encodeURIComponent(`/tutors/${tutor.id}`)}`}
+                                            className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 bg-[#0d8a6e] hover:bg-[#0b735c] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                                        >
+                                            <LogIn size={13} />
+                                            Sign In to View
+                                        </Link>
                                     </div>
                                 )}
                             </div>
@@ -528,6 +561,8 @@ export default async function TutorProfilePage({ params }) {
                                 <FollowButton tutorId={tutor.id} />
                                 <ContactTutorButton
                                     tutor={{ id: tutor.id, name: tutor.name, email: tutor.email }}
+                                    isAuthenticated={isAuthenticated}
+                                    currentUser={user}
                                 />
                             </div>
                         </div>
