@@ -113,9 +113,9 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-8 text-xs text-gray-400 font-medium">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-8 text-xs text-gray-600 font-medium">
                     <span>&copy; {new Date().getFullYear()} TutorHub.LK. All rights reserved.</span>
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-gray-600">
                         <Link href="/about"   className="hover:text-primary transition-colors">About</Link>
                         <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
                         <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
