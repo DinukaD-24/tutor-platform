@@ -6,7 +6,7 @@ import LessonHighlightVideo from "@/components/tutor/LessonHighlightVideo";
 import {
     ChevronRight, BookOpen, Star, GraduationCap,
     CheckCircle, ShieldCheck, Play, BarChart2, Languages, Target,
-    MessageSquare, X, User, Globe, MapPin
+    MessageSquare, X, User, Globe, MapPin, Users, Clock
 } from "lucide-react";
 
 // ISR: Cache tutor profile page at edge for 60 seconds
