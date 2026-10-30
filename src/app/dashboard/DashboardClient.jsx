@@ -931,6 +931,8 @@ export default function DashboardClient({ tutor: initialTutor }) {
                                                 <img
                                                     src={profileForm.image}
                                                     alt="Profile preview"
+                                                    width={56}
+                                                    height={56}
                                                     className="w-14 h-14 rounded-2xl object-cover border-2 border-primary/30 shadow-sm"
                                                 />
                                             ) : (

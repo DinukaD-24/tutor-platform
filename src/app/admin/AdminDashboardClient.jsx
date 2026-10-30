@@ -124,7 +124,9 @@ export default function AdminDashboardClient() {
             fetchApplications();
         } else {
             fetchDbRecords(selectedModel);
-            fetchLookups();
+            if (lookupCategories.length === 0) {
+                fetchLookups();
+            }
         }
     }, [activeTab, selectedModel]);
 
@@ -444,7 +446,7 @@ const MODEL_DEFAULT_TEMPLATES = {
             return (
                 <div className="w-8 h-10 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0 flex items-center justify-center shadow-2xs">
                     {rec.image ? (
-                        <img src={rec.image} alt={rec.name} className="w-full h-full object-cover" />
+                        <img src={rec.image} alt={rec.name} width={32} height={40} loading="lazy" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full bg-[#0d8a6e] text-white font-extrabold flex items-center justify-center text-xs">
                             {rec.name?.charAt(0) || "T"}
@@ -1072,7 +1074,7 @@ const MODEL_DEFAULT_TEMPLATES = {
                                                 {/* Thumbnail Preview */}
                                                 <div className="w-16 h-20 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
                                                     {formData.imageUrl ? (
-                                                        <img src={formData.imageUrl} alt="Ad Preview" className="w-full h-full object-cover" />
+                                                        <img src={formData.imageUrl} alt="Ad Preview" width={64} height={80} loading="lazy" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <span className="text-[9px] text-gray-400 font-bold text-center px-1">No Photo</span>
                                                     )}
@@ -1328,7 +1330,7 @@ const MODEL_DEFAULT_TEMPLATES = {
                                                         {/* Thumbnail Preview */}
                                                         <div className="w-16 h-20 rounded-xl bg-white border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs">
                                                             {formData[k] ? (
-                                                                <img src={formData[k]} alt="Profile Preview" className="w-full h-full object-cover" />
+                                                                <img src={formData[k]} alt="Profile Preview" width={64} height={80} loading="lazy" className="w-full h-full object-cover" />
                                                             ) : (
                                                                 <div className="w-full h-full bg-[#0d8a6e] text-white font-extrabold flex items-center justify-center text-base">
                                                                     {formData.name?.charAt(0) || "No Pic"}

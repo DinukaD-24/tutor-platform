@@ -180,7 +180,7 @@ export default function StudentDashboardClient({ student }) {
                                                 >
                                                     <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-bold text-sm">
                                                         {tutor.image ? (
-                                                            <img src={tutor.image} alt={tutor.name} className="w-full h-full object-cover" />
+                                                            <img src={tutor.image} alt={tutor.name} width={40} height={40} loading="lazy" className="w-full h-full object-cover" />
                                                         ) : (
                                                             tutor.name.charAt(0)
                                                         )}
@@ -219,6 +219,9 @@ export default function StudentDashboardClient({ student }) {
                                                 <img
                                                     src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
                                                     alt={video.title}
+                                                    width={80}
+                                                    height={45}
+                                                    loading="lazy"
                                                     className="w-20 aspect-video object-cover rounded-xl shrink-0"
                                                 />
                                                 <div className="min-w-0 flex-1">
@@ -259,7 +262,7 @@ export default function StudentDashboardClient({ student }) {
                                             >
                                                 <div className="w-12 h-12 rounded-2xl overflow-hidden shrink-0 bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-bold">
                                                     {tutor.image ? (
-                                                        <img src={tutor.image} alt={tutor.name} className="w-full h-full object-cover" />
+                                                        <img src={tutor.image} alt={tutor.name} width={48} height={48} loading="lazy" className="w-full h-full object-cover" />
                                                     ) : (
                                                         tutor.name.charAt(0)
                                                     )}
