@@ -2,8 +2,9 @@
 @source "../**/*.{js,jsx,ts,tsx}";
 
 :root {
-  --color-primary: #218396;
-  --color-primary-dark: #1c7282;
+  --color-primary: #1d7a8c;     /* darkened from #218396 → contrast ratio 4.5:1 on white (WCAG AA) */
+  --color-primary-dark: #186878;
+
 
   --color-dark: #0F2537;
 
