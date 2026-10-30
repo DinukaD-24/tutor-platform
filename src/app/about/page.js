@@ -4,8 +4,8 @@ import {
     Users, BookOpen, Award, TrendingUp, HelpCircle, ChevronDown
 } from "lucide-react";
 import { getSiteStats } from "@/utils/getData";
-
-export const dynamic = "force-dynamic";
+// ISR: Regenerate About page at most once per hour
+export const revalidate = 3600;
 
 const timeline = [
     { year: "April 2026", title: "The Concept & Vision", desc: "TutorHub.LK was conceived by engineering undergraduates to solve Sri Lanka's fragmented tutor discovery process with a clean, structured directory." },
@@ -34,7 +34,7 @@ export default async function AboutPage() {
     ];
 
     return (
-        <main className="min-h-screen bg-background text-dark">
+        <div className="min-h-screen bg-background text-dark">
 
             {/* ── Hero ── */}
             <section className="pt-28 pb-20 bg-white border-b border-gray-100">
@@ -155,6 +155,6 @@ export default async function AboutPage() {
                 </div>
             </section>
 
-        </main>
+        </div>
     );
 }

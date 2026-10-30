@@ -1,8 +1,8 @@
 import { getGrade, getSubject, getSyllabus, getTopicsBySlugs, getTutorsBySlugs } from "@/utils/getData";
 import Link from "next/link";
 import { ChevronRight, Clock, BookOpen, Users, ArrowRight, Zap } from "lucide-react";
-
-export const dynamic = "force-dynamic";
+// ISR: Cache curriculum taxonomy for 1 hour
+export const revalidate = 3600;
 
 const difficultyConfig = {
     "Beginner":     { color: "text-green-700", bg: "bg-green-50",  border: "border-green-100" },

@@ -252,7 +252,6 @@ export async function getFeaturedTutors(limit = 8) {
         { rating: "desc" },
         { reviewsCount: "desc" },
       ],
-      include: { reviews: true },
     });
     return tutors.map(serializeTutor);
   } catch (error) {

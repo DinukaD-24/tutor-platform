@@ -61,9 +61,9 @@ export default function RootLayout({ children }) {
 
         <Navbar/>
 
-        <main className="flex-1">
+        <div className="flex-1">
           {children}
-        </main>
+        </div>
         
         <Footer/>
 

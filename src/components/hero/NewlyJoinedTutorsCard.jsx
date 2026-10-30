@@ -180,6 +180,9 @@ export default function NewlyJoinedTutorsCard({ tutors }) {
                     <img
                       src={currentTutor.image}
                       alt={currentTutor.name}
+                      width={112}
+                      height={112}
+                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                   ) : (

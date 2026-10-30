@@ -49,15 +49,15 @@ body {
 @keyframes slideDown {
   from {
     opacity: 0;
-    tranform: translateY(-10px);
+    transform: translateY(-10px);
   }
 
   to {
     opacity: 1;
-    tranform: translateY(0);
+    transform: translateY(0);
   }
 }
 
 .animate-slideDown {
-  animation: slide 0.2s ease-out;
+  animation: slideDown 0.2s ease-out;
 }

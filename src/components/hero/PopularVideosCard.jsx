@@ -87,6 +87,9 @@ export default function PopularVideosCard({ videos }) {
               <img
                 src={`https://img.youtube.com/vi/${currentVideo.youtubeId}/mqdefault.jpg`}
                 alt={currentVideo.title}
+                width={144}
+                height={81}
+                loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-dark/25 group-hover:bg-dark/10 transition-colors flex items-center justify-center">
@@ -130,6 +133,9 @@ export default function PopularVideosCard({ videos }) {
                 <img
                   src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
                   alt={video.title}
+                  width={48}
+                  height={27}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                 />
                 <div className="absolute inset-0 bg-dark/30 flex items-center justify-center">

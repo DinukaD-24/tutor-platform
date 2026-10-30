@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+// ISR: Cache sitemap for 24 hours
+export const revalidate = 86400;
 
 export default async function sitemap() {
   const baseUrl = "https://www.tutorhub.lk";

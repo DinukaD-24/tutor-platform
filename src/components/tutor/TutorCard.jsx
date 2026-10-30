@@ -62,6 +62,9 @@ export default function TutorCard({ tutor }) {
                             <img 
                                 src={tutor.image} 
                                 alt={tutor.name} 
+                                width={64}
+                                height={64}
+                                loading="lazy"
                                 className="w-16 h-16 rounded-2xl object-cover shadow-xs border-2 border-white ring-1 ring-gray-200/80 group-hover:ring-primary/40 transition-all duration-300"
                             />
                         ) : (

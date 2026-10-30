@@ -6,6 +6,9 @@ export const metadata = {
   description: "Browse free educational video lessons, revisions, and tutorials published by top verified tutors in Sri Lanka.",
 };
 
+// ISR: revalidate videos library every 2 minutes
+export const revalidate = 120;
+
 export default async function VideosPage() {
   const videos = await getAllVideos();
 

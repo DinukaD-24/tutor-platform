@@ -7,8 +7,8 @@ import {
     FileText, Users, Video, Download, Clock, Zap,
     CheckCircle, BookOpen, ArrowRight, AlertCircle, ChevronRight
 } from "lucide-react";
-
-export const dynamic = "force-dynamic";
+// ISR: Cache curriculum taxonomy for 1 hour
+export const revalidate = 3600;
 
 const difficultyConfig = {
     "Beginner":     { color: "text-green-700",  bg: "bg-green-50",  border: "border-green-100",  dot: "bg-green-500"  },
