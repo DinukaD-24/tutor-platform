@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { cache } from "react";
 
 const topicInclude = {
   subject: { include: { grade: { include: { syllabus: true } } } },
@@ -260,7 +261,7 @@ export async function getFeaturedTutors(limit = 8) {
   }
 }
 
-export async function getTutorById(idOrSlug) {
+export const getTutorById = cache(async (idOrSlug) => {
   const t = await prisma.tutor.findFirst({
     where: {
       OR: [
@@ -282,7 +283,7 @@ export async function getTutorById(idOrSlug) {
     }
   });
   return t ? serializeTutor(t) : null;
-}
+});
 
 export async function getTutorsBySlugs(slugs) {
   if (!slugs?.length) return [];

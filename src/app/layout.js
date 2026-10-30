@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://www.tutorhub.lk"),
   title: "TutorHub.LK | Sri Lanka's Tutor Discovery & Learning Platform",
   description: "TutorHub.LK connects Sri Lankan students with qualified, verified tutors across Local A/L, O/L, Edexcel, and Cambridge syllabuses. Browse subjects, compare teaching styles, and find your ideal tutor.",
   icons: {

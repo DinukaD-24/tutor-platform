@@ -1,17 +1,16 @@
 import { getTutorById } from "@/utils/getData";
 import Link from "next/link";
-import FollowButton from "@/components/tutor/FollowButton";
 import AddReviewModal from "@/components/tutor/AddReviewModal";
-import ContactTutorButton from "@/components/tutor/ContactTutorButton";
-import { createClient } from "@/utils/supabase/server";
+import TutorContactChannels from "@/components/tutor/TutorContactChannels";
+import LessonHighlightVideo from "@/components/tutor/LessonHighlightVideo";
 import {
-    ChevronRight, BookOpen, Star, Users, GraduationCap,
-    CheckCircle, Mail, Phone, MapPin, Globe, Clock,
-    ShieldCheck, Play, BarChart2, Languages, Target,
-    MessageSquare, X, User, Lock, LogIn
+    ChevronRight, BookOpen, Star, GraduationCap,
+    CheckCircle, ShieldCheck, Play, BarChart2, Languages, Target,
+    MessageSquare, X, User, Globe, MapPin
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+// ISR: Cache tutor profile page at edge for 60 seconds
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
     const { tutorId } = await params;
@@ -24,8 +23,10 @@ export async function generateMetadata({ params }) {
         };
     }
 
-    const title = `${tutor.name} (${tutor.subject}) — Tutor Profile | TutorHub.LK`;
-    const description = tutor.bio || `Connect with ${tutor.name}, verified ${tutor.subject} tutor on TutorHub.LK. Explore qualifications, teaching experience, and video lessons.`;
+    const title = `${tutor.name} (${tutor.subject || "Verified Tutor"}) — Tutor Profile | TutorHub.LK`;
+    const description = (tutor.bio && tutor.bio.trim().length > 10)
+        ? tutor.bio.slice(0, 160).trim()
+        : `Connect with ${tutor.name}, verified ${tutor.subject || "academic"} tutor on TutorHub.LK. Explore qualifications, teaching experience, and video lessons.`;
     const imageUrl = tutor.image || "https://www.tutorhub.lk/logo.png";
 
     return {
@@ -48,10 +49,6 @@ export async function generateMetadata({ params }) {
 
 export default async function TutorProfilePage({ params }) {
     const { tutorId } = await params;
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const isAuthenticated = Boolean(user);
-
     const tutor = await getTutorById(tutorId);
 
     if (!tutor) {
@@ -94,12 +91,12 @@ export default async function TutorProfilePage({ params }) {
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
                 {/* Breadcrumbs */}
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 mb-5 tracking-wide uppercase">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-600 mb-5 tracking-wide uppercase">
                     <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                     <ChevronRight size={11} />
                     <Link href="/tutors" className="hover:text-primary transition-colors">Tutors</Link>
                     <ChevronRight size={11} />
-                    <span className="text-gray-600 font-bold uppercase">{tutor.name}</span>
+                    <span className="text-gray-700 font-bold uppercase">{tutor.name}</span>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -129,6 +126,9 @@ export default async function TutorProfilePage({ params }) {
                                     <img
                                         src={tutor.image}
                                         alt={tutor.name}
+                                        width={208}
+                                        height={280}
+                                        priority="true"
                                         className="w-full h-full object-cover object-top"
                                         style={{ maskImage: "linear-gradient(to right, black 80%, transparent 100%)" }}
                                     />
@@ -237,9 +237,9 @@ export default async function TutorProfilePage({ params }) {
 
                             {/* Topics label + subject pill */}
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Core Topics Covered</span>
+                                <span className="text-[10px] font-extrabold text-gray-600 uppercase tracking-wider">Core Topics Covered</span>
                                 {tutor.subject && (
-                                    <span className="text-xs font-extrabold text-[#0d8a6e]">{tutor.subject}</span>
+                                    <span className="text-xs font-extrabold text-[#0b735c]">{tutor.subject}</span>
                                 )}
                             </div>
 
@@ -247,7 +247,7 @@ export default async function TutorProfilePage({ params }) {
                             {tutor.specializations?.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {tutor.specializations.map((spec) => (
-                                        <span key={spec} className="text-xs font-bold text-[#0d8a6e] bg-[#e6f7f2] px-3 py-1.5 rounded-xl border border-[#c2edd9]">
+                                        <span key={spec} className="text-xs font-bold text-[#0b735c] bg-[#e6f7f2] px-3 py-1.5 rounded-xl border border-[#c2edd9]">
                                             {spec}
                                         </span>
                                     ))}
@@ -258,27 +258,27 @@ export default async function TutorProfilePage({ params }) {
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                                 <div className="bg-[#f4f9f8] rounded-2xl border border-gray-100/80 p-4 space-y-2">
                                     <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center">
-                                        <BookOpen size={15} className="text-[#0d8a6e]" />
+                                        <BookOpen size={15} className="text-[#0b735c]" />
                                     </div>
-                                    <p className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Target Syllabus</p>
+                                    <p className="text-[9px] font-extrabold text-gray-600 uppercase tracking-wider">Target Syllabus</p>
                                     <p className="text-sm font-extrabold text-dark leading-snug">
                                         {tutor.syllabuses?.length ? tutor.syllabuses.join(", ") : "Not specified"}
                                     </p>
                                 </div>
                                 <div className="bg-[#f4f9f8] rounded-2xl border border-gray-100/80 p-4 space-y-2">
                                     <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center">
-                                        <BarChart2 size={15} className="text-[#0d8a6e]" />
+                                        <BarChart2 size={15} className="text-[#0b735c]" />
                                     </div>
-                                    <p className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Target Grades / Levels</p>
+                                    <p className="text-[9px] font-extrabold text-gray-600 uppercase tracking-wider">Target Grades / Levels</p>
                                     <p className="text-sm font-extrabold text-dark leading-snug">
                                         {tutor.grades?.length ? tutor.grades.join(", ") : "Not specified"}
                                     </p>
                                 </div>
                                 <div className="bg-[#f4f9f8] rounded-2xl border border-gray-100/80 p-4 space-y-2">
                                     <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center">
-                                        <Languages size={15} className="text-[#0d8a6e]" />
+                                        <Languages size={15} className="text-[#0b735c]" />
                                     </div>
-                                    <p className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Medium of Instruction</p>
+                                    <p className="text-[9px] font-extrabold text-gray-600 uppercase tracking-wider">Medium of Instruction</p>
                                     <p className="text-sm font-extrabold text-dark leading-snug">
                                         {tutor.languages?.length ? tutor.languages.join(", ") : "Not specified"}
                                     </p>
@@ -361,7 +361,7 @@ export default async function TutorProfilePage({ params }) {
                             <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-5">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-2xl bg-[#e6f7f2] border border-[#b2e8d4] flex items-center justify-center shrink-0">
-                                        <Play size={17} className="fill-[#0d8a6e] text-[#0d8a6e] ml-0.5" />
+                                        <Play size={17} className="fill-[#0b735c] text-[#0b735c] ml-0.5" />
                                     </div>
                                     <h2 className="text-lg font-extrabold text-dark tracking-tight">
                                         Video Lessons ({tutor.videos.length})
@@ -372,16 +372,19 @@ export default async function TutorProfilePage({ params }) {
                                         <Link
                                             key={video.id}
                                             href={`/watch/${video.id}`}
-                                            className="group rounded-2xl overflow-hidden border border-gray-100 hover:border-[#0d8a6e]/30 hover:shadow-md transition-all duration-200 bg-white"
+                                            className="group rounded-2xl overflow-hidden border border-gray-100 hover:border-[#0b735c]/30 hover:shadow-md transition-all duration-200 bg-white"
                                         >
                                             <div className="aspect-video relative overflow-hidden bg-gray-100">
                                                 <img
                                                     src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
                                                     alt={video.title}
+                                                    width={320}
+                                                    height={180}
+                                                    loading="lazy"
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                 />
                                                 <div className="absolute inset-0 bg-black/25 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                                    <div className="w-10 h-10 bg-[#0d8a6e] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                    <div className="w-10 h-10 bg-[#0b735c] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                                                         <Play fill="white" size={16} className="ml-0.5 text-white" />
                                                     </div>
                                                 </div>
@@ -389,7 +392,7 @@ export default async function TutorProfilePage({ params }) {
                                             <div className="p-3">
                                                 <p className="font-bold text-sm text-dark line-clamp-2">{video.title}</p>
                                                 {video.topic && (
-                                                    <p className="text-[10px] text-[#0d8a6e] mt-0.5 font-semibold">
+                                                    <p className="text-[10px] text-[#0b735c] mt-0.5 font-semibold">
                                                         {video.topic.subject?.name}
                                                     </p>
                                                 )}
@@ -415,10 +418,10 @@ export default async function TutorProfilePage({ params }) {
                             return (
                                 <div className="bg-white rounded-3xl border border-gray-100 p-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] space-y-2.5">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="font-black text-sm text-dark tracking-tight flex items-center gap-1.5">
-                                            <span className="text-[#0d8a6e]">{tutor.subject || "Video"}</span> Lesson Highlight
-                                        </h4>
-                                        <span className="px-2 py-0.5 bg-[#e6f7f2] text-[#0d8a6e] text-[9px] font-black rounded-full border border-[#c2edd9] uppercase tracking-wider">
+                                        <h3 className="font-black text-sm text-dark tracking-tight flex items-center gap-1.5">
+                                            <span className="text-[#0b735c]">{tutor.subject || "Video"}</span> Lesson Highlight
+                                        </h3>
+                                        <span className="px-2 py-0.5 bg-[#e6f7f2] text-[#0b735c] text-[9px] font-black rounded-full border border-[#c2edd9] uppercase tracking-wider">
                                             {hasVideo ? "FEATURED" : "LESSONS"}
                                         </span>
                                     </div>
@@ -426,22 +429,17 @@ export default async function TutorProfilePage({ params }) {
                                     {hasVideo ? (
                                         <>
                                             <div className="p-1 bg-[#f4f9f8] rounded-2xl border-2 border-[#b2e8d4] shadow-xs overflow-hidden">
-                                                <div className="aspect-video w-full rounded-xl overflow-hidden bg-black relative">
-                                                    <iframe
-                                                        src={`https://www.youtube.com/embed/${featuredVideo.youtubeId}?autoplay=1&mute=1&controls=1&modestbranding=1&rel=0`}
-                                                        title={featuredVideo.title || "Lesson Highlight"}
-                                                        className="w-full h-full border-0"
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                        allowFullScreen
-                                                    />
-                                                </div>
+                                                <LessonHighlightVideo
+                                                    youtubeId={featuredVideo.youtubeId}
+                                                    title={featuredVideo.title}
+                                                />
                                             </div>
                                             
                                             <div className="pt-1 flex items-center justify-between">
                                                 <p className="font-extrabold text-xs text-dark truncate flex-1 pr-2">{featuredVideo.title}</p>
                                                 <Link
                                                     href={`/watch/${featuredVideo.id}`}
-                                                    className="text-[10px] font-extrabold text-[#0d8a6e] hover:underline shrink-0"
+                                                    className="text-[10px] font-extrabold text-[#0b735c] hover:underline shrink-0"
                                                 >
                                                     Watch Full →
                                                 </Link>
@@ -449,8 +447,8 @@ export default async function TutorProfilePage({ params }) {
                                         </>
                                     ) : (
                                         <div className="p-4 bg-[#f4f9f8] rounded-2xl border border-dashed border-[#b2e8d4] text-center space-y-2 my-1">
-                                            <div className="w-10 h-10 rounded-full bg-[#e6f7f2] text-[#0d8a6e] flex items-center justify-center mx-auto border border-[#c2edd9]">
-                                                <Play size={18} className="fill-[#0d8a6e] ml-0.5 text-[#0d8a6e]" />
+                                            <div className="w-10 h-10 rounded-full bg-[#e6f7f2] text-[#0b735c] flex items-center justify-center mx-auto border border-[#c2edd9]">
+                                                <Play size={18} className="fill-[#0b735c] ml-0.5 text-[#0b735c]" />
                                             </div>
                                             <div className="space-y-1">
                                                 <p className="font-extrabold text-xs text-dark">No Sample Lessons Uploaded Yet</p>
@@ -467,104 +465,32 @@ export default async function TutorProfilePage({ params }) {
                         <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
 
                             {/* Class Format */}
-                            <div className="p-5 border-b border-gray-50">
-                                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Class Format</p>
+                            <div className="p-5 border-b border-gray-100/80">
+                                <p className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-3">Class Format</p>
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between px-3 py-2.5 bg-[#f4f9f8] rounded-2xl border border-gray-100/80">
                                         <span className="text-sm text-gray-700 font-semibold flex items-center gap-2">
-                                            <Globe size={15} className="text-[#0d8a6e]" />
+                                            <Globe size={15} className="text-[#0b735c]" />
                                             Online Classes
                                         </span>
-                                        <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${tutor.availability?.online ? "text-[#0d8a6e] bg-[#e6f7f2] border border-[#c2edd9]" : "text-gray-400 bg-gray-100"}`}>
+                                        <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${tutor.availability?.online ? "text-[#0b735c] bg-[#e6f7f2] border border-[#c2edd9]" : "text-gray-500 bg-gray-100"}`}>
                                             {tutor.availability?.online ? "Yes" : "No"}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between px-3 py-2.5 bg-[#f4f9f8] rounded-2xl border border-gray-100/80">
                                         <span className="text-sm text-gray-700 font-semibold flex items-center gap-2">
-                                            <MapPin size={15} className="text-[#0d8a6e]" />
+                                            <MapPin size={15} className="text-[#0b735c]" />
                                             Physical Classes
                                         </span>
-                                        <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${tutor.availability?.physical ? "text-[#0d8a6e] bg-[#e6f7f2] border border-[#c2edd9]" : "text-gray-400 bg-gray-100"}`}>
+                                        <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${tutor.availability?.physical ? "text-[#0b735c] bg-[#e6f7f2] border border-[#c2edd9]" : "text-gray-500 bg-gray-100"}`}>
                                             {tutor.availability?.physical ? "Yes" : "No"}
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Contact Channels */}
-                            <div className="p-5 border-b border-gray-50 space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Contact Channels</p>
-                                    {!isAuthenticated && (
-                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                                            <Lock size={10} />
-                                            Login Required
-                                        </span>
-                                    )}
-                                </div>
-                                {isAuthenticated ? (
-                                    <>
-                                        {tutor.email && (
-                                            <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                                                <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
-                                                    <Mail size={13} className="text-[#0d8a6e]" />
-                                                </div>
-                                                <span className="truncate text-xs font-medium">{tutor.email}</span>
-                                            </div>
-                                        )}
-                                        {tutor.phone && (
-                                            <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                                                <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
-                                                    <Phone size={13} className="text-[#0d8a6e]" />
-                                                </div>
-                                                <span className="text-xs font-medium">{tutor.phone}</span>
-                                            </div>
-                                        )}
-                                        {tutor.location && (
-                                            <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                                                <div className="w-7 h-7 rounded-xl bg-[#e6f7f2] border border-[#c2edd9] flex items-center justify-center shrink-0">
-                                                    <MapPin size={13} className="text-[#0d8a6e]" />
-                                                </div>
-                                                <span className="text-xs font-medium">{tutor.location}</span>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className="bg-[#f0fdf9] border border-[#0d8a6e]/20 rounded-2xl p-4 text-center space-y-2">
-                                        <div className="w-9 h-9 rounded-full bg-white shadow-sm border border-[#0d8a6e]/20 flex items-center justify-center mx-auto text-[#0d8a6e]">
-                                            <Lock size={16} />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-bold text-dark">Contact Details Protected</p>
-                                            <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">Sign in with Google to view this tutor's email and phone number.</p>
-                                        </div>
-                                        <Link
-                                            href={`/login?redirect=${encodeURIComponent(`/tutors/${tutor.id}`)}`}
-                                            className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 bg-[#0d8a6e] hover:bg-[#0b735c] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
-                                        >
-                                            <LogIn size={13} />
-                                            Sign In to View
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* CTA Buttons */}
-                            <div className="p-5 space-y-3 relative overflow-hidden">
-                                {/* Wave decoration */}
-                                <div className="absolute bottom-0 right-0 w-32 h-16 opacity-10 pointer-events-none">
-                                    <svg viewBox="0 0 128 64" className="w-full h-full text-[#0d8a6e] fill-current">
-                                        <path d="M0,32 C32,0 96,64 128,32 L128,64 L0,64 Z" />
-                                    </svg>
-                                </div>
-
-                                <FollowButton tutorId={tutor.id} />
-                                <ContactTutorButton
-                                    tutor={{ id: tutor.id, name: tutor.name, email: tutor.email }}
-                                    isAuthenticated={isAuthenticated}
-                                    currentUser={user}
-                                />
-                            </div>
+                            {/* Contact Channels & CTAs */}
+                            <TutorContactChannels tutor={tutor} />
                         </div>
                     </div>
 
