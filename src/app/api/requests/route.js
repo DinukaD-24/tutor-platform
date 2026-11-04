@@ -98,8 +98,8 @@ export async function POST(request) {
         const newRequest = await prisma.tuitionRequest.create({
             data: {
                 studentId: user?.id || null,
-                studentName: name.trim(),
-                studentEmail: email.trim(),
+                studentName: studentName.trim(),
+                studentEmail: studentEmail.trim(),
                 syllabus: syllabus || "Local A/L",
                 gradeOrAge: gradeOrAge || "Not Specified",
                 subject: subject.trim(),
@@ -120,3 +120,4 @@ export async function POST(request) {
         );
     }
 }
+
