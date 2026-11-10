@@ -6,8 +6,8 @@ import HowItWorksSection    from "@/components/home/HowItWorksSection";
 import TestimonialsSection  from "@/components/home/TestimonialsSection";
 import { getSiteStats, getTopReviews } from "@/utils/getData";
 
-// ISR: Cache on Edge CDN and revalidate at most once every 60 seconds
-export const revalidate = 60;
+// ISR: Cache on Edge CDN and revalidate at most once every hour (reduces ISR writes)
+export const revalidate = 3600;
 
 export default async function Home() {
     const stats = await getSiteStats().catch(() => null);
@@ -24,3 +24,4 @@ export default async function Home() {
         </div>
     );
 }
+
