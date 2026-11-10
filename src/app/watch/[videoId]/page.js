@@ -5,8 +5,8 @@ import { isValidYoutubeId } from "@/utils/youtube";
 import LogVisit from "@/components/watch/LogVisit";
 import { ChevronRight } from "lucide-react";
 
-// ISR: cache video watch pages on Edge CDN, revalidate every 5 minutes
-export const revalidate = 300;
+// ISR: cache video watch pages on Edge CDN, revalidate once per day (content rarely changes)
+export const revalidate = 86400;
 
 export async function generateMetadata({ params }) {
   const { videoId } = await params;

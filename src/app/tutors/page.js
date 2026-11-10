@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import TutorsClient from "@/components/tutor/TutorsClient";
 
-// ISR: regenerate this page at most once every 60 seconds
-export const revalidate = 60;
+// ISR: regenerate this page at most once per hour (reduces ISR writes)
+export const revalidate = 3600;
 
 const PAGE_SIZE = 12;
 

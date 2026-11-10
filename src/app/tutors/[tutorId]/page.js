@@ -9,8 +9,8 @@ import {
     MessageSquare, X, User, Globe, MapPin, Users, Clock
 } from "lucide-react";
 
-// ISR: Cache tutor profile page at edge for 60 seconds
-export const revalidate = 60;
+// ISR: Cache tutor profile page at edge, revalidate once per hour (reduces ISR writes)
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
     const { tutorId } = await params;
