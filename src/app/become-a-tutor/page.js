@@ -418,21 +418,42 @@ export default function BecomeATutorPage() {
 
                                     {/* Syllabuses Tag Input */}
                                     <div className="space-y-2">
-                                        <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Target Syllabuses *</label>
-                                        
-                                        {/* Quick Preset Buttons */}
-                                        <div className="flex flex-wrap gap-1.5 mb-2">
-                                            {presetSyllabuses.map((preset) => (
-                                                <button
-                                                    key={preset}
-                                                    type="button"
-                                                    onClick={() => handleAddSyllabus(preset)}
-                                                    className="px-2.5 py-1 text-[11px] font-semibold bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors cursor-pointer"
-                                                >
-                                                    + {preset}
-                                                </button>
-                                            ))}
+                                        <div className="flex items-center justify-between">
+                                            <label className="block text-[10px] font-bold text-dark uppercase tracking-wider">Target Syllabuses *</label>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${syllabusesList.length >= 4 ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-500"}`}>
+                                                {syllabusesList.length} selected
+                                            </span>
                                         </div>
+                                        <p className="text-[11px] text-gray-500 leading-relaxed">
+                                            Select <strong>only the syllabuses you actively teach</strong>. Pick 1–3 that best describe your teaching scope — avoid selecting all options.
+                                        </p>
+                                        
+                                        {/* Quick Preset Buttons — toggle style */}
+                                        <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {presetSyllabuses.map((preset) => {
+                                                const isSelected = syllabusesList.includes(preset);
+                                                return (
+                                                    <button
+                                                        key={preset}
+                                                        type="button"
+                                                        onClick={() => isSelected ? handleRemoveSyllabus(preset) : handleAddSyllabus(preset)}
+                                                        className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer border ${
+                                                            isSelected
+                                                                ? "bg-primary text-white border-primary"
+                                                                : "bg-gray-100 hover:bg-primary/10 hover:text-primary border-transparent"
+                                                        }`}
+                                                    >
+                                                        {isSelected ? "✓ " : "+ "}{preset}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {syllabusesList.length >= 4 && (
+                                            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                                                ⚠️ You&apos;ve selected {syllabusesList.length} syllabuses. Please only keep the ones directly relevant to your subjects — this helps students find you accurately.
+                                            </p>
+                                        )}
 
                                         <div className="flex items-center gap-2">
                                             <input
@@ -445,7 +466,7 @@ export default function BecomeATutorPage() {
                                                         handleAddSyllabus();
                                                     }
                                                 }}
-                                                placeholder="Type syllabus or click presets above..."
+                                                placeholder="Or type a custom syllabus..."
                                                 className="flex-1 border border-gray-100 bg-gray-50/50 rounded-xl px-3.5 py-2.5 text-sm text-dark placeholder-gray-400 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                                             />
                                             <button
@@ -457,20 +478,22 @@ export default function BecomeATutorPage() {
                                             </button>
                                         </div>
                                         
-                                        <div className="flex flex-wrap gap-2 pt-1">
-                                            {syllabusesList.map((syl) => (
-                                                <span key={syl} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-dark/10 text-primary-dark border border-primary-dark/20 rounded-xl text-xs font-bold">
-                                                    {syl}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveSyllabus(syl)}
-                                                        className="hover:text-red-500 font-bold ml-1 cursor-pointer"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </span>
-                                            ))}
-                                        </div>
+                                        {syllabusesList.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 pt-1">
+                                                {syllabusesList.map((syl) => (
+                                                    <span key={syl} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-dark/10 text-primary-dark border border-primary-dark/20 rounded-xl text-xs font-bold">
+                                                        {syl}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveSyllabus(syl)}
+                                                            className="hover:text-red-500 font-bold ml-1 cursor-pointer"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Target Grades / Levels Tag Input */}
